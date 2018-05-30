@@ -1,0 +1,1979 @@
+<?xml-model href='http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng' schematypens='http://relaxng.org/ns/structure/1.0'?><?xml-model href='http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng' type='application/xml' schematypens='http://purl.oclc.org/dsdl/schematron'?>
+<article xmlns="http://docbook.org/ns/docbook" version="5.0">
+    <info>
+        <title>Rethinking transformation – the potential of code generation</title>
+        <author>
+            <personname>Hans-Jürgen Rennau</personname>
+            <email>hans-juergen.rennau@parsqube.de</email>
+            <personblurb>
+                <para/>
+            </personblurb>
+            <affiliation>
+                <orgname>parsQube GmbH</orgname>
+            </affiliation>
+        </author>
+        <author>
+            <personname>Hauke Brandes</personname>
+            <email>hauke.brandes@parsqube.de</email>
+            <personblurb>
+                <para/>
+            </personblurb>
+            <affiliation>
+                <orgname>parsQube GmbH</orgname>
+            </affiliation>
+        </author>
+        <keywordset>
+            <keyword>XML, RDF, transformation, code generation, mapping tools</keyword>
+        </keywordset>
+        <abstract>
+            <para>A code generator for document to document transformation is introduced. It reduces
+                the development effort to editing a set of metadata items attached to a tree model
+                of the target documents. Metadata values are XQuery expressions which are typically
+                so simple that they do not require genuine programming skills. Nevertheless,
+                expressions are more difficult to provide than static values, and therefore
+                possibilities of further simplifying the development task are explored, striving to
+                enable subject matter experts to define the transformation without writing XQuery
+                expressions. This can be achieved by generating the expressions from assertions
+                about alignments between source and target nodes, although specific requirements
+                will often necessitate additional information. As alignments can be represented
+                graphically by connecting lines, the approach amounts to a solid conceptual
+                foundation for graphical mapping tools. Finally, the underlying model of code
+                generation driven by target document structure is generalized into a conceptual
+                framework which is not restricted to XML data sources. Its usefulness is
+                demonstrated by a simple code generator for transforming RDF data into XML
+                documents.</para>
+        </abstract>
+    </info>
+    <section>
+        <title>Introduction</title>
+        <para>XML documents are trees of labeled information, and they may be associated with a
+            document model (e.g. XSD), which prescribes a particular tree structure. Code for
+            processing or constructing documents therefore often reflects the tree structure
+            described by a document model. Such code might be called <emphasis role="bold"/>document
+            model driven code.</para>
+        <para>While a document model implies the tree structure of its instance documents, this tree
+            structures is usually implicit, rather than explicit, due to the use of references which
+            “flatten” the representation <xref linkend="location-trees"/>. However, a de-normalizing
+            transformation (replacing references by a copy of the referenced component) can generate
+            a <emphasis role="bold">document model tree</emphasis>, a tree-structured document model
+            which mirrors the tree structure of its instance documents as closely as possible (see
+                <xref linkend="location-trees"/> for a detailed discussion). Augmenting the nodes of
+            a document model tree with metadata, one obtains a <emphasis role="bold">document
+                metadata tree</emphasis>. The metadata of a model node may convey hints how to
+            process or create the instance document items modeled by the node. This implies a
+            possibility to generate document model driven code from document metadata trees <xref
+                linkend="location-trees"/>. Typically (although not necessarily) the resulting code
+            will mirror the model tree: starting at the root node of the model and descending from
+            each model node to its children.</para>
+        <para>An important category of document model driven code is document construction from data
+            sources, e.g. an XML or JSON document, relational database content or RDF data. This
+            paper explores the generation of document constructors from metadata trees in depth.
+            Major goals are to provide a sound conceptual base and to explore its application in
+            practice. We focus on XML document to XML document transformation, but in the last part
+            we generalize our findings, proposing a conceptual framework for building a family of
+            code generators, each one dealing with a different source media type.</para>
+        <para><emphasis role="bold"><emphasis role="ital">Note on terminology.</emphasis></emphasis>
+            This paper leans on the concept of a document model tree as defined in <xref
+                linkend="location-trees"/>. The term used in <xref linkend="location-trees"/> to
+            denote a node of a model tree is location. We use the terms model node and location as
+            synonyms.</para>
+    </section>
+    <section>
+        <title>Rethinking document-to-document transformation</title>
+        <para>As a starting point, we introduce a simple example transformation.</para>
+        <para>Source document:</para>
+        <programlisting><![CDATA[
+resources
+. books
+. . @lastUpdate?
+. . book*
+. . . @isbn
+. . . title
+. . . author*
+. . . py?
+            ]]></programlisting>
+        <para>Target document:</para>
+        <programlisting><![CDATA[
+publications
+. @updatedAt?
+. publication*
+. . @publicationYear?
+. . isbn
+. . title
+. . creator*
+. . . creatorRole
+. . . creatorName
+            ]]></programlisting>
+        <para>The implementation of a transformation can use a push approach or a pull
+            approach:</para>
+        <itemizedlist spacing="compact">
+            <listitem>
+                <para>Push approach – the code follows the data structure of the source document,
+                    letting it trigger appropriate actions</para>
+            </listitem>
+            <listitem>
+                <para>Pull approach – the code follows the data structure of the target document,
+                    letting it trigger appropriate actions</para>
+            </listitem>
+        </itemizedlist>
+        <para>As a rule of thumb, the push approach is more appropriate when the structure of the
+            target document strongly depends on the actual input data, which is typically the case
+            with document oriented XML, mainly consisting of human readable text and structured
+            according to its actual content. The pull approach, on the other hand, tends to be much
+            more straightforward with data oriented XML, where the target document structure is
+            mainly determined by the target document model, rather than unpredictable text
+            structure.</para>
+        <para>In this discussion we focus on pull transformation, as we are interested in leveraging
+            the information stored in the target document model. The following listing demonstrates
+            the striking similarity between target document structure and code structure, which can
+            be achieved using the pull approach.</para>
+        <example xml:id="example-xquery-for-xml-source">
+            <title>XQuery code implementing the example transformation as a pull
+                transformation.</title>
+            <titleabbrev xml:id="example-xquery-for-xml-source-shorttitle">XQuery code generated for
+                XML data source</titleabbrev>
+            <programlisting>
+let $context := /* return
+
+&lt;<emphasis role="bold">publications</emphasis>>{
+   let $value := $context/books/@lastUpdate return
+   if (empty($value)) then () else
+   attribute <emphasis role="bold">updatedAt</emphasis> {$value},
+   for $context in $context/books/book return 
+   &lt;<emphasis role="bold">publication</emphasis>>{
+      let $v := $context/py return
+      if (empty($v)) then () else
+      attribute <emphasis role="bold">publicationYear</emphasis> {$v},   
+      &lt;<emphasis role="bold">isbn</emphasis>>{$context/@isbn/string()}&lt;/isbn>,
+      &lt;<emphasis role="bold">title</emphasis>>{$context/title/string()}&lt;/title>,
+      for $context in $context/author return  
+      &lt;<emphasis role="bold">creator</emphasis>>{
+         &lt;<emphasis role="bold">creatorRole</emphasis>>{'Author'}&lt;/creatorRole>,
+         &lt;<emphasis role="bold">creatorName</emphasis>>{$context/string()}&lt;/creatorName>
+      }&lt;/creator>
+   }&lt;/publication>
+}&lt;/publications></programlisting>
+        </example>
+        <para>Such code is constructed according to a simple pattern:</para>
+        <orderedlist spacing="compact">
+            <listitem>
+                <para>Instantiate the root element <emphasis role="ital">(write start tag; content
+                        will follow)</emphasis></para>
+            </listitem>
+            <listitem>
+                <para>For each attribute model on this element model:</para>
+                <orderedlist spacing="compact">
+                    <listitem>
+                        <para>Decide whether to construct this attribute</para>
+                    </listitem>
+                    <listitem>
+                        <para>If yes: set the value</para>
+                    </listitem>
+                </orderedlist>
+            </listitem>
+            <listitem>
+                <para>For each child element model on this element model:</para>
+                <orderedlist spacing="compact">
+                    <listitem>
+                        <para>Decide how many instances to construct (possibly none)</para>
+                    </listitem>
+                    <listitem>
+                        <para>For each instance:</para>
+                        <itemizedlist spacing="compact">
+                            <listitem>
+                                <para>Instantiate element <emphasis role="ital">(write start tag;
+                                        content will follow)</emphasis></para>
+                            </listitem>
+                            <listitem>
+                                <para>If element has simple content: set the value</para>
+                            </listitem>
+                            <listitem>
+                                <para>If element has simple content: set the value</para>
+                            </listitem>
+                            <listitem>
+                                <para>If element has attributes/child elements: continue at
+                                    (2)</para>
+                            </listitem>
+                        </itemizedlist>
+                    </listitem>
+                </orderedlist>
+            </listitem>
+        </orderedlist>
+        <para>The example illustrates that the code of a pull transformation can be regarded as a
+            sum of two components: a scaffold which reflects the target document model and
+            structures the code; and “nuggets” – small pieces of code pulling information from the
+            source document. Note the frequent use of the variable $context, whose value is a
+            shifting set of source nodes. It provides an appropriate starting point for navigating
+            to the nodes of interest, for example:</para>
+        <programlisting>   $context/title</programlisting>
+        <para>Here, the value is always bound to the “right” &lt;book> element, which is the
+            &lt;book> currently processed. Such a context is essential for locating the appropriate
+            source nodes.</para>
+        <para>The transformation can be regarded as a sequence of decisions, which is orchestrated
+            by the target document structure. Main kinds of decision are:</para>
+        <informaltable xml:id="decisions" frame="none">
+            <tgroup cols="3">
+                <colspec colname="c1" colnum="1" colwidth="1*"/>
+                <colspec colname="c2" colnum="2" colwidth="5*"/>
+                <colspec colname="c3" colnum="3" colwidth="1*"/>
+                <!--                
+                <thead>
+                    <row>
+                        <entry>Location tree element</entry>
+                        <entry>Meaning</entry>
+                        <entry>XSD element</entry>
+                    </row>
+                </thead>
+-->
+                <tbody>
+                    <row>
+                        <entry align="left">• A? </entry>
+                        <entry align="left">- Whether to construct an attribute </entry>
+                        <entry align="left">(2a)</entry>
+                    </row>
+                    <row>
+                        <entry align="left">• #E? </entry>
+                        <entry align="left">- How many instances of an element to construct</entry>
+                        <entry align="left">(3a)</entry>
+                    </row>
+                    <row>
+                        <entry align="left">• A=? </entry>
+                        <entry align="left">- Which value to use for an attribute </entry>
+                        <entry align="left">(2b)</entry>
+                    </row>
+                    <row>
+                        <entry align="left">• E=? </entry>
+                        <entry align="left">- Which value to use for a simple content
+                            element</entry>
+                        <entry align="left">(2b.ii)</entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </informaltable>
+        <para>For following table compiles code snippets, stating the kind of decision they
+            implement and identifying the source and target nodes involved.</para>
+        <table xml:id="example-code-snippets">
+            <title>Code snippets taken from the example of a simple pull transformation.</title>
+            <tgroup cols="5">
+                <colspec colname="c1" colnum="1" colwidth="5*"/>
+                <colspec colname="c2" colnum="2" colwidth="3*"/>
+                <colspec colname="c3" colnum="3" colwidth="2.8*"/>
+                <colspec colname="c4" colnum="4" colwidth="3.5*"/>
+                <colspec colname="c5" colnum="5" colwidth="2*"/>
+                <thead>
+                    <row>
+                        <entry align="left">Transformation code</entry>
+                        <entry align="left">Source nodes referenced by $context</entry>
+                        <entry align="left">Source nodes</entry>
+                        <entry align="left">Target nodes under construction</entry>
+                        <entry align="left">Decision kind</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry align="left"><emphasis role="bold"
+                            >$context</emphasis>/books/@lastUpdate</entry>
+                        <entry align="left">&lt;resources></entry>
+                        <entry align="left">@lastUpdate</entry>
+                        <entry align="left">@updatedAt</entry>
+                        <entry align="left">A?</entry>
+                    </row>
+                    <row>
+                        <entry align="left"><emphasis role="bold"
+                            >$context</emphasis>/books/@lastUpdate</entry>
+                        <entry align="left">&lt;resources></entry>
+                        <entry align="left">@lastUpdate</entry>
+                        <entry align="left">@updatedAt</entry>
+                        <entry align="left">A=?</entry>
+                    </row>
+                    <row>
+                        <entry align="left"><emphasis role="bold"
+                            >$context</emphasis>/books/book</entry>
+                        <entry align="left">&lt;resources></entry>
+                        <entry align="left">&lt;book></entry>
+                        <entry align="left">&lt;publication></entry>
+                        <entry align="left">#E?</entry>
+                    </row>
+                    <row>
+                        <entry align="left"><emphasis role="bold">$context</emphasis>/py</entry>
+                        <entry align="left">&lt;book></entry>
+                        <entry align="left">&lt;py></entry>
+                        <entry align="left">@publicationYear</entry>
+                        <entry align="left">A?</entry>
+                    </row>
+                    <row>
+                        <entry align="left"><emphasis role="bold">$context</emphasis>/py</entry>
+                        <entry align="left">&lt;book></entry>
+                        <entry align="left">&lt;py></entry>
+                        <entry align="left">@publicationYear</entry>
+                        <entry align="left">A=?</entry>
+                    </row>
+                    <row>
+                        <entry align="left"><emphasis role="bold"
+                            >$context</emphasis>/@isbn/string()</entry>
+                        <entry align="left">&lt;book></entry>
+                        <entry align="left">@isbn</entry>
+                        <entry align="left">&lt;isbn></entry>
+                        <entry align="left">E=?</entry>
+                    </row>
+                    <row>
+                        <entry align="left"><emphasis role="bold"
+                            >$context</emphasis>/title/string()</entry>
+                        <entry align="left">&lt;book></entry>
+                        <entry align="left">&lt;title></entry>
+                        <entry align="left">&lt;title></entry>
+                        <entry align="left">E=?</entry>
+                    </row>
+                    <row>
+                        <entry align="left"><emphasis role="bold">$context</emphasis>/author</entry>
+                        <entry align="left">&lt;book></entry>
+                        <entry align="left">&lt;author></entry>
+                        <entry align="left">&lt;creator></entry>
+                        <entry align="left">#E=?</entry>
+                    </row>
+                    <row>
+                        <entry align="left">'Author'</entry>
+                        <entry align="left">-</entry>
+                        <entry align="left">-</entry>
+                        <entry align="left">&lt;creatorRole></entry>
+                        <entry align="left">E=?</entry>
+                    </row>
+                    <row>
+                        <entry align="left"><emphasis role="bold"
+                            >$context</emphasis>/string()</entry>
+                        <entry align="left">&lt;author></entry>
+                        <entry align="left">&lt;author></entry>
+                        <entry align="left">&lt;creatorName></entry>
+                        <entry align="left">E=?</entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+        <para>This example suggests a great potential for code generation based on the target
+            document model. This is best prepared by introducing a few abstractions.</para>
+    </section>
+    <section>
+        <title>Source navigation based model</title>
+        <para>Now we proceed to translate the informal picture of target document construction into
+            a model which describes document construction as composed of three primitive operations
+            orchestrated by simple rules of iteration, invocation and value passing. The crucial
+            operations are mappings of an input sequence of nodes to an output sequence of nodes. As
+            nodes can be perceived as places, such mappings may be viewed as navigations – hence we
+            call the model a <emphasis role="bold">source navigation based model.</emphasis></para>
+        <section>
+            <title>Basic concepts</title>
+            <para>As discussed in the previous section, document construction can be regarded as a
+                sequence of basic decisions concerning the questions <emphasis role="ital">how many
+                    instances to construct</emphasis> and <emphasis role="ital">which character
+                    sequence to use</emphasis> (as simple element content or attribute value).
+                Consider, for instance, the &lt;creator> element. As its minimum and maximum
+                cardinality differ (being 0 and unbounded), we must take a decision how many
+                elements we will actually instantiate. However, as there may be more than one
+                &lt;publication> to be constructed, the answer clearly depends on which
+                &lt;publication> is considered – the question “how many instances?” cannot be
+                answered globally, but only locally, concerning &lt;creator> children of a
+                particular &lt;publication> element. In fact, we must ask and answer the question
+                again and again for each &lt;publication> appearing in the target document.
+                Similarly, the string value to be used for @publicationYear must be determined
+                repeatedly, once for each &lt;publication> element in the transformation result. </para>
+            <para>To generalize, the basic decisions concerning the instantiation of a model node
+                are taken in the context of an individual parent node. To put it differently: if the
+                parent node has been identified, the decisions can be made, which means one subset
+                of the model instances can be constructed, comprising all instances found under the
+                given parent. It is important to remember that the complete set of instances of a
+                given model node is but the union of the subsets obtained for the instances of the
+                parent model node. This enables a decomposition of the highly complex operation of
+                document construction into primitive operations - small building blocks of
+                processing which implement the basic decisions. Defining a <emphasis role="bold"
+                    >local instantiation</emphasis> of a model node as the subset of its instances
+                sharing a particular parent node, we obtain the following picture:</para>
+            <itemizedlist spacing="compact">
+                <listitem>
+                    <para>Document construction = instantiation of a document model</para>
+                </listitem>
+                <listitem>
+                    <para>Document model = a set of model nodes</para>
+                </listitem>
+                <listitem>
+                    <para>Instantiation of a model node = a set of local instantiations of a model
+                        node</para>
+                </listitem>
+                <listitem>
+                    <para>Local instantiation of a model node = result of a composite operation
+                        “local construction”</para>
+                </listitem>
+                <listitem>
+                    <para>Local construction = composition of primitive operations</para>
+                </listitem>
+                <listitem>
+                    <para>Primitive operation = implementation of a basic decision</para>
+                </listitem>
+            </itemizedlist>
+            <para>This picture amounts to a decomposition of document construction into primitive
+                operations. However, it does not give any hints how to implement those operations.
+                Its practical value depends on an extension enabling their implementation. In
+                particular, if the implementation can be derived from model and configuration data,
+                code generation becomes feasible.</para>
+            <para>Focusing on document construction by transformation of a source document, we can
+                translate the patterns observed in the previous section into formal concepts. Table
+                1 showed how the basic decisions are driven by a navigation of the source document.
+                This navigation was described as the mapping of a context of source nodes to another
+                set of source nodes which enables the decision. A formal definition of primitive
+                operations is prepared by defining input, output and semantics of these mappings.
+                Besides, having realized the importance of parent node identity, we introduce the
+                notion of a node path as a means for expressing node identity (see <xref
+                    linkend="concepts"/>).</para>
+            <table xml:id="concepts">
+                <title>Some concepts facilitating the decomposition of document to document
+                    transformation into primitive operations.</title>
+                <tgroup cols="4">
+                    <colspec colname="c1" colnum="1" colwidth="2*"/>
+                    <colspec colname="c2" colnum="2" colwidth="2*"/>
+                    <colspec colname="c3" colnum="3" colwidth="2*"/>
+                    <colspec colname="c4" colnum="4" colwidth="5*"/>
+                    <thead>
+                        <row>
+                            <entry align="left">Name</entry>
+                            <entry align="left">Abbreviation</entry>
+                            <entry align="left">Property of …</entry>
+                            <entry align="left">Semantics</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry align="left">Node path</entry>
+                            <entry align="left">NP</entry>
+                            <entry align="left">Instance node</entry>
+                            <entry align="left">Identifies the identity of the node</entry>
+                        </row>
+                        <row>
+                            <entry align="left">Source context</entry>
+                            <entry align="left">SC</entry>
+                            <entry align="left">Node path</entry>
+                            <entry align="left">Given a node path, a set of source nodes enabling
+                                the construction of the target node identified by the node
+                                path</entry>
+                        </row>
+                        <row>
+                            <entry align="left">Propagated source context</entry>
+                            <entry align="left">PSC<subscript>parent-instance</subscript></entry>
+                            <entry align="left">Location</entry>
+                            <entry align="left">Given a location and the node path of an instance of
+                                the parent location: a set of source nodes enabling the construction
+                                of the location instances which are child of the node identified by
+                                the node path</entry>
+                        </row>
+                        <row>
+                            <entry align="left">Source context array</entry>
+                            <entry align="left">SCA<subscript>parent-instance</subscript></entry>
+                            <entry align="left">Location</entry>
+                            <entry align="left">Given a location and the node path of an instance of
+                                the parent location: an array with members being sets of source
+                                nodes; for each member, one location instance is constructed, with a
+                                source context equal to the value of the member</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+        </section>
+        <section>
+            <title>Primitive operations</title>
+            <para>Construction of the local instantiation of a model node is a composite operation
+                which consumes as input the source context of the parent node. The operation can be
+                implemented as a composition of three primitive operations given by the following
+                table.</para>
+            <table xml:id="primitive-operations">
+                <title>Primitive operations serving as building blocks of the local instantiation of
+                    a model node.</title>
+                <tgroup cols="4">
+                    <colspec colname="c1" colnum="1" colwidth="3*"/>
+                    <colspec colname="c2" colnum="2" colwidth="3*"/>
+                    <colspec colname="c3" colnum="3" colwidth="4*"/>
+                    <colspec colname="c4" colnum="4" colwidth="4*"/>
+                    <thead>
+                        <row>
+                            <entry align="left">Mapping name</entry>
+                            <entry align="left">Mapping input</entry>
+                            <entry align="left">Mapping output</entry>
+                            <entry align="left">Only applicable if …</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry align="left">context-propagator</entry>
+                            <entry align="left">parent-instance.SC</entry>
+                            <entry align="left"
+                                >Location.PSC<subscript>parent-instance</subscript></entry>
+                            <entry align="left">-</entry>
+                        </row>
+                        <row>
+                            <entry align="left">context-distributor</entry>
+                            <entry align="left">parent-instance.PSC</entry>
+                            <entry align="left"
+                                >Location.SCA<subscript>parent-instance</subscript></entry>
+                            <entry align="left">-</entry>
+                        </row>
+                        <row>
+                            <entry align="left">context-atomizer</entry>
+                            <entry align="left">instance.SC</entry>
+                            <entry align="left">String (simple content)</entry>
+                            <entry align="left">L.has-simple-content=true</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            <para>The <emphasis role="bold">context-propagator</emphasis> maps the source context of
+                the parent instance to a sequence of source nodes called the <emphasis role="ital"
+                    >propagated context</emphasis>, which is the “raw material” required for
+                constructing the local instantiation of the current location. This raw material is
+                used by the <emphasis role="bold">context-distributor</emphasis> to determine the
+                number of child instances and provide each one of them with a <emphasis role="ital"
+                    >source context</emphasis>. Each of these child instances can be constructed, as
+                its source context is given and no other input is required: (a) if the location
+                prescribes simple content, the text value is obtained by applying the <emphasis
+                    role="bold">context-atomizer</emphasis> to the source context; (b) if the model
+                prescribes complex content, it is obtained by passing the source context to each
+                attribute and child location, invoking its local instantiation. </para>
+            <para>It is interesting to note that the context-propagator is a pure navigation
+                function: it maps an input sequence of nodes to an output sequence of nodes. Also
+                the context-atomizer and the context-distributor consume a sequence of nodes. But
+                while the context-atomizer produces a string, the output of the context-distributor
+                is formally defined as an array of node sequences, with one member for each instance
+                to be constructed. Note the special case of a location with cardinality 0..1, where
+                the array is either empty or has a single member. In the most common case, such a
+                context-distributor triggers an instance if the propagated context is non-empty, and
+                it uses the propagated context as the source context of that instance. </para>
+            <para>The proposed definition of primitive operations provides a <emphasis role="ital"
+                    >bare minimum</emphasis> of building blocks which can be composed into a complex
+                document transformation. They should be regarded as primary building blocks which
+                may be further decomposed into smaller units if this reduces overall complexity. For
+                example, the mapping of the parent context to the propagated context may be defined
+                as a sequence of three steps: an initial mapping, subsequently refined by an
+                optional filter step, subsequently refined by an optional sorting step. Such smaller
+                units will be defined in the context of the metadata model, as they will correspond
+                to distinct metadata items.</para>
+        </section>
+        <section>
+            <title>Composing document-to-document transformation</title>
+            <para>The following listing provides pseudo-code of a generic function
+                    <code>get-local-instantiation</code>, which implements local instantiation:
+                consuming a model node and the source context of a parent instance node, returning
+                the instances of the model node which are child node of the given parent node. Note
+                the representation of the mapping functions as properties of the model node, using
+                dot notation, for instance:</para>
+            <programlisting>   $location.context-propagator(…)</programlisting>
+            <para>This reflects our intent to provide the primitive operations as metadata of the
+                model node.</para>
+            <figure>
+                <title>Pseudo code of <code>get-local-instantiation</code>, a function implementing
+                    local instantiation. An auxiliary function <code>new-node</code> is assumed to
+                    be available, which constructs a node, given the node kind, the node name and
+                    the node contents. </title>
+                <programlisting>
+<emphasis role="bold">get-local-instantiation</emphasis>(<emphasis role="italic">$location</emphasis>       as location, 
+                        <emphasis role="emphasis">$parent-context</emphasis> as node()*) 
+as node()* {
+   $propagated-context = $location.<emphasis role="underline">context-propagator</emphasis>
+                                    (parent-context = <emphasis role="italic">$parent-context</emphasis>)
+   $context-array      = $location.<emphasis role="underline">context-distributor</emphasis>
+                                (propagated-context = <emphasis role="italic">$propagated-context</emphasis>)
+   for $context in $context-array:
+      <emphasis role="bold"><emphasis role="italic">node-for-context</emphasis></emphasis>(location = <emphasis role="italic">$location</emphasis>, 
+                        context = <emphasis role="italic">$context</emphasis>)
+
+<emphasis role="bold">node-for-context</emphasis>(<emphasis role="italic">$location</emphasis> as location, 
+                 <emphasis role="italic">$context</emphasis>  as node()*) 
+as node() {
+   $content =
+      if $location.is-leaf: 
+         $location.<emphasis role="underline">context-atomizer</emphasis>(context = <emphasis role="italic">$context</emphasis>)
+      else:
+         for $child-location in $location.child-locations:
+            <emphasis role="bold"><emphasis role="italic">get-local-instantiation</emphasis></emphasis>(      location = <emphasis role="italic">$child-location</emphasis>, 
+                                    parent-context = <emphasis role="italic">$context</emphasis>)
+   return
+      <emphasis role="bold"><emphasis role="italic">new-node</emphasis></emphasis>(   kind = <emphasis role="italic">$location.node-kind</emphasis>, 
+                  name = <emphasis role="italic">$location.name</emphasis>, 
+               content = <emphasis role="italic">$content</emphasis>)
+}</programlisting>
+            </figure>
+            <para>Definition of a function <code>get-local-instantiation</code> amounts to a
+                complete definition of document-to-document transformation: the transformation is
+                achieved by applying <code>get-local-instantiation</code> to the root location of
+                the target document. In this initial invocation, the input value of a parent context
+                is axiomatically set to the root node of the source document.</para>
+            <para>While the primitive operations can be regarded as properties of the model nodes,
+                the metadata expected by a code generator need not necessarily represent them
+                one-to-one, as long as they can be <emphasis role="italic">derived</emphasis> from
+                the metadata. The following section introduces a metadata model which is used by an
+                actual code generator described later.</para>
+
+        </section>
+    </section>
+    <section xml:id="section-metadata-model">
+        <title>Metadata model SNAT (Source Navigation Annotated Target tree)</title>
+        <titleabbrev xml:id="section-metadata-model-shorttitle">Metadata model SNAT</titleabbrev>
+        <para>The source navigation based model associates each location with primitive operations,
+            and it assumes that an implementation of these operations can be derived from metadata
+            of the location. The next step towards building a code generator is therefore the design
+            of an appropriate <emphasis role="bold">metadata model</emphasis>, which defines the
+            names and semantics of metadata items. This section introduces a model which is intended
+            to minimize the effort required for implementing a transformation. Metadata items are
+            represented by attributes of a location tree (<xref linkend="location-trees"/>), so that
+            a transformation is specified by editing a location tree augmented by metadata
+            attributes. </para>
+        <section>
+            <title>Metadata item model</title>
+            <para>The following table describes the most important metadata attributes in terms of a
+                name and semantics. It also indicates the scope of the attributes, which is the set
+                of location nodes where this attribute may appear. The scope is defined by
+                constraints imposed on the location properties. The @src item, for example, appears
+                only on locations with simple content, and @for-each, @group-by and @sort-by appear
+                only on locations with a maximum cardinality greater 1. By default, all attribute
+                values are interpreted as XQuery expressions. Exceptions are enabled by special
+                syntax rules not described here.</para>
+            <table xml:id="table-metadata-items">
+                <title>The metadata model of a SNAT (Source Navigation Annotated Target tree). Each
+                    kind of metadata is modeled in terms of an attribute name, value semantics and
+                    attribute scope, which restricts the use of this attribute to locations with
+                    certain properties. The column Gen? indicates whether the attribute is generated
+                    as part of the initial SNAT tree generated from the target XSD (Y) or added to
+                    the generated SNAT tree by hand if required (N).</title>
+                <titleabbrev xml:id="table-metadata-items-shorttitle">Metadata items
+                    SNAT</titleabbrev>
+                <tgroup cols="5">
+                    <colspec colname="c1" colnum="1" colwidth="2*"/>
+                    <colspec colname="c2" colnum="2" colwidth="3*"/>
+                    <colspec colname="c3" colnum="3" colwidth="6*"/>
+                    <colspec colname="c4" colnum="4" colwidth="3*"/>
+                    <colspec colname="c5" colnum="5" colwidth="1*"/>
+                    <thead>
+                        <row>
+                            <entry align="left">Attribute name</entry>
+                            <entry align="left">Location properties</entry>
+                            <entry align="left">Meaning</entry>
+                            <entry align="left">Example</entry>
+                            <entry align="left">Gen?</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry align="left">alt</entry>
+                            <entry align="left">Location of an element or attribute which is
+                                optional</entry>
+                            <entry align="left">XPath expression, evaluated if @src or @ctxt yields
+                                the empty sequence; the value of @alt is used as if yielded by @src
+                                or @ctxt, respectively</entry>
+                            <entry align="left">"#UNKNOWN"</entry>
+                            <entry align="left">Y</entry>
+                        </row>
+                        <row>
+                            <entry align="left">atom</entry>
+                            <entry align="left">Location of a simple content element or
+                                attribute</entry>
+                            <entry align="left">XPath expression, evaluated in a context binding
+                                variable $v to the value of an accompanying @src; if specified, the
+                                value of @atom, rather than the concatenated string values of @src,
+                                is used as element content or attribute value</entry>
+                            <entry align="left">substring($v, 1, 3)</entry>
+                            <entry align="left">N</entry>
+                        </row>
+                        <row>
+                            <entry align="left">case</entry>
+                            <entry align="left">Child of a choice group descriptor
+                                    (<code>z:_choice_</code>)</entry>
+                            <entry align="left">XPath expression; the selected choice branch is the
+                                first child of <code>z:_choice_</code> whose @case has a true
+                                effective Boolean value</entry>
+                            <entry align="left">@Success eq "false"</entry>
+                            <entry align="left">Y</entry>
+                        </row>
+                        <row>
+                            <entry align="left">ctxt</entry>
+                            <entry align="left">Location of a complex element with maximum
+                                cardinality equal 1</entry>
+                            <entry align="left">XPath expression; its value is used as the
+                                propagated source context</entry>
+                            <entry align="left">PubInfo/Address</entry>
+                            <entry align="left">Y</entry>
+                        </row>
+                        <row>
+                            <entry align="left">dflt</entry>
+                            <entry align="left">Location of a simple content element or attribute
+                                which is mandatory</entry>
+                            <entry align="left">XPath expression, evaluated if @src yields the empty
+                                sequence; the value of @default is used as if yielded by
+                                @src</entry>
+                            <entry align="left">"?"</entry>
+                            <entry align="left">Y</entry>
+                        </row>
+                        <row>
+                            <entry align="left">for-each</entry>
+                            <entry align="left">Location of an element with maximum cardinality
+                                >1</entry>
+                            <entry align="left">XPath expression; its value is used as the
+                                propagated source context; if not accompanied by @group-by, one
+                                target instance per value item is constructed, otherwise one target
+                                instance per group of value items</entry>
+                            <entry align="left">books/book</entry>
+                            <entry align="left">Y</entry>
+                        </row>
+                        <row>
+                            <entry align="left">group-by</entry>
+                            <entry align="left">Location of an element with maximum cardinality >
+                                1</entry>
+                            <entry align="left">XPath expression, evaluated in the context of each
+                                value item yielded by @for-each; for each group of items with equal
+                                @group-by, one target instance is instantiated</entry>
+                            <entry align="left">../author/surName</entry>
+                            <entry align="left">N</entry>
+                        </row>
+                        <row>
+                            <entry align="left">if</entry>
+                            <entry align="left">Location of a complex element which is
+                                optional</entry>
+                            <entry align="left">XPath expression, evaluated in the context of the
+                                value of an accompanying @ctxt; if specified, the element is only
+                                instantiated if the effective Boolean value of @if is true</entry>
+                            <entry align="left">.//(au, ed, py)</entry>
+                            <entry align="left">N</entry>
+                        </row>
+                        <row>
+                            <entry align="left">sort-by, sort-by2, sort-by3 </entry>
+                            <entry align="left">Location of a complex element with maximum
+                                cardinality > 1</entry>
+                            <entry align="left">XPath expressions, optionally following by the
+                                string “DESCENDING”, used to control the order of value items
+                                received from @for-each</entry>
+                            <entry align="left">author/surName</entry>
+                            <entry align="left">N</entry>
+                        </row>
+                        <row>
+                            <entry align="left">src</entry>
+                            <entry align="left">Location of a simple content element or
+                                attribute</entry>
+                            <entry align="left">XPath expression; selects the nodes providing the
+                                information used as element content or attribute value</entry>
+                            <entry align="left">author/surName</entry>
+                            <entry align="left">Y</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            <para>An example SNAT and the transformer code generated from it are shown by the
+                following two listings.</para>
+            <example>
+                <title>SNAT document, defining the transformation described as an introductory
+                    example.</title>
+                <programlisting>
+&lt;z:snats xmlns:z="http://www.xsdplus.org/ns/structure">
+  &lt;z:prolog/>    
+  &lt;z:snat>
+    &lt;<emphasis role="bold">publications</emphasis> <emphasis role="bold"><emphasis role="italics">ctxt</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">books</emphasis></emphasis>">
+      &lt;z:_attributes_>
+        &lt;<emphasis role="bold">updatedAt</emphasis> <emphasis role="bold"><emphasis role="italics">src</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">@lastUpdate</emphasis></emphasis>" <emphasis role="bold"><emphasis role="italic">alt</emphasis></emphasis>=""/>
+      &lt;/z:_attributes_>
+      &lt;<emphasis role="bold">publication</emphasis> <emphasis role="bold"><emphasis role="italic">for-each</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">book</emphasis></emphasis>">
+        &lt;z:_attributes_>
+          &lt;<emphasis role="bold">publicationYear</emphasis> <emphasis role="bold"><emphasis role="italic">src</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">py</emphasis></emphasis>" <emphasis role="bold"><emphasis role="italic">alt</emphasis></emphasis>=""/>
+        &lt;/z:_attributes_>
+        &lt;<emphasis role="bold">isbn</emphasis> <emphasis role="bold"><emphasis role="italic">src</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">@isbn</emphasis></emphasis>" <emphasis role="bold"><emphasis role="italic">dflt</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">'#MISSING'</emphasis></emphasis>"/>
+        &lt;<emphasis role="bold">title</emphasis> <emphasis role="bold"><emphasis role="italic">src</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">title</emphasis></emphasis>" <emphasis role="bold"><emphasis role="italic">dflt</emphasis></emphasis>=""/>
+        &lt;<emphasis role="bold">creator</emphasis> <emphasis role="bold"><emphasis role="italic">for-each</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">author</emphasis></emphasis>">
+          &lt;<emphasis role="bold">creatorRole</emphasis> <emphasis role="bold"><emphasis role="italic">src</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">'Author'</emphasis></emphasis>" <emphasis role="bold"><emphasis role="italic">dflt=</emphasis></emphasis>""/>
+          &lt;<emphasis role="bold">creatorName</emphasis> <emphasis role="bold"><emphasis role="italic">src</emphasis></emphasis>="." <emphasis role="bold"><emphasis role="italic">dflt</emphasis></emphasis>="<emphasis role="italic"/>"/>
+        &lt;/creator>
+      &lt;/publication>
+    &lt;/publications>
+  &lt;/z:snat>
+&lt;/z:snats>                    
+                </programlisting>
+            </example>
+            <example>
+                <title>XQuery code, generated from the SNAT tree shown in the preceding
+                    listing.</title>
+                <programlisting>
+let $c := *
+let $c := $c/<emphasis role="underline"><emphasis role="italic">books</emphasis></emphasis>
+return
+&lt;<emphasis role="bold">publications</emphasis>>{
+   let $v := $c/<emphasis role="underline"><emphasis role="italic">@lastUpdate</emphasis></emphasis>
+   return
+      if (empty($v)) then () else
+      attribute <emphasis role="bold">updatedAt</emphasis> {$v},
+   for $c in $c/<emphasis role="underline"><emphasis role="italic">book</emphasis></emphasis>
+   return
+      &lt;<emphasis role="bold">publication</emphasis>>{
+         let $v := $c/<emphasis role="underline"><emphasis role="italic">py</emphasis></emphasis>
+         return
+            if (empty($v)) then () else
+            attribute <emphasis role="bold">publicationYear</emphasis> {$v/string()},
+         &lt;<emphasis role="bold">isbn</emphasis>>{
+            let $v := $c/<emphasis role="underline"><emphasis role="italic">@isbn</emphasis></emphasis>
+            return
+               if (exists($v)) then $v/string() else <emphasis role="underline"><emphasis role="italic">'#MISSING'</emphasis></emphasis>
+         }&lt;/isbn>,
+         &lt;<emphasis role="bold">title</emphasis>>{$c/<emphasis role="underline"><emphasis role="italic">title</emphasis></emphasis>/string()}&lt;/title>,
+         for $c in $c/<emphasis role="underline"><emphasis role="italic">author</emphasis></emphasis>
+         return
+            &lt;<emphasis role="bold">creator</emphasis>>{
+               &lt;<emphasis role="bold">creatorRole</emphasis>>{'Author'}&lt;/creatorRole>,
+               &lt;<emphasis role="bold">creatorName</emphasis>>{$c/string()}&lt;/creatorName>
+            }&lt;/creator>
+      }&lt;/publication>
+}&lt;/publications>                    
+                </programlisting>
+            </example>
+            <para>The code may be viewed as assembled from the primitive operations reflecting the
+                metadata values. All data values, for example, are obtained by evaluating the
+                expressions found in attributes @src, @alt and @dflt. Similarly, the propagation and
+                distribution of the source context is guided by attributes @ctxt and @for-each. The
+                following listing summarizes the rules how to derive the implementations of
+                primitive operations from metadata item values.</para>
+            <table xml:id="table-code-assembly">
+                <title>The primitive operations context-propagator, context-distributor and
+                    context-atomizer as implied by metadata values. Notation: v@foo is the value of
+                    the expression supplied by attribute @foo, "if v@foo" means "if the value is not
+                    the empty sequence, “if @foo” means “if attribute @foo exists”. The
+                    context-distributor is described informally by equating subsets of the
+                    propagated context (given by v@for-each or v@ctxt) with the source context (SC)
+                    of a distinct target item (TI).</title>
+                <titleabbrev xml:id="table-code-assembly-shorttitle">The assembly of primitive
+                    operations</titleabbrev>
+
+                <tgroup cols="3">
+                    <colspec colname="c1" colnum="1" colwidth="5*"/>
+                    <colspec colname="c2" colnum="2" colwidth="6*" colsep="0"/>
+                    <colspec colname="c3" colnum="3" colwidth="4*"/>
+                    <tbody>
+                        <row>
+                            <entry align="left" namest="c1" nameend="c3"><emphasis role="bold">
+                                    Context-propagator</emphasis></entry>
+                        </row>
+                        <row>
+                            <entry align="left">if @for-each:</entry>
+                            <entry align="left" namest="c2" nameend="c3">v@for-each</entry>
+                        </row>
+                        <row>
+                            <entry align="left">if (@ctxt and @alt):</entry>
+                            <entry align="left" namest="c2" nameend="c3">if (v@ctxt) then v@ctxt
+                                else v@alt</entry>
+
+                        </row>
+                        <row>
+                            <entry align="left">if @ctxt:</entry>
+                            <entry align="left" namest="c2" nameend="c3">v@ctxt</entry>
+                        </row>
+                        <row>
+                            <entry align="left">if (@src and @alt):</entry>
+                            <entry align="left" namest="c2" nameend="c3">if (v@src) then v@src else
+                                v@alt</entry>
+                        </row>
+                        <row>
+                            <entry align="left">else:</entry>
+                            <entry align="left" namest="c2" nameend="c3">v@src</entry>
+                        </row>
+                        <row>
+                            <entry align="left" namest="c1" nameend="c3"><emphasis role="bold"
+                                    >Context-distributor</emphasis></entry>
+                        </row>
+                        <row>
+                            <entry align="left">if (@for-each and @group-by):</entry>
+                            <entry align="left">each group of items in v@for-each:</entry>
+                            <entry align="left">SC of one distinct TI</entry>
+                        </row>
+                        <row>
+                            <entry align="left">if @for-each:</entry>
+                            <entry align="left">each item in v@for-each:</entry>
+                            <entry align="left">SC of one distinct TI</entry>
+                        </row>
+                        <row>
+                            <entry align="left">else:</entry>
+                            <entry align="left">all items in v@ctxt:</entry>
+                            <entry align="left">SC of the only TI</entry>
+                        </row>
+                        <row>
+                            <entry align="left" namest="c1" nameend="c3"><emphasis role="bold">
+                                    Context-atomizer</emphasis></entry>
+                        </row>
+                        <row>
+                            <entry align="left">if (@atom):</entry>
+                            <entry align="left" namest="c2" nameend="c3">v@atom</entry>
+                        </row>
+                        <row>
+                            <entry align="left">else:</entry>
+                            <entry align="left" namest="c2" nameend="c3"
+                                >string-join($source-context, " ")</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            <para>By now we have decomposed document transformation into three primitive operations,
+                and we have set up a model how to derive their implementation from a small set of
+                metadata. In principle, the expressiveness of this metadata language is sufficient
+                for describing arbitrary transformation. However, the benefits of the approach get
+                quickly lost if the expressions supplied as metadata become very complex, or if the
+                decomposition into independent expressions entails blunt repetition of non-trivial
+                expressions. Therefore we extend the model by a few advanced features addressing
+                these issues.</para>
+        </section>
+        <section>
+            <title>Advanced features</title>
+            <para>Several features extend the expressive power of the basic metadata model. These
+                are:</para>
+            <itemizedlist spacing="compact">
+                <listitem>
+                    <para>Value mappings</para>
+                </listitem>
+                <listitem>
+                    <para>User defined functions</para>
+                </listitem>
+                <listitem>
+                    <para>User-defined variables</para>
+                </listitem>
+            </itemizedlist>
+            <section>
+                <title>Value mappings</title>
+                <para>A common requirement is the mapping of strings found in the source document to
+                    different strings to be used in the target document – for example the mapping of
+                    codes to names, or a translation between different code systems. While it would
+                    be possible to describe a value mapping by filling an @atom attribute with a
+                    switch expression, mappings are much easier to define and maintain when
+                    specified by dedicated mapping tables. Example:</para>
+                <programlisting><![CDATA[   <z:valueMap name="OperationalStatus">
+     <z:entry from="true" to="Open"/>
+     <z:entry from="false" to="Closed"/>
+     <z:entry to="Closed"/>
+   </z:valueMap>]]></programlisting>
+                <para>The document model of a SNAT document contains a prolog section where such
+                    maps can be placed. An @atom item can invoke a particular mapping use the syntax
+                        <code>%map-$mapName</code>, where $mapName must be replaced by the name of
+                    the appropriate value map (e.g. <code>atom="%map-OperationalStatus"</code>).
+                </para>
+            </section>
+            <section>
+                <title>User-defined functions</title>
+                <para>User-defined functions can be stored in the prolog of a SNAT document and
+                    invoked by the expressions used in the metadata attributes.</para>
+            </section>
+            <section>
+                <title>User-defined variables</title>
+                <para>Any location can be augmented by a binding of user-defined variables to
+                    expressions. The expression values are available when processing the descendants
+                    of the assigning node. In the following example,</para>
+                <programlisting>   &lt;a:Images 
+      <emphasis role="italic">vars</emphasis>="<emphasis role="bold">group</emphasis>=string(. idiv 50 * 50)<emphasis role="bold"> ;</emphasis> <emphasis role="bold">folder</emphasis>=concat('f', $group)"
+      ...> ...
+   &lt;/a:Images></programlisting>
+                <para>two variables are introduced, <code>group</code> and <code>folder</code>,
+                    whose values are available when constructing the contents of an
+                        <code>&lt;a:Images></code> element:</para>
+                <programlisting>   &lt;a:Section src="<emphasis role="bold">$folder</emphasis>"/></programlisting>
+            </section>
+        </section>
+        <section xml:id="code-generator-snat">
+            <title>Code generator SNAT</title>
+            <para>A SNAT-based code generator is available at github (<xref linkend="xsdplus"/>). It
+                generates the code of document transformations defined by a SNAT document. The SNAT
+                is prepared by hand-editing an initial version generated from an XSD description of
+                the target documents. After changes of the XSD, the SNAT can be upgraded
+                automatically. The upgrade ensures that the SNAT is kept in sync with the XSD.
+                Usually, the upgrade must be finalized by a limited amount of hand-editing, for
+                example adding manual settings for any new items.</para>
+            <para>A typical workflow is illustrated by an example in which we assume the use of
+                BaseX (<xref linkend="basex"/>) as XQuery processor. Let target documents of the
+                desired transformation code have a root element <code>&lt;publications></code> and
+                be described by an XSD <code>publications.xsd</code>. The first step is the
+                generation of an initial version of a SNAT document
+                    (<code>publications.snat.xml</code>):</para>
+            <programlisting>   basex –b "request=<emphasis role="bold">snat</emphasis>?<emphasis role="bold">xsd</emphasis>=/a/b/c/publications.xsd,
+                          <emphasis role="bold">ename</emphasis>=publications" 
+         –o <emphasis role="italic">publications.snat.xml</emphasis>  
+   $HOME_XSDPLUS/<emphasis role="bold">xsdplus.xq</emphasis></programlisting>
+            <para>After editing the SNAT document, the transformation code
+                    (<code>publications.xq</code>) is generated:</para>
+            <programlisting>   basex –b "request=<emphasis role="bold">snat2xq</emphasis>?<emphasis role="bold">snat</emphasis>=publications.snat.xml" 
+         –o <emphasis role="italic">publications.xq</emphasis>  
+   $HOME_XSDPLUS/<emphasis role="bold">xsdplus.xq</emphasis></programlisting>
+            <para>Given a set of input documents (e.g. <code>books.xml</code>), the transformer can
+                be tested, creating a target document <code>publications.xml</code>:</para>
+            <programlisting>   basex –i books.xml –o <emphasis role="italic">publications.xml</emphasis> <emphasis role="bold">publications.xq</emphasis></programlisting>
+            <para>After changes of the XSD, the SNAT document must be upgraded. After renaming the
+                current SNAT document (e.g. to <code>publications.snat.v100.xml</code>), this is
+                achieved by the following command:</para>
+            <programlisting>   basex –b "request=<emphasis role="bold">snat</emphasis>?<emphasis role="bold">xsd</emphasis>=/a/b/c/publications.xsd,
+                          <emphasis role="bold">ename</emphasis>=publications, 
+                          <emphasis role="bold">upgrade</emphasis>=publications.snat.v100.xml"                
+         –o <emphasis role="italic">publications.snat.xml</emphasis>  
+   $HOME_XSDPLUS/<emphasis role="bold">xsdplus.xq</emphasis></programlisting>
+            <para>As a new XSD version typically contains new elements and attributes, the automatic
+                upgrade must be followed by hand-editing which supplies the necessary settings not
+                yet made.</para>
+        </section>
+    </section>
+    <section xml:id="section-source-alignment-based-model">
+        <title>Source alignment based model</title>
+        <titleabbrev xml:id="section-source-alignment-based-model-shorttitle">Source alignment based
+            model</titleabbrev>
+        <para>An important use case of document transformations is the consumption and construction
+            of web service messages. Such messages often contain a variety of information items with
+            subtle semantics, best understood by subject matter experts. These experts play a key
+            role in the correct implementation of transformations. How can their contribution be
+            made as efficient as possible? </para>
+        <para>Creating a SNAT tree does usually not require genuine coding skills. Most entries are
+            simple path expressions identifying source items by an item name or a path which is a
+            sequence of item names. Nevertheless, as a rule also a few more complex expressions are
+            required, which would be difficult to supply for a person who is not a software
+            developer.</para>
+        <para>The question arises if SNAT trees might themselves be <emphasis role="italic"
+                >generated</emphasis> from simpler input, which can be provided by subject matter
+            experts without an IT background. The core of their expertise is a thorough
+            understanding of item semantics on both sides, source and target. The expert recognizes
+            the alignments between source items and target items, and in this section we explore
+            possibilities of leveraging this competence in an optimized way. The idea is to obtain
+            SNAT documents from an identification of alignments and a minimum of additional
+            information.</para>
+        <section>
+            <title>What is an alignment?</title>
+            <para>We use the term <emphasis role="italic">alignment</emphasis> to mean a directed
+                relationship of dependency: a target location is aligned with a source location when
+                the construction of target nodes which are target location instances requires
+                information about the presence or content of source nodes which are source location
+                instances. There may be a semantic equivalence between the aligned locations, but
+                this is not necessarily the case. In our introductory example of a transformation,
+                the target location <code>creator</code> which is child of a
+                    <code>publication</code> location may be regarded as semantically equivalent to
+                an <code>author</code> location found under a <code>book</code> location. As a
+                counter example, consider a target location <code>airline</code> whose nodes are
+                constructed by extracting information from flight numbers provided by
+                    <code>flightNumber</code> elements: the target location <code>airline</code>
+                depends on the source location <code>flightNumber</code>, but there is obviously no
+                semantic equivalence. </para>
+        </section>
+        <section>
+            <title>Representation versus information</title>
+            <para>Alignments can be represented graphically: by lines connecting the symbol of a
+                target location with the symbols of one or more source locations. This possibility
+                enables graphical mapping tools as offered by various products (e.g. <xref
+                    linkend="altova-mapforce"/>). But while graphical representation is very helpful
+                for human understanding and can facilitate human decisions, it is only a
+                representation and cannot be equated with the information content provided by the
+                alignments. Technically speaking, it is a frontend used for collecting information,
+                to be distinguished from the information itself. </para>
+        </section>
+        <section>
+            <title>Annotated target tree (SAAT)</title>
+            <para>We propose to model alignments as metadata describing target locations. The
+                alignments of a given target location consist of source location identifiers. A
+                readible form of these are name paths like <code>/resources/books/book</code>. A
+                straightforward representation of the alignments describing a document-to-document
+                transformation is a location tree of the target documents, augmented by additional
+                attributes on the location nodes which convey the name paths of the aligned source
+                locations. Such a document we call a SAAT – Source Alignment Annotated Target tree.
+                Here comes an example, in which the attributes supplying alignments are named
+                    <code>al</code>:</para>
+            <programlisting>
+&lt;z:saats xmlns:z="http://www.xsdplus.org/ns/structure">
+  &lt;z:saat>
+    &lt;publications <emphasis role="bold">al="/resources/books"</emphasis>>
+      &lt;z:_attributes_>
+        &lt;updatedAt <emphasis role="bold">al="/resources/books/@lastUpdate"</emphasis>/>
+      &lt;/z:_attributes_>
+      &lt;publication <emphasis role="bold">al="/resources/books/book</emphasis>">
+        &lt;z:_attributes_>
+          &lt;publicationYear <emphasis role="bold">al="/resources/books/book/py</emphasis>" />
+        &lt;/z:_attributes_>
+        &lt;isbn <emphasis role="bold">al="/resources/books/book/isbn"</emphasis>/>
+        &lt;title <emphasis role="bold">al="/resources/books/book/title"</emphasis>/>
+        &lt;creator <emphasis role="bold">al="/resources/books/book/author"</emphasis>>
+          &lt;creatorRole/>
+          &lt;creatorName <emphasis role="bold">al="/resources/books/book/author"</emphasis>/>
+        &lt;/creator>
+      &lt;/publication>
+    &lt;/publications>
+  &lt;/saat>
+&lt;saats></programlisting>
+            <para>Compare this to the SNAT tree specifying the transformation precisely, in which
+                all attributes describing navigation are highlighted:</para>
+            <programlisting>
+&lt;z:snats xmlns:z="http://www.xsdplus.org/ns/structure">
+  &lt;z:snat>
+    &lt;publications <emphasis role="bold">ctxt="books"</emphasis>>
+      &lt;z:_attributes_>
+        &lt;updatedAt <emphasis role="bold">src="@lastUpdate"</emphasis> alt=""/>
+      &lt;/z:_attributes_>
+      &lt;publication <emphasis role="bold">for-each="book"</emphasis>>
+        &lt;z:_attributes_>
+          &lt;publicationYear <emphasis role="bold">src="py"</emphasis> alt=""/>
+        &lt;/z:_attributes_>
+        &lt;isbn <emphasis role="bold">src="@isbn"</emphasis> dflt="'#MISSING'"/>
+        &lt;title <emphasis role="bold">src="title"</emphasis> dflt=""/>
+        &lt;creator <emphasis role="bold">for-each="author"</emphasis>>
+          &lt;creatorRole <emphasis role="bold">src="=Author"</emphasis> dflt=""/>
+          &lt;creatorName <emphasis role="bold">src="."</emphasis> dflt="'?'"/>
+        &lt;/creator>
+      &lt;/publication>
+    &lt;/publications>
+  &lt;/snat>
+&lt;snats></programlisting>
+            <para>In a SNAT tree, navigation is described by <emphasis role="bold"
+                    >expressions</emphasis>, to be evaluated at runtime in a current context implied
+                by the preceding steps of navigation. Alignments, on the other hand, are static
+                    <emphasis role="bold">identifiers</emphasis>, not expressions (in spite of the
+                apprearance). Nevertheless, the example exhibits a striking correspondence between
+                the name paths describing alignments and navigation expressions.</para>
+            <table xml:id="alignments-versus-navigation-steps">
+                <title>A comparison between navigation steps and alignments.</title>
+                <tgroup cols="4">
+                    <colspec colname="c1" colnum="1" colwidth="5*"/>
+                    <colspec colname="c2" colnum="2" colwidth="5*"/>
+                    <colspec colname="c3" colnum="3" colwidth="3*"/>
+                    <colspec colname="c4" colnum="4" colwidth="2*"/>
+                    <thead>
+                        <row>
+                            <entry align="left">Target location</entry>
+                            <entry align="left">Alignment</entry>
+                            <entry align="left">Navigation</entry>
+                            <entry align="left">Navigation attribute</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry align="left"><code>publications</code></entry>
+                            <entry align="left"><emphasis role="bold"
+                                >/resources/books</emphasis></entry>
+                            <entry align="left">/resources/books</entry>
+                            <entry align="left">ctxt</entry>
+                        </row>
+                        <row>
+                            <entry align="left"><code>. @updatedAt</code></entry>
+                            <entry align="left">/resources/books/<emphasis role="bold"
+                                    >@lastUpdate</emphasis></entry>
+                            <entry align="left">@lastUpdate</entry>
+                            <entry align="left">src</entry>
+                        </row>
+                        <row>
+                            <entry align="left"><code>. publication</code></entry>
+                            <entry align="left">/resources/books/<emphasis role="bold"
+                                    >book</emphasis></entry>
+                            <entry align="left">book</entry>
+                            <entry align="left">for-each</entry>
+                        </row>
+                        <row>
+                            <entry align="left"><code>. . @publicationYear</code></entry>
+                            <entry align="left">/resources/books/book/<emphasis role="bold"
+                                    >py</emphasis></entry>
+                            <entry align="left">py</entry>
+                            <entry align="left">src</entry>
+                        </row>
+                        <row>
+                            <entry align="left"><code>. . isbn</code></entry>
+                            <entry align="left">/resources/books/book/<emphasis role="bold"
+                                    >isbn</emphasis></entry>
+                            <entry align="left">isbn</entry>
+                            <entry align="left">src</entry>
+                        </row>
+                        <row>
+                            <entry align="left"><code>. . title</code></entry>
+                            <entry align="left">/resources/books/book/<emphasis role="bold"
+                                    >title</emphasis></entry>
+                            <entry align="left">title</entry>
+                            <entry align="left">src</entry>
+                        </row>
+                        <row>
+                            <entry align="left"><code>. . creator</code></entry>
+                            <entry align="left">/resources/books/book/<emphasis role="bold"
+                                    >author</emphasis></entry>
+                            <entry align="left">author</entry>
+                            <entry align="left">for-each</entry>
+                        </row>
+                        <row>
+                            <entry align="left"><code>. . . creatorRole</code></entry>
+                            <entry align="left">-</entry>
+                            <entry align="left">-</entry>
+                            <entry align="left">-</entry>
+                        </row>
+                        <row>
+                            <entry align="left"><code>. . . creatorName</code></entry>
+                            <entry align="left">/resources/books/book/<emphasis role="bold"
+                                    >author</emphasis></entry>
+                            <entry align="left">.</entry>
+                            <entry align="left">src</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            <para>Corresponding values of alignment and navigation are marked by a subset
+                relationship: the navigation leads to a set of nodes which is a subset of the nodes
+                represented by the corresponding alignment. So, for example, navigation
+                    <code>author</code> (which is short for <code>child::author</code>) is evaluated
+                in the context of an individual <code>book</code> element and selects all
+                    <code>author</code> nodes found under that <code>book</code> node. This is a
+                subset of the nodes represented by the alignment
+                    <code>/resources/books/book/author</code>, which is the set of <emphasis
+                    role="italic">all</emphasis>
+                <code>author</code> nodes found under any <code>book</code> node. </para>
+        </section>
+        <section>
+            <title>Mapping alignments to navigation</title>
+            <para>A SNAT document describes an intended transformation precisely, whereas alignment
+                is less precise. Consider, for example, the relationship between
+                    <code>publication</code>, <code>isbn</code> and <code>title</code> nodes. The
+                SNAT document guarantees that each source <code>book</code> is mapped to a distinct
+                    <code>publication</code> and that the <code>isbn</code> and <code>title</code>
+                children of a <code>publication</code> element refer to the same <code>book</code>
+                source element. This expectation is very intuitive, and therefore it may go
+                unnoticed that the alignments shown above do not make these commitments: the
+                alignments would not be contradicted by a transformation where a
+                    <code>publication</code> contains a <code>title</code> taken from one
+                    <code>book</code> and an <code>isbn</code> taken from another <code>book</code>,
+                or (if we ignore cardinality constraints) a <code>publication</code> containing all
+                    <code>title</code> and all <code>isbn</code> values found in any book. </para>
+            <para>The core of this problem lies in <emphasis role="bold">semantic
+                    relationships</emphasis> pertaining to structural relationships in general, and
+                parent-child relationships in particular. The node name <code>title</code>, for
+                instance, indicates that node contents represent a title, but it does not hint at a
+                semantic relationship between nodes, which constrains the child <code>title</code>
+                to represent a property of the parent <code>publication</code>. (Were the element
+                name <code>hasTitle</code>, this would be slightly different.) The SNAT model of a
+                transformation preserves the intended semantic relationships implicitly: via
+                navigation. Navigation to a <emphasis role="italic">particular</emphasis>
+                <code>title</code> as well as to a particular <code>isbn</code>, executed while
+                constructing an individual target <code>publication</code>, ensures that the target
+                document expresses the intended semantics.</para>
+            <para>The question arises if we cannot set up rules how to map alignments to navigation
+                steps. <xref linkend="alignments-versus-navigation-steps"/> clearly suggests such a
+                possibility. It should be remembered that the SNAT model is essentially a
+                decomposition of transformation into navigation steps, or, the other way around, an
+                integration of navigation steps into a complete picture of a transformation. If we
+                can infer navigation steps from pairs of alignments (the alignments of parent and
+                child locations), we have come very close to solving the problem of mapping
+                alignments to a complete picture of the transformation. The task of generating
+                transformation code from alignments can be redefined as the task of mapping a SAAT
+                tree to a SNAT tree.</para>
+        </section>
+        <section>
+            <title>Infering context propagation</title>
+            <para>As discussed in previous sections, the SNAT model of a transformation defines
+                three primitive operations – context-propagator, context-distributor,
+                context-atomizer. Among these, it is the context-propagator which represents
+                navigation: the mapping of a set of source nodes to another set of source nodes. The
+                input of this mapping is the source context of an individual target node; the output
+                of this mapping is the (collected) source context of the child nodes of this target
+                node. </para>
+        </section>
+        <section>
+            <title>Semantic versus structural relationships</title>
+            <para>Consider the construction of a <code>publication</code> node, which has a single
+                    <code>book</code> node as source context. The context-propagator of the
+                    <code>title</code> child location should <emphasis role="italic">not</emphasis>
+                select all <code>title</code> nodes found in the source document, but a <emphasis
+                    role="italic">particular</emphasis>
+                <code>title</code> – the one which is child of the particular <code>book</code>
+                providing the source context of the <code>publication</code>. The requirement
+                captures a <emphasis role="bold">semantic relationship</emphasis> between the
+                    <code>publication</code> and <code>title</code> nodes under construction. If
+                target node P and target node C have a certain semantic relationship R (here: C
+                gives the title of P), then the source context of P and the source context of C
+                should have the same semantic relationship R (the source context of C should give
+                the title of the source context of P). Mapping alignments to navigations (thus: SAAT
+                to SNAT) means selecting those instances of an alignment which have a particular
+                semantic relationship with the source context of the parent instance. The semantic
+                relationship is implicit - implied by a structural relationship, the parent-child
+                relationship defined as part of the target document model.</para>
+            <para>As the semantic relationship guiding navigation is implicit, implied by a
+                structural relationship between target nodes (parent-child), it must also be derived
+                from a <emphasis role="italic">structural relationship</emphasis> between sources
+                nodes. So we have arrived at the general question: how is the semantic relationship
+                pertaining to a particular parent-child pair in the target document model translated
+                into a structural relationship connecting source nodes, more precisely: leading from
+                the source context of the parent node to a subset of the source alignment of the
+                child location?</para>
+            <para>We start by considering a particular case for which an intuitive solution is
+                easily found. Let P and C denote two target locations, where C represents child
+                nodes of P. (Example: P = <code>publication</code>, C = <code>title</code>). Assume
+                that the alignment of C is a child location of the alignment of P. (Example:
+                alignment of P: <code>book</code>, alignment of C: <code>title</code>.) Then we may
+                expect the parent-child relationship defined by the target document model to have
+                similar semantics as the parent-child relationship between their alignments, as
+                defined by the source document model. (Example: the child gives the title of the
+                parent.) So we set up a first, preliminary rule: “if the alignments of parent and
+                child locations are themselves parent and child locations, then set the
+                context-propagator of the target child location to select all instances of the
+                source child location which are child nodes of the source context of the parent
+                node.” In our example, this rule would yield the desired result: the source context
+                of the target <code>title</code> would be the child node of the source node serving
+                as the source context of the target <code>publication</code> node. </para>
+            <para>Parent-child relationships are often modified by the insertion of intermediate
+                nodes providing some sort of grouping. Therefore we might generalize our preliminary
+                rule to select all instances of the target child locations’s alignment which are
+                    <emphasis role="italic">descendant</emphasis> of the target parent node’s souce
+                context. While this will cover many cases, this is a far cry from a general
+                solution, as hierarchical relationships need not be preserved by the transformation.
+                As an example, consider target documents focusing on authors and describing
+                publications as child elements of the node representing an author</para>
+        </section>
+        <section>
+            <title>Shortest-path-principle</title>
+            <para>A general approach to the mapping of alignments to navigations must be based on a
+                generalized way of mapping semantic relationships assumed in the target model to
+                structural relationships observed in the source model. Given a parent and a child
+                location from the target model, we assume a semantic relationship between these
+                locations and we also assume a similar semantic relationship to exist between the
+                alignments of the target locations - between the alignment of the target parent
+                location and the alignment of the target child location. The important point is that
+                the cases where the alignments of a parent-child pair is itself a parent-child pair
+                or an ancestor-descendant pair are handled as expected, yet regarded as special
+                cases of a general rule. The approach requires a precise definition of the
+                structural relationship existing between two arbitrary sets of nodes, supplied by
+                the alignments of target parent and target child location. The definition is
+                expressed as a navigation mapping a given node from the target parent alignment to a
+                set of nodes from the target child alignment. The definition of the rule is
+                ultimately arbitrary, and the challenge is to find a solution which matches
+                intuitive expectations best and under the broadest set of circumstances. </para>
+
+            <para>We define the structural relationship between the alignments of parent and source
+                locations as the <emphasis role="bold">shortest navigation path</emphasis> leading
+                from the target parent alignment (which is one or more source locations) to the
+                target child alignment (one or more source locations). The shortest path between two
+                nodes A and B is defined as follows: (a) if A is descendant (ancestor) or B, the
+                shortest path is along the descendant:: (ancestor::) axis; (b) otherwise the
+                shortest path is a prefix leading from A to the nearest common ancestor C, followed
+                by the path from C to B along the descendant:: axis. The following table compiles a
+                few examples.</para>
+            <table xml:id="shortest-path-principle">
+                <title>Application of the “shortest-path-principle”.</title>
+                <tgroup cols="3">
+                    <colspec colname="c1" colnum="1" colwidth="5*"/>
+                    <colspec colname="c2" colnum="2" colwidth="5*"/>
+                    <colspec colname="c3" colnum="3" colwidth="3*"/>
+                    <thead>
+                        <row>
+                            <entry align="left">Source alignment of parent node</entry>
+                            <entry align="left">Source alignment of child node</entry>
+                            <entry align="left">Shortest path</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry align="left">A/B/C</entry>
+                            <entry align="left">A/B/C/D</entry>
+                            <entry align="left">D</entry>
+                        </row>
+                        <row>
+                            <entry align="left">A/B/C</entry>
+                            <entry align="left">A/B/C/D/E</entry>
+                            <entry align="left">D/E</entry>
+                        </row>
+                        <row>
+                            <entry align="left">A/B/C</entry>
+                            <entry align="left">A/B</entry>
+                            <entry align="left">parent::B</entry>
+                        </row>
+                        <row>
+                            <entry align="left">A/B/C</entry>
+                            <entry align="left">A</entry>
+                            <entry align="left">parent::B/parent::A</entry>
+                        </row>
+                        <row>
+                            <entry align="left">A/B/C</entry>
+                            <entry align="left">A/B/X/Y</entry>
+                            <entry align="left">parent::B/X/Y</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+        </section>
+        <section>
+            <title>Future work</title>
+            <para>The shortest-path-principle needs elaboration. When the alignments of the target
+                parent node comprise several source locations, inferred navigation is not the union
+                of all navigations from any parent alignment to any source alignment. To illustrate
+                the problem, let us assume that the alignments of <code>publication</code> comprise
+                    <code>book</code> and <code>journal</code>, and the alignment of child location
+                    <code>title</code> comprise <code>title</code> under <code>book</code> and
+                    <code>journalTitle</code> under <code>journal</code>. Given a parent
+                    <code>publication</code> with a source context consisting of a <code>book</code>
+                node, we want to rule out the shortest path from <code>book</code> to
+                    <code>journalTitle</code>. The example shows that the shortest-path-principle
+                requires further elaboration which is work in progress. </para>
+        </section>
+    </section>
+    <section>
+        <title>Metadata model SAAT (Source Alignment Annotated Target tree)</title>
+        <para>In the preceding section we have shown that alignments can be mapped to navigation
+            which plays the role of context propagation, as defined by the SNAT model of document
+            transformation. What is the potential value of a location tree augmented by metadata
+            providing source alignments? This would be the minimal version of a <emphasis
+                role="bold">SAAT</emphasis> tree, a Source Alignment Annotated Target tree.</para>
+        <section>
+            <title>Minimal SAAT</title>
+            <para>A SAAT tree can be mapped to a SNAT tree, and therefore it implies a precisely
+                defined document to document transformation:</para>
+            <itemizedlist>
+                <listitem>
+                    <para><emphasis role="italic">Propagation of the source context</emphasis> is
+                        derived from source alignments according to the shortest-path-principle;
+                        this enables populating the SNAT metadata related to context propagation
+                        (@ctxt, @for-each, @src)</para>
+                </listitem>
+                <listitem>
+                    <para><emphasis role="italic">Distribution</emphasis> of the propagated source
+                        context over target instances is decided by a default rule (one target
+                        instance per instance of the source context, unless the maximum cardinality
+                        of the target is one); SNAT metadata @group-by and @sort-by are not
+                        used</para>
+                </listitem>
+                <listitem>
+                    <para><emphasis role="italic">Atomization</emphasis> of the source context is
+                        decided by a default rule (string values of all context nodes are
+                        concatenated, using a blank as separator)</para>
+                </listitem>
+            </itemizedlist>
+            <para>No matter how sensible the defaults are, they are only defaults, meeting the
+                actual requirements in some cases and not meeting them in others. A minimal SAAT
+                does define a transformation precisely, but it cannot be used for expressing
+                arbitrary transformations.</para>
+        </section>
+        <section>
+            <title>Alignment qualifiers</title>
+            <para>This limitation may be addressed by <emphasis role="bold">alignment
+                    qualifiers</emphasis> – metadata modifying the interpretation of the alignments.
+                In particular, the propagation, distribution and atomization of the source context
+                might be adapted to special requirements not covered by the default rules. This
+                approach requires a <emphasis role="bold">metadata model</emphasis> defining the
+                names and semantics of “aqua items”, metadata items playing the role of alignment
+                qualifiers. Embarking on this task, one should remember a basic difference between
+                the SNAT model and the SAAT model: the SNAT model is based on expressions and closer
+                to a software developer’s perspective; the SAAT model focuses on alignments which
+                can be identified by a subject matter expert. Simplicity is an important benefit of
+                the SAAT approach, without which it might not be worthwhile, considering the
+                superior expressiveness of the SNAT model. The definition of a SAAT-based metadata
+                model may be perceived as the challenge to find a tradeoff between simplicity and
+                expressiveness. </para>
+            <para>An important usecase of SAAT models is the support of graphical mapping tools: the
+                graphical representation of a document to document transformation can be captured by
+                a SAAT tree, which can in turn be mapped to a SNAT tree providing both – a
+                specification of the mapping semantics and an implementation of mapping source code. </para>
+            <para>The construction of a SAAT based metadata model is work in progress, geared
+                towards supporting a graphical mapping tool which is part of a framework supporting
+                data transformations between large type systems. </para>
+        </section>
+        <section>
+            <title>Code generator SAAT</title>
+            <para>A simple SAAT-based source code generator is integrated into the SNAT-based source
+                code generator described in <xref linkend="code-generator-snat"/>. Currently, the
+                metadata model is restricted to alignments (@al attributes), and alignment
+                qualifiers are not yet supported. Behind the scenes, code generation is based on a
+                transformation of the supplied SAAT document into a SNAT document. Let target
+                documents of the desired transformation code have a root element
+                    <code>&lt;publications></code> and be described by an XSD
+                    <code>publications.xsd</code>. An initial version of a SAAT document is
+                generated by the following call:</para>
+            <programlisting>   basex –b "request=<emphasis role="bold">saat</emphasis>?<emphasis role="bold">xsd</emphasis>=/a/b/c/publications.xsd,
+                          <emphasis role="bold">ename</emphasis>=publications" 
+         –o <emphasis role="italic">publications.saat.xml</emphasis>  
+   $HOME_XSDPLUS/<emphasis role="bold">xsdplus.xq</emphasis></programlisting>
+            <para>After editing the SAAT document, the transformation code
+                    (<code>publications.xq</code>) is generated:</para>
+            <programlisting>   basex –b "request=<emphasis role="bold">saat2xq</emphasis>?<emphasis role="bold">saat</emphasis>=publications.saat.xml" 
+         –o <emphasis role="italic">publications.xq</emphasis>  
+   $HOME_XSDPLUS/<emphasis role="bold">xsdplus.xq</emphasis></programlisting>
+            <para>Given a set of input documents (e.g. <code>books.xml</code>), the transformer can
+                be tested, creating a target document <code>publications.xml</code>:</para>
+            <programlisting>   basex –i books.xml –o <emphasis role="italic">publications.xml</emphasis> <emphasis role="bold">publications.xq</emphasis></programlisting>
+            <para>After changes of the XSD, the SAAT document must be upgraded. After renaming the
+                current SAAT document (e.g. to <code>publications.saat.v100.xml</code>), this is
+                achieved by the following command:</para>
+            <programlisting>   basex –b "request=<emphasis role="bold">saat</emphasis>?<emphasis role="bold">xsd</emphasis>=/a/b/c/publications.xsd,
+                          <emphasis role="bold">ename</emphasis>=publications, 
+                          <emphasis role="bold">upgrade</emphasis>=publications.saat.v100.xml"                
+         –o <emphasis role="italic">publications.saat.xml</emphasis>  
+   $HOME_XSDPLUS/<emphasis role="bold">xsdplus.xq</emphasis></programlisting>
+            <para>Like an upgraded SNAT document, an upgraded SAAT document must usually be
+                hand-edited in order to supply the settings required for new element and
+                attributes.</para>
+        </section>
+    </section>
+    <section>
+        <title>AT Map Machine</title>
+        <para>The previous sections explained the use of annotated target tree models for generating
+            the source code of document transformations. Now we explore the possibility of
+            generalization, enabling the transformation of non-XML data sources into XML documents.
+            We propose the idea of an annotated target tree as a concept supporting the generation
+            of various kinds of data mappers.</para>
+        <section>
+            <title>Does SNAT presuppose XML?</title>
+            <para>A SNAT-based code generator is driven by metadata enabling primitive operations,
+                which serve as the functional building blocks of a document transformation. These
+                operations map a node sequence to a value which is another node sequence
+                (context-propagator), an array of node sequences (context-distributor) or a string
+                (context-atomizer). Does the central role played by node sequences mean that the
+                SNAT model is restricted to XML data sources?</para>
+            <para>The apparent limitation can be overcome if we generalize the notion of a “node
+                sequence” to mean a <emphasis role="italic">sequence of distinct items</emphasis>.
+                The following table gives a few examples.</para>
+            <table xml:id="nodes-generalization">
+                <title>Examples for a possible generalization of the node concept, meaning distinct
+                    items of which the resource is composed.</title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colnum="1" colwidth="1*"/>
+                    <colspec colname="c2" colnum="2" colwidth="2*"/>
+                    <thead>
+                        <row>
+                            <entry align="left">Source data media type</entry>
+                            <entry align="left">What is a "node"?</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry align="left">HTML</entry>
+                            <entry align="left">DOM node</entry>
+                        </row>
+                        <row>
+                            <entry align="left">JSON</entry>
+                            <entry align="left">JSON item (object, array, string, number,
+                                boolean)</entry>
+                        </row>
+                        <row>
+                            <entry align="left">CSV</entry>
+                            <entry align="left">table, row, cell</entry>
+                        </row>
+                        <row>
+                            <entry align="left">SQL</entry>
+                            <entry align="left">db, table, row, column</entry>
+                        </row>
+                        <row>
+                            <entry align="left">RDF</entry>
+                            <entry align="left">RDF node</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            <para>For each media type based on distinct items of information a SNAT-based code
+                generator may be defined, following a scheme of actions discussed below. Note,
+                however, that with some media types (e.g. HTML, JSON, CSV) a simpler approach to
+                transformation is to use an XML representation of the original input, readily
+                obtained by Open Source products (like BaseX (<xref linkend="basex"/>) with its
+                extension functions for parsing non-XML resources into XML). Such a trivial
+                preprocessing step enables the reuse of code generators for XML-to-XML
+                transformation (like the one described in <xref linkend="code-generator-snat"/>) for
+                non-XML data sources.</para>
+        </section>
+        <section>
+            <title>Does SAAT presuppose XML?</title>
+            <para>A source alignment based model (as defined in section "<xref
+                    linkend="section-source-alignment-based-model"
+                    endterm="section-source-alignment-based-model-shorttitle"/>") is a set of rules
+                how to generate a SNAT document from a SAAT document. A SAAT document describes the
+                alignment of target locations with source locations and thus presupposes a location
+                tree describing the source data set. However, the concept of a location tree has not
+                yet been defined for non-XML resources. For this reason, an exploration of
+                SAAT-based code generation for the transformation of non-XML data sources is beyond
+                the scope of this paper.</para>
+        </section>
+        <section>
+            <title>Scheme for building SNAT-based code generators</title>
+            <para>The concept of a SNAT-based code generator spans two layers:</para>
+            <itemizedlist spacing="compact">
+                <listitem>
+                    <para>The ground layer is the decomposition of document construction into
+                        primitive operations</para>
+                </listitem>
+                <listitem>
+                    <para>The top layer is a metadata model enabling the implementation of those
+                        primitives</para>
+                </listitem>
+            </itemizedlist>
+            <para>The ground layer is independent of a particular source data media type, as long as
+                the source data can be viewed as a collection of distinct items. The metadata model,
+                on the other hand, must specify the construction of code which can be applied to
+                sets of source data items. Such code will usually rely on a particular media type.
+                We conclude that </para>
+            <itemizedlist spacing="compact">
+                <listitem>
+                    <para>A SNAT-based code generator is tied to a particular source data media
+                        type</para>
+                </listitem>
+                <listitem>
+                    <para>The dependency is restricted to the metadata model</para>
+                </listitem>
+            </itemizedlist>
+            <para><emphasis role="italic">Note. As mentioned before, the dependency on a single
+                    media type can be removed by a preliminary step translating various media types
+                    into a single media type whose transformation is natively supported. For
+                    example, an XML-dependent code generator can be easily extended to support JSON,
+                    CSV and HTML data sources.</emphasis></para>
+            <para>In general, the task of designing a SNAT-based code generator can be redefined as
+                the design of a metadata model which enables a generic implementation of the
+                primitive operations using metadata as sole input. The model comprises three
+                submodels:</para>
+            <itemizedlist spacing="compact">
+                <listitem>
+                    <para><emphasis role="bold">metadata item model</emphasis> – defines the names
+                        and semantics of metadata items</para>
+                </listitem>
+                <listitem>
+                    <para><emphasis role="bold">metadata value model</emphasis> – defines the
+                        interpretation of metadata item values</para>
+                </listitem>
+                <listitem>
+                    <para><emphasis role="bold">code assembly model</emphasis> – defines how to
+                        assemble the source code of primitives from metadata</para>
+                </listitem>
+            </itemizedlist>
+            <section>
+                <title>Metadata item model</title>
+                <para>Metadata items fall into two categories: <emphasis role="italic"
+                        >location</emphasis> metadata items and <emphasis role="italic"
+                        >prolog</emphasis> metadata items. Location metadata items are properties of
+                    an individual location. Prolog metadata items set up a context facilitating the
+                    specification and interpretation of location metadata items. The metadata model
+                    described in section "<xref linkend="section-metadata-model"
+                        endterm="section-metadata-model-shorttitle"/>", for instance, defines
+                    various kinds of location metadata items (see table "<xref
+                        linkend="table-metadata-items" endterm="table-metadata-items-shorttitle"/>")
+                    and two kinds of prolog metadata.</para>
+            </section>
+            <section>
+                <title>Metadata value model</title>
+                <para>The metadata model must specify how to interpret the metadata item values.
+                    Note that the interpretation may depend on the kind of metadata item. There are
+                    many possibilities, for example:</para>
+                <itemizedlist spacing="compact">
+                    <listitem>
+                        <para>Expressions from a standardized query language (XQuery, SQL, SPARQL,
+                            ...)</para>
+                    </listitem>
+                    <listitem>
+                        <para>Code from an imperative programming language (Java, Python,
+                            ...)</para>
+                    </listitem>
+                    <listitem>
+                        <para>Expressions from a purpose-defined language</para>
+                    </listitem>
+                    <listitem>
+                        <para>Data structures (XML, JSON, CSV, ...)</para>
+                    </listitem>
+                    <listitem>
+                        <para>Atomic values (strings, numbers, …)</para>
+                    </listitem>
+                    <listitem>
+                        <para>Invocations passing arguments to functions defined by the metadata
+                            model</para>
+                    </listitem>
+                    <listitem>
+                        <para>Any combination of the above</para>
+                    </listitem>
+                </itemizedlist>
+                <para>The metadata value model described in section "<xref
+                        linkend="section-metadata-model" endterm="section-metadata-model-shorttitle"
+                    />" uses the following combination:</para>
+                <itemizedlist spacing="compact">
+                    <listitem>
+                        <para>Location metadata items: the value is interpreted as XQuery
+                            expression, unless syntactically marked up as invocation of a mapping
+                            function (reflecting a user-supplied value mapping) or one of a set of
+                            functions defined by the metadata model (functions not described in this
+                            paper)</para>
+                    </listitem>
+                    <listitem>
+                        <para>Prolog metadata items: the value is interpreted as a data structure
+                            (item kind <code>valueMap</code>) or an XQuery function (item kind
+                                <code>function</code>)</para>
+                    </listitem>
+                </itemizedlist>
+            </section>
+            <section>
+                <title>Code assembly model</title>
+                <para>The code assembly model is a set of rules which map location metadata items to
+                    implementations of the three primitive operations defined by the SNAT model -
+                    context-propagator, context-distributor and context-atomizer. As an example,
+                    table "<xref linkend="table-code-assembly"
+                        endterm="table-code-assembly-shorttitle"/>" summarizes the code assembly
+                    model of the code generator described in section "<xref
+                        linkend="section-metadata-model" endterm="section-metadata-model-shorttitle"
+                    />".</para>
+            </section>
+        </section>
+        <section>
+            <title>Using SNAT as a meta model</title>
+            <para>We have introduced the concept of a SNAT (Source Navigation Annotated Target tree)
+                as a document which specifies the transformation of source data sets of a particular
+                kind into instances of a particular document model. A SNAT document is a location
+                tree obtained from the target document model and augmented by metadata. The names,
+                semantics and scope of the metadata items are defined by a metadata model (see for
+                example table "<xref linkend="table-metadata-items"
+                    endterm="table-metadata-items-shorttitle"/>"). Relying on such a metadata model,
+                a SNAT-based code generator transforms a SNAT document into executable code
+                implementing primitive operations and composing them into the transformation as a
+                whole. </para>
+            <para>Defined in such general terms, the concept of a SNAT-based code generator becomes
+                an abstract model which may guide the design of concrete code generators,
+                distinguished by a particular metadata model and expecting source data with a
+                particular media type. To illustrate this possibility, we introduce a SNAT-based
+                code generator for constructing XML documents from RDF data.</para>
+        </section>
+    </section>
+    <section>
+        <title>Proof of concept: RDF-to-XML, SNAT-based</title>
+        <para>This sections sketches a simple code generator for RDF-to-XML transformations, which
+            is driven by a Source Navigation Annotated Target tree. As a SNAT-based code generator
+            is distinguished by a particular metadata model, the description can be structured
+            according to the main parts of the metadata model.</para>
+        <section>
+            <title>Metadata item model</title>
+            <para>Although dealing with RDF data sources, we may reuse the metadata item model
+                introduced in section "<xref linkend="section-metadata-model"
+                    endterm="section-metadata-model-shorttitle"/>" virtually unchanged. Again, table
+                    "<xref linkend="table-metadata-items" endterm="table-metadata-items-shorttitle"
+                />" gives us the names of the most important metadata items and describes the role
+                of the item values during document construction. For example, @ctxt and @for-each
+                items provide the mapping of a current context (set of RDF resources) to a new
+                context (another set of RDF resources); and @src items map a context to the RDF
+                nodes supplying data values. Note, however, that with RDF data sources the metadata
+                item <emphasis role="italic">values</emphasis> cannot be XQuery expressions, as RDF
+                nodes are not part of the XQuery data model, so that XQuery expressions cannot
+                consume RDF nodes.</para>
+        </section>
+        <section>
+            <title>Metadata value model</title>
+            <para>The new code generator must therefore define a <emphasis role="italic">new
+                    metadata value model</emphasis>. A possible approach would be to define metadata
+                item values to be SPARQL expressions. This would work, as SPARQL expressions are
+                capable of mapping a current context of RDF nodes to the output required by
+                context-propagator, -distributor and –atomizer. But the difference between XQuery
+                and SPARQL expressions with regard to simplicity and intuitiveness should be
+                considered. With XQuery, typical annotations are small path expressions, which are
+                easy to write and to understand. Dealing with SPARQL equivalents, this ease of
+                writing and reading will be lost, and it must be questioned if a tree studded with
+                SPARQL expressions will be appreciated as a straightforward way of describing an RDF
+                to XML transformation.</para>
+            <para>Guided by these considerations, we designed a simple path notation for specifying
+                navigation within an RDF graph in a way which is similar to XPath navigation. This
+                tiny expression language, <emphasis role="bold">RPath</emphasis>, reuses the basic
+                concepts of XPath: navigation axes, name tests and predicates. The following listing
+                gives a few examples of RPath expressions and their translation into SPARQL queries. </para>
+            <example>
+                <title>Examples of SPARQL queries generated for RPath expressions.</title>
+                <programlisting><![CDATA[###
+### SPARQL generated for RPATH: 
+###    lib:author
+###
+PREFIX a: <file:///C:/projects/seat/resources-markupuk/markupuk-input.xml#>
+PREFIX lib: <http://www.example.org/ns/domain/library#>
+
+SELECT DISTINCT ?newContext WHERE {
+?context lib:author ?newContext .
+FILTER (?context IN ( a:n1.1.1, a:n1.1.2 )) . # the current context
+
+###
+### SPARQL generated for RPATH: 
+###    //lib:book/lib:author
+###
+PREFIX a: <file:///C:/projects/seat/resources-markupuk/markupuk-input.xml#>
+PREFIX zzz: <http://www.xsdplus.org/ns/internal#>
+PREFIX lib: <http://www.example.org/ns/domain/library#>
+
+SELECT DISTINCT ?newContext WHERE {
+?context (!(zzz:NEVER)+)/lib:book ?value1 .
+?value1 lib:author ?newContext .
+FILTER (?context IN ( a:root-elem )) . # the current context
+
+###
+### SPARQL generated for RPATH: 
+###    ancestor::lib:books
+###
+PREFIX a: <file:///C:/projects/seat/resources-markupuk/markupuk-input.xml#>
+PREFIX zzz: <http://www.xsdplus.org/ns/internal#>
+PREFIX lib: <http://www.example.org/ns/domain/library#>
+
+SELECT DISTINCT ?newContext WHERE {
+?context ^(!(zzz:NEVER)+) ?newContext .
+?newContext ^!(zzz:NEVER)/lib:books ?newContext .
+FILTER (?context IN ( a:n1.1.1, a:n1.1.2 )) . # the current context]]></programlisting>
+            </example>
+            <para>Using RPath one may concisely express graph navigation as it is typical when
+                mapping RDF data to XML. However, RPath does not support advanced requirements. When
+                they surface, SPARQL queries can be used as fallback: the metadata value model
+                allows the use of both, RPath expressions and SPARQL queries.</para>
+        </section>
+        <section>
+            <title>Code assembly model</title>
+            <para>The code assembly model uses XQuery as the target language, and the generated code
+                is very similar to the code generated for the transformation of XML input. The fact
+                that RDF nodes, rather than XML nodes, play the role of key intermediates (the
+                source context) does not pose a problem. RDF resources are represented by their URI
+                (a string), and RDF values are represented by their string representation. The code
+                generator translates any RPath expressions into SPARQL queries, collects all SPARQL
+                queries in a library and associates each one with a query key. The generated XQuery
+                code submits the appropriate query key along with the current context to a generic
+                function (<code>updContext</code>) which resolves the query to a new context or a
+                single data value, dependent on the primitive operation being executed.</para>
+        </section>
+        <section>
+            <title>Example SNAT and source code</title>
+            <para>A small example will illustrate the use of the code generator. Let the goal again
+                be the construction of a <code>publications</code> document, but this time using an
+                RDF data source. The following two listings show a SNAT document and the source code
+                generated from it.</para>
+            <example>
+                <title>SNAT document, defining the transformation of RDF data into an XML
+                    document.</title>
+                <programlisting>
+&lt;z:snats xmlns:z="http://www.xsdplus.org/ns/structure">
+  &lt;z:prolog>
+    &lt;z:nsMap>
+      &lt;z:ns prefix="lib" uri="http://www.example.org/ns/resources/library#"/>
+    &lt;/z:nsMap>
+  &lt;/z:prolog>    
+  &lt;z:snat>
+    <emphasis role="bold">&lt;publications</emphasis> <emphasis role="italic"><emphasis role="bold">ctxt</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">$libs</emphasis></emphasis>"
+      &lt;z:_attributes_>
+        <emphasis role="bold">&lt;updatedAt</emphasis> <emphasis role="italic"><emphasis role="bold">src</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">lib:lastUpdate</emphasis></emphasis>" alt=""/>
+      &lt;/z:_attributes_>
+      <emphasis role="bold">&lt;publication</emphasis> <emphasis role="italic"><emphasis role="bold">for-each</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">descendant::lib:book</emphasis></emphasis>">
+        &lt;z:_attributes_>
+          <emphasis role="bold">&lt;publicationYear</emphasis> <emphasis role="italic"><emphasis role="bold">src</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">lib:py</emphasis></emphasis>" alt=""/>
+        &lt;/z:_attributes_>
+        <emphasis role="bold">&lt;isbn</emphasis> <emphasis role="italic"><emphasis role="bold">src</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">lib:isbn</emphasis></emphasis>" dflt="'#MISSING'"/>
+        <emphasis role="bold">&lt;title</emphasis> <emphasis role="italic"><emphasis role="bold">src</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">lib:title</emphasis></emphasis>" dflt=""/>
+        <emphasis role="bold">&lt;creator</emphasis> <emphasis role="italic"><emphasis role="bold">for-each</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">lib:author</emphasis></emphasis>">
+          <emphasis role="bold">&lt;creatorRole</emphasis> <emphasis role="italic"><emphasis role="bold">src</emphasis></emphasis>="<emphasis role="underline"><emphasis role="italic">'Author'</emphasis></emphasis>" dflt=""/>
+          <emphasis role="bold">&lt;creatorName</emphasis> <emphasis role="italic"><emphasis role="bold">src</emphasis></emphasis>="." dflt=""/>
+        &lt;/creator>
+      &lt;/publication>
+    &lt;/publications>
+  &lt;/z:snat>
+&lt;/z:snats></programlisting>
+            </example>
+            <example>
+                <title>XQuery code, generated from the SNAT document shown in the preceding
+                    listing.</title>
+                <programlisting>declare variable <emphasis role="bold">$dataSources</emphasis> as element(rx:dataSources) external;
+declare variable $sparqlLib :=                    
+<emphasis role="bold">&lt;sparqlLib></emphasis>
+  &lt;sparql key="$libs" initialContext="$libs"/>
+  &lt;sparql key="descendant::lib:book">...&lt;/sparql>
+  &lt;sparql key="lib:author">...&lt;/sparql>
+  &lt;sparql key="lib:books/lib:lastUpdate">...&lt;/sparql>
+  &lt;sparql key="lib:isbn">...&lt;/sparql>  
+  &lt;sparql key="lib:py">...&lt;/sparql>  
+  &lt;sparql key="lib:title">...&lt;/sparql>  
+&lt;sparqlLib>;  
+
+declare function <emphasis role="bold">f:updContext</emphasis>(<emphasis role="italic">$dataSources</emphasis> as element(rx:dataSources),
+                              <emphasis role="italic">$context</emphasis> as xs:string*, 
+                              <emphasis role="italic">$queryKey</emphasis> as xs:string) as xs:string* {...};
+
+let $c := <emphasis role="italic">f:updContext</emphasis>($dataSources, (), "<emphasis role="underline"><emphasis role="italic">$libs</emphasis></emphasis>")
+return   
+<emphasis role="bold">&lt;publications</emphasis>>{
+    let $v := <emphasis role="italic">f:updContext</emphasis>($dataSources, $c, "<emphasis role="underline"><emphasis role="italic">lib:books/lib:lastUpdate</emphasis></emphasis>")
+    return
+        if (empty($v)) then () else
+        attribute <emphasis role="bold">&lt;updatedAt</emphasis> {$v},
+        
+    for $c in <emphasis role="italic">f:updContext</emphasis>($dataSources, $c, "<emphasis role="underline"><emphasis role="italic">descendant::lib:book</emphasis></emphasis>")
+    return
+        <emphasis role="bold">&lt;publication</emphasis>>{
+            let $v := <emphasis role="italic">f:updContext</emphasis>($dataSources, $c, "<emphasis role="underline"><emphasis role="italic">lib:py</emphasis></emphasis>")
+            return
+               if (empty($v)) then () else
+               attribute <emphasis role="bold">publicationYear</emphasis> {$v},
+            <emphasis role="bold">&lt;isbn</emphasis>>{
+               let $v := <emphasis role="italic">f:updContext</emphasis>($dataSources, $c, "<emphasis role="underline"><emphasis role="italic">lib:isbn</emphasis></emphasis>")               
+               return
+                  if (exists($v)) then $v else '#MISSING'
+            }&lt;/isbn>,            
+            <emphasis role="bold">&lt;title</emphasis>>{<emphasis role="italic">f:updContext</emphasis>($dataSources, $c, "<emphasis role="underline"><emphasis role="italic">lib:title</emphasis></emphasis>")}&lt;/title>,
+            
+            for $c in <emphasis role="italic">f:updContext</emphasis>($dataSources, $c, "<emphasis role="underline"><emphasis role="italic">lib:author</emphasis></emphasis>")
+            return
+               <emphasis role="bold">&lt;creator</emphasis>>{
+                  <emphasis role="bold">&lt;creatorRole</emphasis>>Author&lt;/creatorRole>,
+                  <emphasis role="bold">&lt;creatorName</emphasis>>{$c}&lt;/creatorName>
+               }&lt;/creator>
+        }&lt;/publication>    
+}&lt;/publications> 
+                </programlisting>
+            </example>
+            <para>The XQuery source code has the same structure as the code generated for XML data
+                sources (compare example "<xref linkend="example-xquery-for-xml-source"
+                    endterm="example-xquery-for-xml-source-shorttitle"/>". Note the difference -
+                using an XML data source, navigation is accomplished by path expressions, whereas
+                using an RDF data source, navigation is accomplished by submitting SPARQL queries
+                referenced by query keys to a generic evaluator. The original RPath expressions are
+                used as query keys, which enhances the readability of the code.</para>
+            <para>The input of the transformation is an XML document identifying the RDF graph and a
+                set of resources bound to user-defined names. Example:</para>
+            <programlisting><![CDATA[<rx:dataSources xmlns:rx="https://www.xsdplus.org/ns/...">
+  <rx:namespace prefix="lib" uri="http://www.example.org/ns/..."/>
+  <rx:graph name="main" uri="localhost:9093//...">
+    <rx:resource uri="lib:rwth" name="libs"/>
+    <rx:resource uri="lib:wage" name="libs"/>
+    <rx:resource uri="lib:jota" name="libs"/>
+  </rx:graph>
+</rx:dataSources>]]></programlisting>
+            <para>The metadata expressions can reference the resources via variable references (e.g.
+                    <code>ctxt="$libs"</code> and thus use them as starting points of
+                navigation.</para>
+        </section>
+    </section>
+    <bibliography>
+        <biblioentry xml:id="altova-mapforce">
+            <abbrev>1</abbrev>
+            <title>Altova MapForce - tool for data mapping, conversion and ETL.</title>
+            <publishername>Altova</publishername>
+            <date>2018</date>
+            <biblioid class="uri">https://www.altova.com/de/mapforce</biblioid>
+        </biblioentry>
+        <biblioentry xml:id="basex">
+            <abbrev>2</abbrev>
+            <title>BaseX – The XML Framework. Lightweight and High-Performance Data
+                Processing.</title>
+            <publishername>BaseX</publishername>
+            <date>2018</date>
+            <biblioid class="uri">http://basex.org</biblioid>
+        </biblioentry>
+        <biblioentry xml:id="location-trees">
+            <abbrev>3</abbrev>
+            <title>Location trees enable XSD based tool development.</title>
+            <authorgroup>
+                <author>
+                    <personname>
+                        <firstname>Hans-Juergen</firstname>
+                        <surname>Rennau</surname>
+                    </personname>
+                </author>
+            </authorgroup>
+            <date>2017</date>
+            <biblioid class="uri"
+                >http://xmllondon.com/2017/xmllondon-2017-proceedings.pdf</biblioid>
+        </biblioentry>
+        <biblioentry xml:id="sparql">
+            <abbrev>4</abbrev>
+            <title>SPARQL 1.1 Query Language</title>
+            <publisher>
+                <publishername>World Wide Web Consortium (W3C)</publishername>
+            </publisher>
+            <date>2013</date>
+            <biblioid class="uri">https://www.w3.org/TR/sparql11-query/</biblioid>
+        </biblioentry>
+        <biblioentry xml:id="xsdplus">
+            <abbrev>5</abbrev>
+            <title>xsdplus - a toolkit for XSD based tool development</title>
+            <authorgroup>
+                <author>
+                    <personname>
+                        <firstname>Hans-Juergen</firstname>
+                        <surname>Rennau</surname>
+                    </personname>
+                </author>
+            </authorgroup>
+            <date>2017</date>
+            <biblioid class="uri">https://github.com/hrennau/xsdplus</biblioid>
+        </biblioentry>
+    </bibliography>
+</article>

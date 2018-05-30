@@ -1,0 +1,616 @@
+<?xml-model href='http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng' schematypens='http://relaxng.org/ns/structure/1.0'?><?xml-model href='http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng' type='application/xml' schematypens='http://purl.oclc.org/dsdl/schematron'?>
+<article xmlns="http://docbook.org/ns/docbook" version="0.1">
+  <info>
+        <title>Two (and a half) models for markup of bibliographic references</title>
+        <author>
+            <personname><firstname>Mark</firstname><surname>Dunn</surname></personname>
+            <email>mark.dunn@oup.com</email>
+            <affiliation>
+                <orgname>Oxford University Press</orgname>
+            </affiliation>
+        </author>
+        <keywordset>
+            <keyword>Bibliographic references</keyword>
+            <keyword>BITS</keyword>
+            <keyword>OpenURL</keyword>
+            <keyword>XSLT</keyword>
+        </keywordset>
+        <abstract>
+            <para>This paper describes two models for semantic markup of bibliographic references,
+                their advantages and disadvantages, and the challenges of automating a conversion
+                from one format to the other. In one format a reference is captured as plain text.
+                The semantic markup (author name, title, publication date, etc) is captured in
+                attributes on the element containing the reference text. The other format is BITS,
+                where each component of a reference is captured in its own element. The BITS model
+                comes in two flavours, &lt;element-citation> and &lt;mixed-citation>, hence the
+                extra half a model in the title. The conversion to BITS needs to support OpenURL
+                linking and the Initiative for Open Citations (I4OC).</para>
+        </abstract>
+    </info>
+  <section>
+    <title>Background</title>
+    <para>In late 2015 OUP announced a partnership with Silverchair Information Systems to host its
+      journals and book-based online products.</para>
+    <para>The new platform accepts books in a flavour of the industry-standard BITS (Book
+            Interchange Tag Suite) data model<citation>1</citation>.</para>
+    <para>OUP book content has been captured for many years in a bespoke data model. Before being
+      loaded to the new platform, this content must be converted to BITS. An XSLT script is being
+      written to automate the conversion.</para>
+        <para>The OUP data model is broadly compatible with BITS, but one major point of difference
+            is the approach taken to modelling bibliographic references. This paper discusses the
+            approaches to modelling references, and the challenges of converting from the OUP format
+            to BITS whilst maintaining the online functionality that the markup supports.</para>
+  </section>
+  <section>
+    <title>Bibliographic reference formats</title>
+    <para>A bibliographic reference conveys information that enables a reader to locate another
+            resource. E.g. for a book, the necessary information includes author name, title, and
+            publication date. For a journal article a reference would also include the journal
+            title, volume number, and issue number.</para>
+    <para>There are a number of standard formats for bibliographic references, including
+                Chicago<citation>2</citation>, Harvard<citation>6</citation>, and
+                Vancouver<citation>3</citation>. There are various ways in which they differ from
+            one another:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Spacing and punctuation of components.</para>
+      </listitem>
+      <listitem>
+        <para>Order of components</para>
+      </listitem>
+      <listitem>
+        <para>Number of authors listed (before hitting <quote>et al.</quote>).</para>
+      </listitem>
+      <listitem>
+        <para>Style of author name (e.g. <quote>surname, given names</quote>, <quote>surname,
+            initials</quote>, <quote>initials surname</quote>, etc.).</para>
+      </listitem>
+      <listitem>
+        <para>Style of abbreviating a journal title.</para>
+      </listitem>
+      <listitem>
+        <para>How the references are indicated in the text (e.g. superscript number,
+          author/date).</para>
+      </listitem>
+    </itemizedlist>
+    <para>The standards run to hundreds of pages of rules. In addition, universities often provide
+      their own interpretations or clarifications of the rules.</para>
+    <para>Tools such as Zotero<citation>10</citation> make it easy for authors to generate
+            bibliographic references in the format of their choice. Publishers then have to handle
+            the output and turn it into XML.</para>
+      <example>
+          <title>Book, Chicago style</title>
+            <para>(First author name is in the format <quote>surname, foremanes</quote>; second and
+                subsequent author names are in format <quote>forenames surname</quote>.)</para>
+          <para>Lalloo, Fiona, Bronwyn Kerr, JM Friedman, and Gareth Evans. <emphasis role="italic">Risk
+              assessment and management in cancer genetics</emphasis> (Oxford: Oxford University Press,
+              2005)</para>
+      </example>
+      <example>
+          <title>Book, Harvard style</title>
+            <para>(All author names are in format <quote>surname, initials</quote>; publication date
+                precedes book title.)</para>
+          <para>Lalloo, F., Kerr, B., Friedman, J., and Evans, G. (2005) <emphasis role="italic">Risk
+              assessment and management in cancer genetics</emphasis> Oxford, Oxford University
+              Press</para>
+      </example>
+      <example>
+          <title>Book, Vancouver style</title>
+            <para>(Author names are in format <quote>surname initials</quote>; no italicization of
+                title.)</para>
+          <para>Lalloo F, Kerr B, Friedman J, Evans, G. Risk assessment and management in cancer
+              genetics. Oxford: Oxford University Press; 2005</para>
+      </example>
+    <example>
+      <title>Journal article, Chicago style</title>
+      <para>(Double quote marks around article title.)</para>
+      <para>Salomone, A, A Bozzo, D Di Corcia, E Gerace, and M Vincenti. “Occupational Exposure to
+        Alcohol-Based Hand Sanitizers: The Diagnostic Role of Alcohol Biomarkers in Hair.” <emphasis
+          role="italic">Journal of Analytical Toxicology</emphasis> 42, no. 3 (1 April 2018):
+        157–162, https://doi.org/10.1093/jat/bkx094</para>
+    </example>
+    <example>
+      <title>Journal article, Harvard style</title>
+      <para>(Single quote marks around article title.)</para>
+      <para>Salomone, A., Bozzo, A., Di Corcia, D., Gerace, E., and Vincenti M. (2018) ‘Occupational
+        exposure to alcohol-based hand sanitizers: the diagnostic role of alcohol biomarkers in
+        hair’, <emphasis role="italic">Journal of Analytical Toxicology</emphasis> 42(3), 157–162,
+        available: https://doi.org/10.1093/jat/bkx094</para>
+    </example>
+    <example>
+      <title>Journal article, Vancouver style</title>
+      <para>(Abbreviated journal title.)</para>
+      <para>Salomone A, Bozzo A, Di Corcia D, Gerace E, Vincenti M. Occupational exposure to
+        alcohol-based hand sanitizers: the diagnostic role of alcohol biomarkers in hair. J Anal
+        Toxicol. 2018 Apr 1;42(3):157–162, doi:10.1093/jat/bkx094</para>
+    </example>
+        <example>
+            <title>Journal article, style rendered by OUP Academic platform</title>
+            <para>(Generated from JATS article metadata.)</para>
+            <para>A Salomone, A Bozzo, D Di Corcia, E Gerace, M Vincenti; Occupational Exposure to
+                Alcohol-Based Hand Sanitizers: The Diagnostic Role of Alcohol Biomarkers in Hair,
+                    <emphasis role="italic">Journal of Analytical Toxicology</emphasis>, Volume 42,
+                Issue 3, 1 April 2018, Pages 157–162, https://doi.org/10.1093/jat/bkx094</para>
+        </example>
+   </section>
+  <section>
+    <title>Online functionality of bibliographic references</title>
+    <para>The benefit in online content of a bibliographic reference is having it link directly to
+            the resource. Journal articles typically have DOIs<citation>5</citation>, and a
+            reference to a journal article might include the DOI. This can easily be parsed into a
+            link which will be resolved to the URL at which the referenced article can be found.
+            Many journal articles (and references to them) also include PubMed<citation>9</citation>
+            IDs, which work in a similar way.</para>
+    <para>Sometimes the best that can be done with a bibliographic reference is to pass the
+      components to a search tool, as parameters to a URL.</para>
+    <para>The components of a reference must be identified in the XML in order to generate accurate
+      search URLs.</para>
+    <example>
+      <title>OpenURL search</title>
+      <para><link
+                    xlink:href="http://sfx-demo.exlibrisgroup.com:3210/demo?sid=oup:oxmed&amp;genre=book&amp;title=Risk%20assessment%20and%20management%20in%20cancer%20genetics&amp;aulast=Lalloo&amp;aufirst=F&amp;date=2005"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"/></para>
+    </example>
+    <example>
+      <title>COPAC search</title>
+      <para><link
+        xlink:href="http://copac.ac.uk/search?ti=Risk+assessment+and+management+in+cancer+genetics&amp;au=Lalloo"
+          xmlns:xlink="http://www.w3.org/1999/xlink"/></para>
+    </example>
+    <example>
+      <title>Google Preview</title>
+       <para><link
+         xlink:href="https://www.google.com/search?q=Risk+assessment+and+management+in+cancer+genetics&amp;btnG=Search+Books&amp;tbm=bks&amp;tbo=1"
+          xmlns:xlink="http://www.w3.org/1999/xlink"></link></para>
+    </example>
+    <example>
+      <title>WorldCat search</title>
+      <para><link
+        xlink:href="http://worldcat.org/search?q=ti%3ARisk+assessment+and+management+in+cancer+genetics&amp;qt=advanced&amp;dblist=638"
+          xmlns:xlink="http://www.w3.org/1999/xlink"/></para>
+    </example>
+  </section>
+  <section>
+    <title>OUP data model</title>
+    <para>When OUP was first developing its data model, the digital content was created by
+      converting scholarly monographs that had already been published in print. The intention was to
+      sell the online content as a way of making these books more widely available. </para>
+    <para>The online version had to be as faithful as possible to the original print version. This
+      meant that bibliographic references had to be captured as plain text, as submitted by the
+      author. Each reference was wrapped in a <code>&lt;bibItem></code> element.</para>
+    <para>Having the references link to library catalogues (via OpenURL<citation>8</citation>) was
+            desirable, so we chose to identify the components of a reference by copying them into
+            attribute values on the <code>&lt;bibItem></code> element.</para>
+    <para>OpenURLs and other search links are generated on the platform by parsing these
+      attributes.</para>
+    <para>This model also lets us add value to abbreviated references (e.g.
+      <quote>Ibid.</quote>)</para>
+    <example>
+      <title>OUP data model for a book reference</title>
+            <para>(Using Vancouver style for the text of the reference.)</para>
+      <programlisting>&lt;bibItem 
+  class="book" 
+  author="Lalloo F|Kerr B|Friedman J|Evans G"
+  title="Risk assessment and management in cancer genetics"
+  date="2005"
+  place="Oxford"
+  publisher="Oxford University Press"
+  >
+    Lalloo F, Kerr B, Friedman J, Evans G. 
+    Risk assessment and management in cancer genetics.
+    Oxford: Oxford University Press; 2005
+&lt;/bibItem></programlisting>
+    </example>
+    <example>
+      <title>OUP data model for a journal article reference</title>
+            <para>(Using Vancouver style for the text of the reference.)</para>
+      <programlisting>&lt;bibItem 
+  class="journalArticle" 
+  author="Salomone A|Bozzo A|Di Corcia D|Gerace E|Vincenti M"
+  title="Occupational exposure to alcohol-based hand sanitizers: 
+      the diagnostic role of alcohol biomarkers in hair"
+  date="2018"
+  vol="42"
+  journalIssue="3"
+  page="157"
+  pageLast="162"
+  doiTarget="10.1093/jat/bkx094"
+  >
+    Salomone A, Bozzo A, Di Corcia D, Gerace E, Vincenti M. 
+    Occupational exposure to alcohol-based hand sanitizers: 
+      the diagnostic role of alcohol biomarkers in hair. 
+    J Anal Toxicol. 2018 Apr 1;42(3):157–162, 
+    doi:10.1093/jat/bkx094
+&lt;/bibItem></programlisting>
+    </example>
+  </section>
+  <section>
+    <title>BITS data model</title>
+    <para>The BITS data model takes the approach of wrapping each component of a reference in an
+      element describing its meaning.</para>
+    <para>There are two different flavours of this model.</para>
+    <itemizedlist>
+      <listitem>
+        <para>The <code>&lt;element-citation></code> model contains only elements. Punctuation of
+                    the components to style a reference in any of the standard formats is a task
+                    left to rendering engines.</para>
+      </listitem>
+      <listitem>
+        <para>The <code>&lt;mixed-citation></code> model consists of mixed content. Punctuation must
+                    be included among the content of a reference.</para>
+      </listitem>
+    </itemizedlist>
+    <example>
+      <title>BITS data model for a book reference</title>
+            <para>With &lt;element-citation>:</para>
+      <programlisting>&lt;element-citation>
+  &lt;name>
+    &lt;surname>Lalloo&lt;/surname>
+    &lt;given-names>F&lt;/given-names>
+  &lt;/name>
+  &lt;name>
+    &lt;surname>Kerr&lt;/surname>
+    &lt;given-names>B&lt;/given-names>
+  &lt;/name>
+  &lt;name>
+    &lt;surname>Friedman&lt;/surname>
+    &lt;given-names>J&lt;/given-names>
+  &lt;/name>
+  &lt;name>
+    &lt;surname>Evans&lt;/surname>
+    &lt;given-names>G&lt;/given-names>
+  &lt;/name>
+  &lt;year>2005&lt;/year>
+  &lt;source>Risk assessment and management in cancer genetics&lt;/source>
+  &lt;publisher-loc>Oxford&lt;/publisher-loc>
+  &lt;publisher-name>Oxford University Press&lt;/publisher-name>
+&lt;/element-citation></programlisting>
+            <para>With &lt;mixed-citation> (Vancouver style):</para>
+      <programlisting>&lt;mixed-citation>
+  &lt;string-name>&lt;surname>Lalloo&lt;/surname> &lt;given-names>F&lt;/given-names>&lt;/string-name>, 
+  &lt;string-name>&lt;surname>Kerr&lt;/surname> &lt;given-names>B&lt;/given-names>&lt;/string-name>, 
+  &lt;string-name>&lt;surname>Friedman&lt;/surname> &lt;given-names>J&lt;/given-names>&lt;/string-name>, 
+  &lt;string-name>&lt;surname>Evans&lt;/surname> &lt;given-names>G&lt;/given-names>&lt;/string-name>.
+  &lt;source>Risk assessment and management in cancer genetics&lt;/source>.
+  &lt;publisher-loc>Oxford&lt;/publisher-loc>: 
+  &lt;publisher-name>Oxford University Press&lt;/publisher-name>;
+  &lt;year>2005&lt;/year>
+&lt;/mixed-citation></programlisting>
+    </example>
+    <example>
+      <title>BITS data model for a journal article reference</title>
+            <para>With &lt;element-citation>:</para>
+      <programlisting>&lt;element-citation>
+  &lt;name>
+    &lt;surname>Salomone&lt;/surname>
+    &lt;given-names>A&lt;/given-names>
+  &lt;/name>
+  &lt;name>
+    &lt;surname>Bozzo&lt;/surname>
+    &lt;given-names>A&lt;/given-names>
+  &lt;/name>
+  &lt;name>
+    &lt;surname>Di Corcia&lt;/surname>
+    &lt;given-names>D&lt;/given-names>
+  &lt;/name>
+  &lt;name>
+    &lt;surname>Gerace&lt;/surname>
+    &lt;given-names>E&lt;/given-names>
+  &lt;/name>
+  &lt;name>
+    &lt;surname>Vincenti&lt;/surname>
+    &lt;given-names>M&lt;/given-names>
+  &lt;/name>
+  &lt;article-title>Occupational exposure to alcohol-based hand sanitizers: 
+    the diagnostic role of alcohol biomarkers in hair&lt;/article-title>
+  &lt;source>J Anal Toxicol&lt;/source>
+  &lt;year>2018&lt;/year>
+  &lt;volume>42&lt;/volume>
+  &lt;issue>3&lt;/issue>
+  &lt;fpage>157&lt;/fpage>
+  &lt;lpage>162&lt;/lpage>
+  &lt;pub-id pub-id-type="doi">10.1093/jat/bkx094&lt;/pub-id>
+&lt;/element-citation></programlisting>
+            <para>With &lt;mixed-citation> (Vancouver style):</para>
+      <programlisting>&lt;mixed-citation>
+  &lt;string-name>&lt;surname>Salomone&lt;/surname> &lt;given-names>A&lt;/given-names>&lt;/string-name>, 
+  &lt;string-name>&lt;surname>Bozzo&lt;/surname> &lt;given-names>A&lt;/given-names>&lt;/string-name>, 
+  &lt;string-name>&lt;surname>Di Corcia&lt;/surname> &lt;given-names>D&lt;/given-names>&lt;/string-name>, 
+  &lt;string-name>&lt;surname>Gerace&lt;/surname> &lt;given-names>E&lt;/given-names>&lt;/string-name>, 
+  &lt;string-name>&lt;surname>Vincenti&lt;/surname> &lt;given-names>M&lt;/given-names>&lt;/string-name>. 
+  &lt;article-title>Occupational exposure to alcohol-based hand sanitizers: 
+    the diagnostic role of alcohol biomarkers in hair&lt;/article-title>.
+  &lt;source>J Anal Toxicol&lt;/source>.
+  &lt;year>2018&lt;/year> &lt;month>Apr&lt;/month> &lt;day>1&lt;/day>;
+  &lt;volume>42&lt;/volume>(&lt;issue>3&lt;/issue>):&lt;fpage>157&lt;/fpage>–&lt;lpage>162&lt;/lpage>,
+  doi:&lt;pub-id pub-id-type="doi">10.1093/jat/bkx094&lt;/pub-id>
+&lt;/mixed-citation></programlisting>
+    </example>
+  </section>
+  <section>
+    <title>Converting the OUP data model to BITS</title>
+    <para>The first proposal was to throw away the content of the OUP <code>&lt;bibItem></code> and
+      turn the attribute values into elements within a BITS <code>&lt;element-citation></code>
+      element.</para>
+    <para>The <code>&lt;element-citation></code> model is an ideal destination; clean, and easy to
+      capture. But there are difficulties in implementing this for OUP content.</para>
+    <para>The platform needs a robust rendering engine to apply spacing and punctuation to an
+        <code>&lt;element-citation></code> element. OUP content has many different types of
+      reference, including:</para>
+    <itemizedlist>
+      <listitem>
+        <para>book</para>
+      </listitem>
+      <listitem>
+        <para>book chapter</para>
+      </listitem>
+      <listitem>
+        <para>journal article</para>
+      </listitem>
+      <listitem>
+        <para>newspaper/magazine</para>
+      </listitem>
+      <listitem>
+        <para>conference</para>
+      </listitem>
+      <listitem>
+        <para>archive</para>
+      </listitem>
+      <listitem>
+        <para>web link</para>
+      </listitem>
+      <listitem>
+        <para>catalogue</para>
+      </listitem>
+      <listitem>
+        <para>patent</para>
+      </listitem>
+      <listitem>
+        <para>thesis</para>
+      </listitem>
+      <listitem>
+        <para>personal correspondence with the author</para>
+      </listitem>
+      <listitem>
+        <para>etc.</para>
+      </listitem>
+    </itemizedlist>
+    <para>(Not to mention references to many kinds of legal documents, treaties, legislation,
+      etc.)</para>
+    <para>Developing and testing a rendering engine for all these styles is not a trivial
+      task.</para>
+    <para>There's also a proportion of references in which the attribute values have been captured
+      incorrectly. This is currently invisible to users of the platform (until they click on a link
+      generated from the attribute values), but would be exposed if the attribute values were
+      converted to element content.</para>
+        <para>There are references where the author does not follow a standard, e.g. inserting some
+            discursive text. The BITS model includes a &lt;comment> element for holding this, but in
+            OUP's data model there is no attribute to capture this text.</para>
+        <example>
+            <title>Non-standard references</title>
+            <para>Klaassen, C. D., Ed. (2001). <emphasis role="italic">Casarett and Doull’s
+                    Toxicology: The basic science of poisons.</emphasis> McGraw-Hill Medical, New
+                York. This broad detailed introduction to toxicology is a good reference for the
+                clear presentation of the concepts, methods, and common toxic materials and contains
+                many nice examples.<!--<link xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://www.oxfordscholarship.com/view/10.1093/acprof:oso/9780195141566.001.0001/acprof-9780195141566-bibliography-1"
+                />--></para>
+            <para>DANTE ALIGHIERI, <emphasis role="italic">The Divine Comedy</emphasis>; we
+                recommend the translation by D. L. Sayers (3 vols.; Harmondsworth: Penguin Books,
+                    1950–62).<!--<link xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://www.oxfordscholarship.com/view/10.1093/0199259941.001.0001/acprof-9780199259946-bibliography-1"
+                />--></para>
+            <para>The best general treatments of the US Constitution include the classic work by
+                Alfred Kelly, Winfred Harbison, and Herman Belz, <emphasis role="italic">The
+                    American Constitution: Its Origins and Developments</emphasis>, 7th ed. (New
+                York: W. W. Norton, 1991) and Melvin I. Urofsky and Paul Finkelman, <emphasis
+                    role="italic">The March of Liberty: A Constitutional History of the United
+                    States</emphasis>, 3rd ed. (New York: Oxford University Press, 2011). Good short
+                treatments are Michael Les Benedict, <emphasis role="italic">The Blessings of
+                    Liberty: A Concise History of the Constitution of the United States</emphasis>
+                (Lexington, MA: D. C. Heath, 1996) and David J. Bodenhamer, <emphasis role="italic"
+                    >The Revolutionary Constitution</emphasis> (New York: Oxford University Press,
+                    2012).<!--<link xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://veryshortintroductions.com/view/10.1093/actrade/9780195378320.001.0001/actrade-9780195378320-bibliography-2"
+                />--></para>
+        </example>
+    <para>OUP decided to keep the requirement that references should be presented as the author
+            intended, which rules out the <code>&lt;element-citation></code> model and leaves us
+            with <code>&lt;mixed-citation></code>.</para>
+  </section>
+    <section>
+        <title>Outline of the XSLT</title>
+        <para>The approach we adopted was to pass the content of the &lt;bibItem> element through a
+            template a number of times, each time looking for a different attribute to match in the
+            text.</para>
+        <example>
+            <title>Stages of conversion</title>
+            <para>Original content:</para>
+            <programlisting>Deborah Furet How Illusions Pass, 176-196, 234-247. London: Gerald Duckworth, 1987</programlisting>
+            <para>After first pass:</para>
+            <programlisting>Deborah Furet &lt;title>How Illusions Pass&lt;/title>, 176-196, 234-247. London: Gerald Duckworth, 1987</programlisting>
+            <para>After second pass:</para>
+            <programlisting>Deborah &lt;surname>Furet&lt;/surname> &lt;title>How Illusions Pass&lt;/title>, 176-196, 234-247. London: Gerald Duckworth, 1987</programlisting>
+            <para>After third pass:</para>
+            <programlisting>Deborah &lt;surname>Furet&lt;/surname> &lt;title>How Illusions Pass&lt;/title>, 176-196, 234-247. London: Gerald Duckworth, &lt;year>1987&lt;/year></programlisting>
+        </example>
+        <para>The template for the original &lt;bibItem> element is:</para>
+        <programlisting>  
+&lt;xsl:template match="bibItem[
+    @class = 'bookChapter' 
+    or @class = 'book' 
+    or @class = 'journalArticle' 
+    ]">
+    &lt;xsl:variable name="content" as="node()+" select="child::node()"/>
+    
+    &lt;xsl:variable name="content-plus-title" as="node()+">
+      &lt;xsl:choose>
+        &lt;xsl:when test="@title">
+          &lt;xsl:call-template name="getElement">
+            &lt;xsl:with-param name="class" select="@class" tunnel="yes"/>
+            &lt;xsl:with-param name="attributeName" select="'title'" tunnel="yes"/>
+            &lt;xsl:with-param name="stringToMatch" select="@title" tunnel="yes"/>
+            &lt;xsl:with-param name="matched" select="false()" tunnel="yes"/>
+            &lt;xsl:with-param name="nodesToCheck" select="$content"/>
+          &lt;/xsl:call-template>
+        &lt;/xsl:when>
+        &lt;xsl:otherwise>
+          &lt;xsl:copy-of select="$content"/>
+        &lt;/xsl:otherwise>
+      &lt;/xsl:choose>
+    &lt;/xsl:variable>
+
+    &lt;xsl:variable name="content-plus-name" as="node()+">
+        &lt;!-- call to "getElement" but parameter $nodesToCheck is $content-plus-title -->
+    &lt;/xsl:variable>
+
+    &lt;xsl:variable name="content-plus-date" as="node()+">
+        &lt;!-- call to "getElement" but parameter $nodesToCheck is $content-plus-name -->    
+    &lt;/xsl:variable>
+
+    &lt;xsl:copy>
+      &lt;xsl:apply-templates select="@*"/>
+      &lt;xsl:copy-of select="$content-plus-date"/>
+    &lt;/xsl:copy>
+    
+  &lt;/xsl:template>
+</programlisting>
+        <para>The content of the &lt;bibItem> element goes through several stages within the
+            template. Passing from one stage to the next involves a call to a template
+                <quote>getElement</quote> to find a particular attribute value within the content
+            and wrap it in the corresponding BITS element. The output of the first stage is passed
+            as the input to the next, and so on, until the output of the last stage is copied into
+            the output XML tree.</para>
+        <para>The <quote>getElement</quote> template that does the matching is:</para>
+        <programlisting>  
+&lt;xsl:template name="getElement">
+    &lt;xsl:param name="class" as="xs:string" required="yes" tunnel="yes"/>
+    &lt;xsl:param name="attributeName" as="xs:string" required="yes" tunnel="yes"/>
+    &lt;xsl:param name="stringToMatch" as="xs:string" required="yes" tunnel="yes"/>
+    &lt;xsl:param name="matched" as="xs:boolean" tunnel="yes"/>
+    &lt;xsl:param name="nodesToCheck" as="node()+"/>
+    
+    &lt;xsl:variable name="thisNode" as="node()" select="$nodesToCheck[1]"/>
+    &lt;xsl:variable name="remainingNodes" as="node()*" select="$nodesToCheck except $thisNode"/>
+    
+    &lt;xsl:variable name="nodeAsString" as="xs:string" select="string($thisNode)"/> 
+        
+    &lt;xsl:variable name="matches" as="xs:boolean" select="oupdtg:hasMatch($nodeAsString,$stringToMatch)"/>
+
+    &lt;!-- 
+        Code to look at $thisNode (the first node)
+        Either copy it (if $stringToMatch is not found, or if it has been matched already)
+        or wrap part of the text node matching $stringToMatch in an element appropriate to the $attributeName
+    -->
+
+    &lt;xsl:if test="count($remainingNodes) != 0">
+      &lt;xsl:call-template name="getElement">
+        &lt;xsl:with-param name="matched" select="$matched or $matches" tunnel="yes"/>
+        &lt;xsl:with-param name="nodesToCheck" select="$remainingNodes"/>
+      &lt;/xsl:call-template>
+    &lt;/xsl:if>
+     
+&lt;/xsl:template>
+</programlisting>
+        <para>The parameters to the template are:</para>
+    <informaltable frame="all">
+      <tgroup cols="2">
+        <colspec colname="c1" colnum="1" colwidth="1*"/>
+        <colspec colname="c2" colnum="2" colwidth="1*"/>
+        <thead>
+          <row>
+            <entry>Parameter</entry>
+            <entry>Description</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>class</entry>
+            <entry>The type of item that is being referenced (e.g. book, journal article).</entry>
+          </row>
+          <row>
+            <entry>attributeName</entry>
+            <entry>The name of the attribute whose value is being sought in the content (e.g.
+                <quote>author</quote>, <quote>title</quote>). The value of this and the $class
+              parameter determine the name of the element that is wrapped round a matching
+              string.</entry>
+          </row>
+          <row>
+            <entry>stringToMatch</entry>
+            <entry>The value (author name, article title, etc) that the template is looking for in
+              the content.</entry>
+          </row>
+          <row>
+            <entry>matched</entry>
+            <entry>A boolean variable, whose value is <quote>true()</quote> if the string has
+              already been matched in the content.</entry>
+          </row>
+          <row>
+            <entry>nodesToCheck</entry>
+            <entry>The remaining content of the bibItem. The template parses one node at a time, and
+              then recursively calls itself with the remaining nodes passed as this
+              parameter.</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+    </section>
+    <section>
+        <title>Limitations of the conversion</title>
+        <para>We could in theory add more passes through <quote>getElement</quote> to capture the
+            publisher name, volume number, issue number, etc. But there are diminishing returns.
+            There's an increasing risk of inaccurate results. For example, one number looks very
+            much like another within a string. </para>
+        <para>And adding more elements to the citation doesn't necessarily improve the results from
+            an OpenURL link. We've noticed that including more parameters in an OpenURL can result
+            in the link failing to match an item in a library catalogue. Unless each parameter
+            matches a corresponding field in the catalogue metadata, the OpenURL will not return a
+            result. The sweet spot for references to books seems to be surname of first author,
+            title, and publication date.</para>
+        <para>We have so far chosen only to identify the first contributor to a referenced work, and
+            only their surname. The format of the @author attribute of the &lt;bibItem> element is
+                <quote>surname, forenames</quote>. This doesn't always match the format in the text
+            of the reference, which could be <quote>forenames surname</quote>. We have to weigh the
+            value of identifying other contributors and their forenames against the effort of
+            enhancing the conversion templates.</para>
+        <para>Limiting the conversion to just a few fields gives us a good chance of capturing
+            enough information with enough accuracy to support OpenURL linking.</para>
+        <para>This is not enough to support the Initiative for Open Citations
+                (I4OC)<citation>7</citation> fully, since the markup is incomplete. I4OC is an
+            initiative to promote availability of citation data. This is facilitated by depositing
+            bibliographic references as part of the metadata associated with a DOI.
+                CrossRef<citation>4</citation> supports the deposit of unstructured references,
+            which allows us to provide limited support for I4OC, but ideally we would provide fully
+            structured references.</para>
+        <para>One benefit of the OUP data model that we are losing in the conversion to BITS is the
+            ability to handle partial references. An author referring repeatedly to the same work
+            may use the word <quote>Ibid.</quote> to save space on subsequent references, or
+            substitute a couple of em-dashes for the author name. Using a &lt;bibItem> for these
+            allows us to capture the full information even on a partial reference, but the BITS
+            model doesn't let us do that. This situation is increasingly rare, as authors are
+            discouraged from using these styles.</para>
+    </section>
+  <bibliography>
+    <bibliomixed><abbrev>1</abbrev><citetitle>Book Interchange Tag Set (BITS)</citetitle>:
+            <address><link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://jats.nlm.nih.gov/extensions/bits/"/></address></bibliomixed>
+    <bibliomixed><abbrev>2</abbrev><citetitle>Chicago Manual of Style</citetitle>:
+            <address><link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.chicagomanualofstyle.org/home.html"/></address></bibliomixed>
+    <bibliomixed><abbrev>3</abbrev><citetitle>Citing Medicine (2nd Edition)</citetitle>:
+            <address><link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.ncbi.nlm.nih.gov/books/NBK7256/"/></address></bibliomixed>
+        <bibliomixed><abbrev>4</abbrev><citetitle>CrossRef</citetitle>:
+            <address><link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.crossref.org/"/></address></bibliomixed>
+    <bibliomixed><abbrev>5</abbrev><citetitle>DOI</citetitle>:
+            <address><link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.doi.org/"/></address></bibliomixed>
+        <bibliomixed><abbrev>6</abbrev><citetitle>Harvard Style (Imperial College London
+                guide)</citetitle>:
+            <address><link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.imperial.ac.uk/media/imperial-college/administration-and-support-services/library/public/harvard.pdf"/></address></bibliomixed>
+    <bibliomixed><abbrev>7</abbrev><citetitle>Initiative for Open Citations (I4OC)</citetitle>:
+            <address><link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://i4oc.org/"/></address></bibliomixed>
+    <bibliomixed><abbrev>8</abbrev><citetitle>OpenURL (ANSI/NISO Z39.88-2004 (R2010))</citetitle>:
+            <address><link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.niso.org/publications/z3988-2004-r2010-openurl-framework-context-sensitive-services"/></address></bibliomixed>
+    <bibliomixed><abbrev>9</abbrev><citetitle>PubMed</citetitle>:
+            <address><link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.ncbi.nlm.nih.gov/pubmed/"/></address></bibliomixed>
+    <bibliomixed><abbrev>10</abbrev><citetitle>Zotero</citetitle>:
+            <address><link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.zotero.org/"/></address></bibliomixed>
+  </bibliography>
+</article>

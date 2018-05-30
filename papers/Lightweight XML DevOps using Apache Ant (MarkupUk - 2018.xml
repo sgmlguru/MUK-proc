@@ -1,0 +1,1002 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE article>
+<article
+  xmlns="http://docbook.org/ns/docbook" version="5.0"
+  xmlns:xlink="http://www.w3.org/1999/xlink" >
+  <info>
+    <title>Lightweight XML DevOps using Apache Ant</title>
+    <author>
+        <personname><firstname>Philip</firstname><surname>Hodder</surname></personname>
+        <email>philip.hodder@encodis.com</email>
+    </author>
+    <abstract>
+        <para>
+            Many teams struggle with defining, documenting and following proper processes. A case study is described where the content delivery team of a major digital publisher was experiencing these problems when running transformation pipelines using XSLT and Schematron, as well as numerous other XML related tasks. The use of the Apache Ant build tool has allowed them to create a set of higher level tools that to enforce an agreed development policy using a set of reusable macros. These macros have allowed the team to dramatically increase the quality of deployed code, as well as improving the ability of new team members to become productive more quickly. This experience has spurred the development of an open source equivalent of this macro library (whimsically entitled "XPantS") which is also described.
+        </para>
+    </abstract>
+  </info>
+<section xml:id="introduction">
+  <title>Introduction</title>
+  <para>
+    This paper presents a case study on the development of a set of
+    standard tools to support and enhance XML based development
+    practices in a content delivery team in a major publisher of digital
+    information. Originally the team used Microsoft’s Team Foundation
+    Server (TFS) as a code repository and
+    <link xlink:href="https://ant.apache.org">Apache Ant</link> as a
+    build tool to perform a variety of XML related tasks, principally
+    XLST and <link xlink:href="http://schematron.com">Schematron</link>
+    development for a wide variety of types of content with numerous
+    internal end users. While TFS is a functional tool it does have
+    certain limitations (branching, for example, among others) but was
+    not being used in an optimal fashion: the entire code base for all
+    projects in all the content teams was included in a single
+    repository. Build processes were also poorly documented—as was the
+    code and the build files themselves. Deliverable XSLT code was built
+    using a complex web of Ant <quote>includes</quote> with temporary
+    changes being made to certain of these build files by individual
+    developers to build the code they needed to deploy at that time.
+    Another developer would then make similar modifications to their
+    copy for their work. Even worse, the transformation pipelines that
+    converted content often ran the code directly from this repository
+    so there was no separation between code in a development state and
+    code being used in a production environment.
+  </para>
+  <para>
+    In summary then the team was having to work around a number of
+    issues:
+  </para>
+  <itemizedlist spacing="compact">
+    <listitem>
+      <para>
+        Poor (or non-existent) documentation, leading to long
+        on-boarding times before new team members (or existing team
+        members changing roles) could become productive.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        No structured development process, which also led to team
+        members unfamiliar with a new project or pipeline taking
+        increased time to get useful work done.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Poor repeatability of the build process and mechanisms.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Lack of a formal (or even notional) deployment phase, leading to
+        confusion over which version of code was supposed to be run and
+        when.
+      </para>
+    </listitem>
+  </itemizedlist>
+  <para>
+    Although it was not referred to within the team in these terms,
+    these seem to be fairly standard <quote>DevOps</quote> issues, and
+    it was becoming increasingly clear that improvements would have to
+    be made.
+  </para>
+</section>
+<section xml:id="development-policy">
+  <title>Development Policy</title>
+  <para>
+    The first change to be implemented was the agreement of a
+    <quote>development policy</quote>, a document that described what
+    would become the team’s set of <quote>best practices</quote>.
+    Although this was not a piece of technical work it did serve as a
+    high level requirements definition for the macro development work.
+  </para>
+  <para>
+    The development policy included statements concerning:
+  </para>
+  <itemizedlist spacing="compact">
+    <listitem>
+      <para>
+        When, where and how to document the various kinds of projects
+        and pipelines that the team worked on. Principally this
+        consisted of guidelines to embed documentation within the
+        various build files, XSLTs and Schematron files themselves.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        A directive to move to Git as the version control system with
+        VSTS as the repository.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Branch naming conventions (mostly following Git Flow, although
+        that process was not used itself).
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Guidance on common naming conventions for folders within
+        repositories to make transferring to new projects easier.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Use of <link xlink:href="https://semver.org">Semantic
+        Versioning</link> in projects and when to bump major, minor and
+        patch numbers.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Deployment rules, such as only deploying from a
+        <quote>release</quote> branch, not deploying with outstanding
+        commits etc.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Use of pull requests to ensure at least some degree of code
+        review and confirmation that documentation had been completed.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Setting up an environment separate from other teams where the
+        content delivery team could deploy assets (the <quote>Content
+        Architecture Production Environment</quote> or
+        <quote>CAPE</quote>).
+      </para>
+    </listitem>
+  </itemizedlist>
+  <section xml:id="documentation">
+    <title>Documentation</title>
+    <para>
+      A note on documentation: early on the decision was taken to use
+      Markdown for all documentation within the team. While XML document
+      standards like
+      <link xlink:href="https://docbook.org">DocBook</link> and
+      OxygenDoc would seem to be the obvious choice,
+      <link xlink:href="https://daringfireball.net/projects/markdown/syntax">Markdown</link>
+      was chosen for the reason that almost no training is required to
+      use it—in fact merely using plain text will be accepted as valid
+      and suitably rendered. This would reduce the workload on the
+      content delivery team who would not have to learn another
+      documentation standard, the assumption being that any form of
+      documentation is preferable to no documentation at all. It should
+      also be noted that Ant documentation cannot use these other (XML)
+      standards as no tags are permitted inside its
+      <literal>&lt;description&gt;</literal> tag—using Markdown
+      therefore allowed the team to use a uniform documentation system.
+      However, as part of the library described below some XSLTs were
+      created to extract the Markdown documentation from Ant build
+      files, XSLTs and Schematrons which could then be used to produce
+      HTML for deployment.
+    </para>
+  </section>
+</section>
+<section xml:id="the-ant-macro-library">
+  <title>The ANT macro library</title>
+  <para>
+    It was clear that continuing to use the existing build process was
+    unsustainable, especially as the team was growing and required its
+    members to be able to rapidly switch roles within it. Therefore,
+    using the Development Policy as the basis for the team’s
+    requirements, a new Ant macro library was developed.
+  </para>
+  <para>
+    Although there are many build systems available it was decided to
+    keep using Apache Ant for two main reasons. Firstly, it is an XML
+    based technology which would be familiar to the team, and secondly
+    it would allow the team to re-use parts of the existing build system
+    where appropriate. The various Ant macros in the existing build
+    system were analysed for common code and functionality and a new
+    library constructed using the following principles:
+  </para>
+  <itemizedlist spacing="compact">
+    <listitem>
+      <para>
+        Macro definitions would be used rather than custom Java code.
+        This would be simpler to maintain and would not require
+        additional skills beyond XML.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Modular code: related macro definitions would be grouped
+        together as files/modules to minimize the number of
+        <literal>&lt;include&gt;</literal> statements required.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Documentation for each of the modules would be included in the
+        module itself (as Markdown in the
+        <literal>&lt;description&gt;</literal> tag, as described above)
+        and automatically generated for deployment to an internal web
+        site.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Common sense naming conventions were followed: for example, the
+        file <quote>compile-schematron.xml</quote> contains macros
+        involved in Schematron compilation and so on.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Performance of the build system was not considered to be an
+        issue; instead maintainability of the code by the whole team was
+        considered to be more important.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Additional configuration tools like
+        <link xlink:href="http://ant.apache.org/ivy/">Ivy</link> and
+        <link xlink:href="https://maven.apache.org">Maven</link> were
+        also not involved, again for simplicity and maintainability
+        reasons.
+      </para>
+    </listitem>
+  </itemizedlist>
+  <para>
+    The macros in the library were developed over time but can be
+    grouped into a few broad categories:
+  </para>
+  <itemizedlist spacing="compact">
+    <listitem>
+      <para>
+        XML operations, such as compiling Schematron files, validating
+        XML instance documents and so on.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Deployment of files using a variety of mechanisms.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Wrappers around shell commands/system executables, such as
+        <emphasis>git</emphasis>, <emphasis>ssh</emphasis> and so on.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Utility macros used by other macros.
+      </para>
+    </listitem>
+  </itemizedlist>
+  <para>
+    A number of XSLTs were also developed to work with these macros.
+    These generally involved:
+  </para>
+  <itemizedlist spacing="compact">
+    <listitem>
+      <para>
+        Extracting Markdown documentation from Ant build files, XSLTs
+        and Schematron.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Filtering and converting SVRL reports.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Modifying Schematron files in a number if ways, for example to
+        display report and assert IDs in their respective messages.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        General utilty stylesheets to modify XML documents in various
+        ways (remove documentation elements, linearise XML files etc).
+      </para>
+    </listitem>
+  </itemizedlist>
+  <para>
+    These XSLTs were deployed to a standard location on the CAPE where
+    they could be referenced by the Ant macros.
+  </para>
+  <para>
+    It should be noted that most these macros are essentially
+    <quote>wrappers</quote> around existing Ant functionality—but the
+    value of the Ant library lies in this encapsulation of higher level
+    functionality. For example, the <literal>deploy-files</literal>
+    macro is really just a wrapper around the Ant
+    <literal>&lt;copy&gt;</literal> task. However,
+    <literal>deploy-files</literal> is aware of the context within which
+    the team is working: team members merely supply a target path on the
+    CAPE and a relevant file set and the macro does the rest.
+  </para>
+  <para>
+    This <quote>wrapper</quote> pattern has proved very useful in day to
+    day use. For example, the standard deploy target for the CAPE is an
+    anonymous Samba share hosted on a AWS EC2 Linux instance. This
+    allows Ant’s basic <literal>&lt;copy&gt;</literal> mechanism (that
+    works over file systems) to be used for deployment, as well as
+    allowing developers to browse the deployment to check for
+    correctness. However, a recently Windows 10 patch removed the
+    ability for Windows 10 machines to connect to anonymous shares,
+    which meant that those developers could no longer deploy any files.
+    To get around this the <literal>deploy-files</literal> macro was
+    updated to use optionally use <emphasis>ssh</emphasis> (Secure
+    Shell) as a deployment mechanism. Once the relevant
+    <emphasis>ssh</emphasis> keys were installed and configured they
+    could carry on deploying assets with no changes required to their
+    existing build files.
+  </para>
+  <section xml:id="example-of-use">
+    <title>Example of use</title>
+    <para>
+      The usefulness of this library to the content delivery team can
+      best be illustrated through the example of the <quote>content
+      migration</quote> sub-team. This team acts as a bridge between the
+      editorial function and the fabrication pipelines (which
+      subsequently deliver content for delivery to users of the main
+      product web page). The content is mastered in XML using a variety
+      of DTDs but the definitions in these DTDs are quite broad, in the
+      sense that several different types of content can be represented
+      using the same DTD. However, for delivery to the production
+      systems certain additional rules must be enforced—these rules
+      (written in Schematron) <quote>tailor</quote> the broad DTD
+      definition for each particular content type.
+    </para>
+    <para>
+      The Schematron rules effectively represent the editorial
+      requirements for the content—there are many of them and they
+      change quite often. The content migration sub-team develops and
+      maintains these Schematron rules, supplying them to the
+      fabrication team for inclusion in the various pipelines related to
+      those content types. Prior to the development of the Ant library
+      the typical workflow was something like:
+    </para>
+    <orderedlist numeration="arabic" spacing="compact">
+      <listitem>
+        <para>
+          Find the appropriate build.xml file and edit it, commenting
+          out details of other team members content types and
+          un-commenting their own.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Find another, apparently unrelated build.xml file (e.g. with a
+          relative path similar to
+          <quote>../../common/build.xml</quote>) and make similar
+          changes.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Run the first build file to create a pre-compiled Schematron
+          file (i.e. an XSLT).
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Manually move the output file to a different folder.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Inform the fabrication team that there is a new version of the
+          file.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Liaise with fabrication to correct any issues found during the
+          next run of the content through its pipeline. This may include
+          confirming which version of the code is being included and
+          re-compiling if necessary.
+        </para>
+      </listitem>
+    </orderedlist>
+    <para>
+      Note that as all code was shared in the same TFS repository it was
+      very difficult to go back and check the status of any particular
+      version. Different versions were not explicitly labelled and any
+      changes to the code might be overwritten by another team member
+      committing to the same files in the same repository.
+    </para>
+    <para>
+      Therefore, after the Ant library was developed a second, higher
+      level set of macros was developed to assist the content migration
+      sub-team. The Schematron files for each content stream were placed
+      in their own Git repository and which had its own (Ant) properties
+      file that described how the Schematron files should be compiled
+      and the various options that should be applied. A standard
+      template for a <emphasis role="strong">build.xml</emphasis> file
+      common to all the content streams was also created. The workflow
+      now became:
+    </para>
+    <orderedlist numeration="arabic" spacing="compact">
+      <listitem>
+        <para>
+          Create a new feature branch in the repository and make the
+          code changes required.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          From a command line run <literal>$ ant compile</literal> to
+          compile the Schematron files (using the
+          <literal>compile-schematron</literal> macros).
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Run <literal>$ ant validate</literal> to validate the compiled
+          Schematron against a representative data model, or series of
+          models (using the <literal>validate-schematron</literal>
+          macros).
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Merge the feature changes back into master (and repeat from
+          step 1 for additional features).
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Once all features have been finished create a
+          <quote>release</quote> branch,
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Run the validation tasks once more. If all the tests are valid
+          then run <literal>$ ant version</literal> to update the
+          version number—this version number is now embedded in the
+          compiled Schematron.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Prepare release documentation and run
+          <literal>$ ant docs</literal> to prepare it. This
+          documentation will be deployed with the compiled Schematron
+          files so that all content developers can see what changes have
+          been made and why. The build file will check that this
+          documentation has been completed and will not deploy until it
+          has.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Run <literal>$ ant deploy</literal> to deploy the compiled
+          Schematron files to the CAPE for reference as well as
+          deploying them directly to a network share where the
+          fabrication pipeline will pick it up automatically. This uses
+          the <literal>deploy-files</literal> macros, but the standard
+          build file will not allow deployment from other than a release
+          branch or if there are outstanding commits. In other words,
+          the developer cannot deploy simply <quote>as a
+          test</quote>—they must think about their actions.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Merge the feature branch back into master and push to the
+          server to keep a record of all changes.
+        </para>
+      </listitem>
+    </orderedlist>
+    <para>
+      This freed up the content migration sub-team to concentrate on the
+      details of the content and the Schematron rules, dealing with
+      actual content issues rather having to continually having to
+      manually configure build files at each step. Furthermore, the
+      addition of a version number meant that any errors encountered in
+      the fabrication pipeline were much easier to track and resolve. Of
+      course, some of these improvements are directly related to the
+      enforcement of the Development Policy—but most of the time this is
+      accomplished <emphasis>automatically</emphasis> through the Ant
+      library macros.
+    </para>
+  </section>
+</section>
+<section xml:id="xpants">
+  <title>XPantS</title>
+  <blockquote>
+    <para>
+      <quote>A simple library for simple folk.</quote>
+    </para>
+  </blockquote>
+  <para>
+    The success of the Ant library for the content delivery team led the
+    authors to consider developing a clean-room, open source equivalent.
+    This would make similar functionality available to the community at
+    large and allow for more rapid development and bug fixes. Shortly
+    thereafter the XPantS (&quot;XML Practical Ant Scripts) library was
+    developed and has recently been made available on
+    <link xlink:href="https://github.com/encodis/xpants">GitHub</link>.
+  </para>
+  <para>
+    There are, of course, a number of differences with the original Ant
+    library as a number of constraints imposed by the original
+    development and production environments no longer apply.
+  </para>
+  <itemizedlist spacing="compact">
+    <listitem>
+      <para>
+        Unlike the Ant library, XPantS is distributed as a Jar file and
+        referenced in build files via the <quote>antlib</quote> system
+        which brings it inline with similar distributions.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        The macros are also simpler and more flexible and the library
+        includes a basic set of XSLTs in the deployable Jar file.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Development now uses AntUnit to test the macros themselves and
+        the library now includes a simple wrapper around the
+        <link xlink:href="https://github.com/xspec/xspec">XSpec</link>
+        library.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Documentation for the macros does not require separate hosting.
+        The Markdonw is extracted as part of a local build process and
+        uploaded to GitHub Docs.
+      </para>
+    </listitem>
+  </itemizedlist>
+  <para>
+    XPantS has a number of dependencies, including:
+  </para>
+  <itemizedlist spacing="compact">
+    <listitem>
+      <para>
+        <link xlink:href="http://ant-contrib.sourceforge.net">ANT
+        Contrib</link>. XPantS uses some tasks defined by ANT Contrib,
+        particularly the <literal>&lt;for&gt;</literal> and
+        <literal>&lt;propertyregex&gt;</literal> tasks.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Although it is not required the
+        <link xlink:href="https://www.saxonica.com/products/products.xml">Saxon
+        XSLT and XQuery Processor</link> is recommended. XPantS will use
+        Saxon for XSLT processing if it can, otherwise it will default
+        to Xalan.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        <link xlink:href="http://www.java2s.com/Code/Jar/x/Downloadxmlresolverjar.htm">XML
+        Resolver</link>, installed in Ant’s classpath.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        For simplicity the ISO Schematron XSLT files are included
+        directly in the XSLT part of the library.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        The <literal>&lt;convert-schema&gt;</literal> and
+        <literal>&lt;validate-with-schematron&gt;</literal> macros use
+        the
+        <link xlink:href="http://www.thaiopensource.com/relaxng/trang.html">Trang</link>
+        converter and
+        <link xlink:href="http://www.thaiopensource.com/relaxng/jing.html">Jing</link>
+        validator respectively which should also be available in the Ant
+        classpath.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        A number of macros act as wrappers around command line
+        applications, which obviously need to be installed to work.
+        These include:
+        <link xlink:href="https://aws.amazon.com/cli/">AWS Command Line
+        Tools</link>,
+        <link xlink:href="https://github.com/git/git">Git</link>,
+        <link xlink:href="https://pandoc.org/">Pandoc</link>,
+        <link xlink:href="https://www.python.org/">Python</link>,
+        <link xlink:href="https://www.ssh.com/ssh/">SSH</link>,
+        <link xlink:href="http://www.html-tidy.org/">HTML Tidy</link> and
+        <link xlink:href="https://github.com/xspec/xspec">XSpec</link>.
+      </para>
+    </listitem>
+  </itemizedlist>
+  <section xml:id="macro-construction">
+    <title>Macro construction</title>
+    <para>
+      Most of the macros follow a pattern. Firstly, the main entry point
+      is a macro of the same name as the module (or file). So, for
+      example, the
+      <emphasis role="strong">compile-schematron.xml</emphasis> file
+      contains a <quote>top level</quote>
+      <literal>&lt;compile-schematron&gt;</literal> macro. This will
+      detect the type of arguments given to it and run either the
+      <literal>&lt;compile-schematorn-file&gt;</literal> macro if a
+      single file is supplied or the
+      <literal>&lt;compile-schematron-fileset&gt;</literal> macro if a
+      fileset (or folder of files) has been given. Note that in the
+      latter case the <quote>-fileset</quote> macro will call the
+      <quote>-file</quote> macro in a loop over all files in the
+      fileset. This pattern is typical of all macros that can take
+      either a file or a fileset specification.
+    </para>
+    <para>
+      Macros will also use other macros in the library as required. For
+      example, almost all macros use macros from the
+      <emphasis role="strong">attr-checks.xml</emphasis> module to
+      provide additional checks on their arguments, beyond that provided
+      by the Ant <literal>&lt;macrodef&gt;</literal>facility itself.
+    </para>
+    <para>
+      Although considerable use of the Ant Contrib
+      <literal>&lt;for&gt;</literal> macro is used (simply due to the
+      utility it provides) an attempt has been made to avoid other logic
+      constructs such as the
+      <literal>&lt;if&gt;/&lt;then&gt;/&lt;else&gt;</literal> macros. As
+      Ant is generally declarative in nature rather than imperative,
+      extensive use has been made of its built in
+      <quote><link xlink:href="https://ant.apache.org/manual/ifunless.html">if/unless</link></quote>
+      attributes.
+    </para>
+    <para>
+      As an example of macro construction consider the
+      <literal>&lt;xspec-file&gt;</literal> macro below:
+    </para>
+    <programlisting>
+&lt;macrodef
+    name=&quot;xspec-file&quot;
+    description=&quot;Run a single XSpec file&quot;&gt;
+
+    &lt;attribute
+        name=&quot;file&quot;
+        default=&quot;&quot;
+        description=&quot;XSpec file&quot;/&gt;
+
+    &lt;attribute
+        name=&quot;test&quot;
+        default=&quot;&quot;
+        description=&quot;Type of test to run [xslt,xquery,schematron]&quot;/&gt;
+
+    &lt;attribute
+        name=&quot;coverage&quot;
+        default=&quot;false&quot;
+        description=&quot;Output test coverage report [true,false]&quot;/&gt;
+
+    &lt;attribute
+        name=&quot;junit&quot;
+        default=&quot;false&quot;
+        description=&quot;Output JUnit report [true,false]&quot;/&gt;
+
+    &lt;sequential&gt;
+
+        &lt;!-- fail if required attributes not set --&gt;
+        &lt;check-attr-set macro=&quot;xspec-file&quot; name=&quot;file&quot; value=&quot;@{file}&quot;/&gt;
+
+        &lt;check-attr-list macro=&quot;xspec-file&quot; name=&quot;test&quot; value=&quot;@{test}&quot; list=&quot;xslt,xquery,schematron&quot;/&gt;
+
+        &lt;check-attr-bool macro=&quot;xspec-file&quot; name=&quot;coverage&quot; value=&quot;@{coverage}&quot;/&gt;
+        &lt;check-attr-bool macro=&quot;xspec-file&quot; name=&quot;junit&quot; value=&quot;@{junit}&quot;/&gt;
+
+        &lt;!-- find XSpec command --&gt;
+        &lt;check-exe-path property=&quot;xspec.exe&quot; unix=&quot;xspec.sh&quot; windows=&quot;xspec.bat&quot; unless:set=&quot;xspec.exe&quot;/&gt;
+
+        &lt;!-- get test type --&gt;
+        &lt;local name=&quot;test.@{test}&quot;/&gt;
+        &lt;property name=&quot;test.@{test}&quot; value=&quot;true&quot;/&gt;
+
+        &lt;!-- run tidy --&gt;
+        &lt;property name=&quot;exec.failonerror&quot; value=&quot;true&quot;/&gt;
+
+        &lt;exec
+            executable=&quot;${xspec.exe}&quot;
+            failonerror=&quot;${exec.failonerror}&quot;&gt;
+            &lt;arg line=&quot;-t&quot; if:set=&quot;test.xslt&quot;/&gt;
+            &lt;arg line=&quot;-q&quot; if:set=&quot;test.xquery&quot;/&gt;
+            &lt;arg line=&quot;-s&quot; if:set=&quot;test.schematron&quot;/&gt;
+            &lt;arg line=&quot;-c&quot; if:true=&quot;@{coverage}&quot;/&gt;
+            &lt;arg line=&quot;-j&quot; if:true=&quot;@{junit}&quot;/&gt;
+            &lt;arg line=&quot;@{file}&quot;/&gt;
+        &lt;/exec&gt;
+
+    &lt;/sequential&gt;
+&lt;/macrodef&gt;
+</programlisting>
+    <para>
+      All <literal>&lt;macrodef&gt;</literal> elements and their related
+      <literal>&lt;attribute&gt;</literal>/<literal>&lt;element&gt;</literal>
+      children have <quote>description</quote> attributes—these are used
+      to generate documentation via the
+      <emphasis role="strong">extract-markdown.xml</emphasis> module. In
+      the first section, the attributes are checked: the file name
+      cannot be blank, the type of test must be one of
+      <quote>xslt</quote>, <quote>xquery</quote> or
+      <quote>schematron</quote> and the values of the
+      <quote>coverage</quote> and <quote>junit</quote> attributes must
+      be <quote>true</quote> or <quote>false</quote>. The various
+      <literal>&lt;check-attr-...&gt;</literal> macros will fail the
+      build if these conditions are not met. (Note that Ant itself will
+      only check if attributes are required or optional, and will apply
+      their default values. It cannot check attribute types or lists of
+      allowed values). Next the system’s <emphasis>path</emphasis> is
+      checked for the presence of the XSpec executable (this is
+      <quote>xspec.sh</quote> in Unix based systems and
+      <quote>xspec.bat</quote> for Windows). Again the build will fail
+      if the executable cannot be found.
+    </para>
+    <para>
+      Next a property is set whose name is based on the test type. So,
+      therefore, if the <quote>xquery</quote> test was selected the
+      <quote>test.xquery</quote> property will be created. This is used
+      in the <literal>&lt;exec&gt;</literal> macro to set the correct
+      command line arguments: the <quote>test.xslt</quote> and
+      <quote>test.schematron</quote> properties will not exist and so
+      the <quote>-t</quote> and <quote>-s</quote> arguments will not be
+      included in the call. This pattern is used extensively in the
+      XPantS library to keep the code readable (although it does require
+      familiarity with how Ant properties work).
+    </para>
+  </section>
+  <section xml:id="xpants-contents">
+    <title>XPantS contents</title>
+    <para>
+      These macros have been developed as they were required, especially
+      the external tool wrappers, but they can be divided into three
+      broad categories.
+    </para>
+    <para>
+      The XML macros include:
+    </para>
+    <itemizedlist spacing="compact">
+      <listitem>
+        <para>
+          <literal>apply-transform</literal>: Applies an XSLT (or a
+          series of XSLTs) to a file or fileset. As might be expected
+          this is a wrapper around the built in Ant
+          <literal>&lt;xslt&gt;</literal> task but with some convenience
+          features.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal>compile-schematron</literal>: Compiles a Schematron
+          file (or files) into an XSLT using the ISO Schematron
+          transforms, although the individual stylesheets that perform
+          the various stages of the compilation can be overridden if
+          required. Standard XPantS library XSLTs can also be applied
+          directly, e.g. to remove comments.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal>convert-schema</literal>: A wrapper around the
+          <link xlink:href="http://www.thaiopensource.com/relaxng/trang.html">Trang</link>
+          converter (and consequently has the same limitations).
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal>validate-instance</literal>: A wrapper around Ant’s
+          <literal>&lt;xmlvalidate&gt;</literal> and
+          <literal>&lt;schemavalidate&gt;</literal> tasks, along with a
+          wrapper around the
+          <link xlink:href="http://www.thaiopensource.com/relaxng/jing.html">Jing</link>
+          validator for RNG/RNC instance files. This allows the user to
+          use the same macro to validate an instance against any type of
+          schema.
+        </para>
+      </listitem>
+    </itemizedlist>
+    <para>
+      Some of the more utility based macros include:
+    </para>
+    <itemizedlist spacing="compact">
+      <listitem>
+        <para>
+          <literal>attr-checks</literal>: These macros are mainly used
+          by the rest of the library as part of it’s parameter checking
+          and error handling.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal>compare-files</literal>: Compare files (or filesets)
+          using either the <emphasis>diff</emphasis> tool or
+          <link xlink:href="https://www.deltaxml.com">DeltaXML</link>
+          (which must also be installed).
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal>deploy-files</literal>: Deploys a set of files to a
+          target. This may use the standard file system utilities
+          (i.e. the Ant <literal>&lt;copy&gt;</literal> task) but
+          options exist for using the AWS command line tool (for
+          example, deployment to an S3 bucket) or
+          <emphasis>scp</emphasis>.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal>extract-markdown</literal>: Uses XSLTs internal to
+          the library to extract Markdown documentation from Ant build
+          files, XSLT files or Schematron files. For Ant build files it
+          also adds documentation around the macros and targets the file
+          contains. XSLT file documentation is enhanced with lists of
+          templates and Schematron files have documentation for pattern,
+          rules, asserts and reports added. The output is Markdown, so
+          may need to be converted into HTML (e.g. using the
+          <literal>&lt;pandoc&gt;</literal> macro, below).
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal>file-utils</literal>: These macros are mainly used by
+          the rest of the library as part of it’s parameter checking and
+          error handling.
+        </para>
+      </listitem>
+    </itemizedlist>
+    <para>
+      A number of external (command line based) tools also have Ant
+      macro wrappers:
+    </para>
+    <itemizedlist spacing="compact">
+      <listitem>
+        <para>
+          <literal>aws</literal>: A wrapper around the AWS command line
+          tool. It also includes a macro that uses the <quote>s3
+          sync</quote> command, which is used by
+          <literal>&lt;deploy-files&gt;</literal>.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal>git</literal>: These macros provide access to the
+          <emphasis>git</emphasis> command line functionality.
+          Convenience functions are included for getting the current
+          branch name, getting the current status, checking for
+          outstanding commits (and failing the build if there are any)
+          and checking if the current branch matches a particular
+          pattern (e.g. failing the build if the current branch is not
+          &quot;release).
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal>pandoc</literal>: A wrapper for the
+          <link xlink:href="http://pandoc.org">Pandoc</link> document
+          converter. Most of the important options are available as
+          arguments to the <literal>&lt;pandoc&gt;</literal> macro.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal>python</literal>: A wrapper for the
+          <emphasis>python</emphasis> command to run local scripts or
+          installed modules. Also includes macros to build and install
+          Python Package Index (PyPi) modules.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal>ssh</literal>: Wrappers for the
+          <emphasis>ssh</emphasis> (Secure Shell) and
+          <emphasis>scp</emphasis> commands. Also used by the
+          <literal>&lt;deploy-files&gt;</literal> macro.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal>tidy</literal>: A wrapper around the
+          <link xlink:href="http://www.html-tidy.org">HTML Tidy</link>
+          application.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal>version-number</literal>: One of the newer macros,
+          this contains a number of functions to update version numbers
+          that conform to the Semantic Versioning standard.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <literal>xspec</literal>: This is simply a wrapper around the
+          <emphasis role="strong">xspec.bat</emphasis>/<emphasis role="strong">xspec.sh</emphasis>
+          scripts provided by the XSpec install (so it should be on the
+          path).
+        </para>
+      </listitem>
+    </itemizedlist>
+    <para>
+      The
+      <link xlink:href="https://ant.apache.org/antlibs/antunit/">AntUnit</link>
+      testing framework is gradually being applied to more of the macros
+      as development time permits. This should increase the stability
+      and quality of the library.
+    </para>
+  </section>
+  <section xml:id="build-file-example">
+    <title>Build file example</title>
+    <para>
+      In this example a project’s <literal>&lt;deploy&gt;</literal> task
+      first checks that there are no outstanding commits. Then it checks
+      that the current <emphasis>git</emphasis> branch matches
+      <quote>release/v<emphasis>.</emphasis></quote>–this may be meeting
+      some team or DevOps requirement. Only then does it deploy the
+      files.
+    </para>
+    <programlisting>
+&lt;target name=&quot;deploy&quot;&gt;
+    &lt;git-check-outstanding-commits/&gt;
+    &lt;git-check-branch pattern=&quot;release/v*.*&quot;/&gt;
+    &lt;deploy-files target=&quot;\\myfile.share\assets&quot;&gt;
+        &lt;fileset dir=&quot;build&gt;
+            &lt;include name=&quot;*.xml&quot;/&gt;
+        &lt;/fileset&gt;
+    &lt;/deploy-files&gt;
+&lt;/target&gt;
+</programlisting>
+  </section>
+</section>
+<section xml:id="conclusion">
+  <title>Conclusion</title>
+  <para>
+    Although Ant might be considered an old technology by modern
+    standards it can still be employed to good effect. The creation of a
+    standard set of macros has allowed the content delivery team to
+    drastically improve their efficiency, the quality of their code and
+    their interaction with other teams involved in content production by
+    allowing them to concentrate on actual content issues rather than
+    the minutiae of how they build things. It has also positioned the
+    team to be more in line with current CI/CD (Continuous
+    Integration/Continuous Delivery) models that the company is starting
+    to adopt. It is, however, important to note that teams must have a
+    clear idea of how they want to work—in the form of the Development
+    Policy, for example, or a similar document—before factoring this
+    into build files and configurations themselves.
+  </para>
+  <para>
+    A number of the lessons learned through the development of the
+    team’s Ant library are now available in the XPantS library. It is
+    hoped that this will prove useful to the general community.
+  </para>
+</section>
+<bibliography>
+    <bibliomixed xml:id="id-apache-ant">"Apache Ant", https://ant.apache.org</bibliomixed>
+    <bibliomixed xml:id="id-schematron">"Schematron", http://schematron.com</bibliomixed>
+    <bibliomixed xml:id="id-semver">"Semantic Versioning 2.0.0", https://semver.org</bibliomixed>
+    <bibliomixed xml:id="id-docbook">"DocBook.org", https://docbook.org</bibliomixed>
+    <bibliomixed xml:id="id-markdown">"Markdown: Syntax", https://daringfireball.net/projects/markdown/syntax</bibliomixed>
+    <bibliomixed xml:id="id-ivy">"Apache Ivy", http://ant.apache.org/ivy/</bibliomixed>
+    <bibliomixed xml:id="id-maven">"Apache Maven Project", https://maven.apache.org</bibliomixed>
+    <bibliomixed xml:id="id-xpants">"XML - Practical Ant Scripts", https://github.com/encodis/xpants</bibliomixed>
+    <bibliomixed xml:id="id-xspec">"XSpec", https://github.com/xspec/xspec</bibliomixed>
+    <bibliomixed xml:id="id-antcontrib">"Ant Contrib Tasks", http://ant-contrib.sourceforge.net</bibliomixed>
+    <bibliomixed xml:id="id-saxon">"SAXON: The XSLT and XQuery Processor", https://www.saxonica.com/products/products.xml</bibliomixed>
+    <bibliomixed xml:id="id-xmlresolver">"XML Resolver", http://www.java2s.com/Code/Jar/x/Downloadxmlresolverjar.htm</bibliomixed>
+    <bibliomixed xml:id="id-trang">"Trang: Multi-format schema converter based on RELAX NG", http://www.thaiopensource.com/relaxng/trang.html</bibliomixed>
+    <bibliomixed xml:id="id-jing">"Jing: A RELAX NG validator in Java", http://www.thaiopensource.com/relaxng/jing.html</bibliomixed>
+    <bibliomixed xml:id="id-aws">"AWS Command Line Interface", https://aws.amazon.com/cli/</bibliomixed>
+    <bibliomixed xml:id="id-git">"Git", https://github.com/git/git</bibliomixed>
+    <bibliomixed xml:id="id-pandoc">"Pandoc: a universal document converter", https://pandoc.org/</bibliomixed>
+    <bibliomixed xml:id="id-python">"Python", https://www.python.org/</bibliomixed>
+    <bibliomixed xml:id="id-ssh">"SSH (Secure Shell)", https://www.ssh.com/ssh/</bibliomixed>
+    <bibliomixed xml:id="id-htmltidy">"HTML Tidy", http://www.html-tidy.org/</bibliomixed>
+    <bibliomixed xml:id="id-deltaxml">"DeltaXML", https://www.deltaxml.com"</bibliomixed>
+    <bibliomixed xml:id="id-antunit">"Apache AntUnit", https://ant.apache.org/antlibs/antunit/</bibliomixed>
+</bibliography>
+</article>

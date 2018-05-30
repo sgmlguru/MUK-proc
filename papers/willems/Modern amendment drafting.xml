@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="utf-8"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0" xml:lang="en">
+	<info>
+	    <title>Modern amendment drafting - The road to XML</title>
+		<author>
+			<personname>Bert Willems</personname>
+			<email>bert.willems@fontoxml.com</email>
+			<uri>https://fontoxml.com</uri>
+			<personblurb>
+				<para>As the product architect of FontoXML, a web-based authoring tool, it is Bert's job to find the perfect balance between technology and user experience. He is passionate about information &amp; IT architecture and likes to solve problems.</para>
+			</personblurb>
+			<affiliation>
+				<jobtitle>Software Architect</jobtitle>
+				<orgname>FontoXML</orgname>
+			</affiliation>
+		</author>
+		<keywordset>
+		    <keyword>XML</keyword>
+		    <keyword>Structured Authoring</keyword>
+			<keyword>Conditional Random Fields</keyword>
+		    <keyword>Machine Learning</keyword>
+		    <keyword>Law drafting</keyword>
+		    <keyword>Amendments</keyword>
+		</keywordset>
+		<abstract>
+		    <para>This paper reports on an experiment to build a system which aids in the drafting of amendment documents. The system provides a mechanism to help validate the correctness of amendments. Furthermore, the system is able to semi-automatically sort the amendments in voting order and simulate the effects of amendments on the law. The proposed implementation is based on XML technology, an XML editor and machine learning.</para>
+		</abstract>
+	</info>
+    
+    <section>
+        <title>Context</title>
+        <para>Disclaimer: The following is a simplified representation of reality intended to provide just enough context to the reader of this paper. It is not intended as a comprehensive introduction to legislation and parliamentary procedures.</para>
+        <para>New legislation is often introduced by augmenting an existing law rather than introducing an entirely new law. This process is called "amending" the law. An amendment is a formal or official change made to a law, contract, constitution, or other legal document. It is based on the verb to amend, which means: to change. Amendments can add, remove, or update parts of these legal documents.</para>
+        <para>For example:</para>
+        <informalexample>
+            <para>3.9 In paragraph A57C(b)(vi), for "his", substitute "their".</para>
+        </informalexample>
+        <para>This amendment replaces the word "his" with "their" in paragraph A57C(b)(vi).</para>
+        <para>The process of making a change to the law starts with a deputy (a member of the parliamentary commission and/or the parliament) writing an initial draft of the amendment. This initial draft is sent to the drafting office. The drafting office’s job is to ensure that each legal document (including amendments) is well written, unambiguous and consistent with the other legal document(s) in the legal system. It is often the case that they make changes to the draft or they need to make changes to other parts of the law in order to keep the legal system consistent. This often requires discussion with the deputy and new versions of the draft go back and forth.</para>
+        <para>The current process in the parliaments (at least in Italy and the Netherlands) is still very manual: sometimes the amendments are written on paper which needs to be digitalized first. Other times the amendments are written in Microsoft Word. In both cases, the amendments need to be converted before they can be published. The amendments are often published as PDF files or as HTML on a website.</para>
+        <para>Both the Dutch and the Italian parliament use digital workflows and tools, for example, to register amendments. The content of those systems is still primarily Word-based. Adopting an XML-first workflow would eliminate the need for conversion and would enable a whole new suite of tools. However, introducing changes to parliamentary processes is a time-consuming task, often requiring a change in the statute.</para>
+    </section>
+    
+    <section>
+        <title>Introduction</title>
+        <para>This paper reports on an experiment testing whether it is possible to create an XML authoring system which pro-actively aids during the drafting lifecycle of amendment documents, from initial draft to voting. The goal of the system is to provide a user interface (UI) that is quite similar to Microsoft Word but it is XML based. Having an XML-first workflow reduces the conversion burden but that is not something the authors of amendment documents are concerned with. Therefore, in order to get users to adopt the new system, it must provide clear benefits to those users.</para>
+        <orderedlist spacing="compact">
+            <para>The benefits realized during the experiment are:</para>
+            <listitem>
+                <para>Assisted checking whether an amendment is correct.</para>
+            </listitem>
+            <listitem>
+                <para>Ordering amendments for voting.</para>
+            </listitem>
+            <listitem>
+                <para>Simulation of the effect of an amendment to the actual law.</para>
+            </listitem>
+        </orderedlist>
+        <para>The scope of the experiment is to test whether it is possible to realize those benefits in a software system. The first part of the system is a UI where users write the content of an amendment document. The UI is implemented using a WYSIWYG XML editor. The second part of the system provides real-time warnings and the on-demand simulation in case there are no warnings.</para>
+        
+        <section>
+            <title>Validating amendments</title>
+            <para>Although the final judgement of whether an amendment is considered valid and correct must be left to humans at all times, the system assists where it can. For example, if a user writes an amendment to change article X in law Y, the system can test whether article X actually exists in law Y and warn the user if it doesn’t. The system can also determine whether the basic components (location and action) of an amendment are actually present and give a warning in case they’re missing.</para>
+        </section>
+        
+        <section>
+            <title>Ordering amendments</title>
+            <para>The goal of ordering amendments is to reduce the amount of voting that needs to happen by considering amendments that have a bigger impact first. The ordering of the amendments is rule-based. The rules depend on the location of the target of the amendment and the amendment action.</para>
+            <orderedlist spacing="compact">
+                <para>Consider the following (abstract) rule set:</para>
+                <listitem>
+                    <para>Amendments are first grouped and sorted by article.</para>
+                </listitem>
+                <listitem>
+                    <para>Within each sorted group, sort the amendments from those with the biggest impact to the ones with the smallest impact.</para>
+                </listitem>
+            </orderedlist>
+            <informalexample>
+                <para>For example:</para>
+                <para>Consider amendments A1 and A2. A1 proposes to change a single word in article 1 and A2 proposes to delete article 1. Since the impact of A2 is much bigger than A1, and in fact "contains" A1, it should be first in the list.</para>
+            </informalexample>
+            <para>The system should warn the user in case the ordering in the amendment document is different from the ordering prescribed by the rule set.</para>
+        </section>
+        
+        <section>
+            <title>Simulation</title>
+            <para>The goal of the simulation is to <emphasis>simulate the effect</emphasis> of the change described in an amendment to <emphasis>the original text</emphasis>. In order to do so, the system needs to be able to interpret the amendment and apply it to the original text.</para>
+            <para>Via this simulation, the user gets a real-time preview of the result of an amendment. This enables him/her to see whether the intended effect is actually achieved.</para>
+        </section>
+ 
+    </section>
+    
+    <section>
+        <title>Problem definitions</title>
+        <para>The system is modeled around four main problems:</para>
+        
+        <section xml:id="problem-1" xreflabel="Problem 1">
+            <title>Problem 1: Segment amendments in an amendments document</title>
+            <para>An amendment document may contain multiple amendments. The system must be able to recognize the start &amp; end position of each individual amendment because subsequent problems work on the individual amendment level.</para>
+        </section>
+        
+        <section xml:id="problem-2" xreflabel="Problem 2">
+            <title>Problem 2: Recognize the location, action and operand information</title>
+            <para>Each amendment essentially describes a change to the original text. For the next problems, it is required for the system to understand the nature of the change. Essentially, it needs a model of each change.</para>
+            <orderedlist spacing="compact">
+                <para>The model requires:</para>
+                <listitem>
+                    <para>Location information; Where does the change need to be made in the original text.</para>
+                </listitem>
+                <listitem>
+                    <para>Action information; How does the original text need to be modified.</para>
+                </listitem>
+                <listitem>
+                    <para>Operand information; Depending on the action information.</para>
+                </listitem>
+            </orderedlist>
+            <para>This is essentially an information extraction problem.</para>
+        </section>
+        
+        <section xml:id="problem-3" xreflabel="Problem 3">
+            <title>Problem 3: Order the amendments according to the rule set</title>
+            <para>The ordering algorithm is defined as a rule set that takes the model recognized by <xref xlink:href="#problem-2"/> as an input. Essentially this problem can be represented as a topological sort with constraints.</para>
+        </section>
+        
+        <section xml:id="problem-4" xreflabel="Problem 4">
+            <title>Problem 4: Generate the simulation</title>
+            <para>The simulation can be modelled as a transformation on the original text taking the result of <xref xlink:href="#problem-2"/> as an input for the transformation.</para>
+            <orderedlist spacing="compact">
+                <para>Subproblems:</para>
+                <listitem>
+                    <para>Resolve the original text being modified.</para>
+                </listitem>
+                <listitem>
+                    <para>Find the location in the original text based on the location information.</para>
+                </listitem>
+                <listitem>
+                    <para>Apply the action and operands.</para>
+                </listitem>
+                <listitem>
+                    <para>Create a rendition of the result.</para>
+                </listitem>
+            </orderedlist>
+        </section>
+ 
+    </section>
+    
+    <section>
+        <title>Implementation</title>
+        <para>The architecture of the system is based on the Apache UIMA architecture <citation>Lally and Ferrucci 2004</citation>. It is a component software architecture for the development of analytics for the analysis of unstructured information. This allows the problems introduced in the previous section to be decomposed into sub-problems, each which its own solution forming a system that can be quickly adapted to other problems by swapping analytic components in and out. It essentially forms a pipeline through which information flows. Each stage adds additional information in the form of annotations. The implementation takes XML as an input instead of unstructured text. The annotations can be on both the character level, DOM level as well as on both levels simultaneously.</para>
+        <para>An example of an analysis pipeline would be to use Regular Expressions to extract information which is then fed into a second stage where a machine learning algorithm could take the matches as input features.</para>
+        <para>The following sections describe how each previously listed problem is solved.</para>
+        
+        <section xml:id="solution-1" xreflabel="Segmenting amendments (Problem #1)">
+            <title>Segmenting amendments (Problem #1)</title>
+            <para>Any given amendment document is likely to contain multiple amendments. Sometimes on the same law but is not uncommon to update multiple laws with one set of amendments. Think of an update of multiple laws as a database transaction happening on multiple tables; you want to preserve the referential integrity (or the integrity of the legal system in this case).</para>
+            <para>The goal of this stage in the pipeline is the recognize where each individual amendment starts and where it ends. The result of the segmentation can be stored in the XML document resulting in a richer XML structure.</para>
+            <orderedlist spacing="compact">
+                <para>Looking at this problem closer, it is composed of two tasks:</para>
+                <listitem>
+                    <para>Distinguish between the preamble, postamble and the body (containing the amendments we care about).</para>
+                </listitem>
+                <listitem>
+                    <para>Distinguish between individual amendments which are often grouped in articles.</para>
+                </listitem>
+            </orderedlist>
+            <para>We treat these problems as a sequence classification problem. We trained 2 models implemented using the Conditional Random Fields (CRF) algorithm <citation>Lafferty, Andrew and Fernando 2001</citation>. According to the research performed by Fuchun Peng and Andrew McCallum <citation>Peng and Andrew 2004</citation>, CRFs work well for extracting structured information from research papers, achieving good performance. Although amendments are different from research papers, both are generally well-structured and some of the tasks, including segmentation overlap. This algorithm is also used in similar implementations like GROBID <citation>GROBID 2008-2017</citation> and MALLET <citation>McCallum 2002</citation>.</para>
+            
+            <section>
+                <title>Linear Chain Conditional Random Fields (CRF)</title>
+                <para>We’ll treat some of the problems as sequence classification problems. We’ll use a well-known algorithm called Conditional Random Fields (CRFs) to solve these problems.</para>
+                <para>According to Wikipedia:</para>
+                <blockquote>
+                    <para>CRFs are a class of statistical modeling method often applied in pattern recognition and machine learning and used for structured prediction. CRFs fall into the sequence modeling family. Whereas a discrete classifier predicts a label for a single sample without considering "neighboring" samples, a CRF can take context into account; e.g., the linear chain CRF (which is popular in natural language processing) predicts sequences of labels for sequences of input samples.</para>
+                    <para>CRFs are a type of discriminative undirected probabilistic graphical model. It is used to encode known relationships between observations and construct consistent interpretations. It is often used for labeling or parsing of sequential data, such as natural language processing or biological sequences and in computer vision. Specifically, CRFs find applications in POS Tagging, shallow parsing, named entity recognition, gene finding and peptide critical functional region finding, among other tasks, being an alternative to the related hidden Markov models (HMMs).</para>
+                </blockquote>
+                <para>To get a sense of how CRFs work, consider the sentence "I’m at home.". Now consider the sentence "I’m at kwaak.". Based on both sentences one intuitively understands that "kwaak" is some sort of location because we know that "home" is also a location and the words appear in the same context.</para>
+                <para>CRFs take into account the context in which a word appears and some other features like "is the text made up out of numbers?". More precisely: an input sequence of observed variables <emphasis>X</emphasis> represents a sequence of observations (the words with the associated features which make up a sentence) and <emphasis>Y</emphasis> represents a hidden (or unknown) state variable that needs to be inferred given the observations (the labels). The <emphasis>Y<subscript>i</subscript></emphasis> are structured to form a chain, with an edge between each <emphasis>Y<subscript>(i-1)</subscript></emphasis> and <emphasis>Y<subscript>i</subscript></emphasis>. As well as having a simple interpretation of the <emphasis>Y<subscript>i</subscript></emphasis> as "labels" for each element in the input sequence, this layout admits efficient algorithms for:</para>
+                <orderedlist spacing="compact">
+                    <listitem>
+                        <para>model training, learning the conditional distributions between the <emphasis>Y<subscript>i</subscript></emphasis> and feature functions from some corpus of training data.</para>
+                    </listitem>
+                    <listitem>
+                        <para>decoding, determining the probability of a given label sequence <emphasis>Y</emphasis> given <emphasis>X</emphasis>.</para>
+                    </listitem>
+                    <listitem>
+                        <para>inference, determining the most likely label sequence <emphasis>Y</emphasis> given <emphasis>X</emphasis>.</para>
+                    </listitem>
+                </orderedlist>
+                <para>For a more detailed introduction to CRFs, see An Introduction to Conditional Random Fields for Relational Learning <citation>Sutton and McCallum 2012</citation>.</para>
+                <para>For the implementation of the CRFs, an implementation based on CRFSharp <citation>Fu 2017</citation> is used. CRFSharp is a .NET Framework 4.0 implementation of Conditional Random Fields written in C#. Its main algorithm is similar to CRF++ written by Taku Kudo <citation>Kudo 2017</citation>. It encodes model parameters by L-BFGS. Moreover, it has many significant improvements over CRF++, such as totally parallel encoding and optimized memory usage. The CRFSharp implementation was modified to target the .NET Standard 2.0 to allow cross-platform usage in .NET Core applications.</para>
+            </section>
+            
+            <section>
+                <title>Model description</title>
+                <para>The segmentation model is split into two smaller models. The first model segments the amendment text from the surrounding text like introductory and closing words. The second model segments individual articles and the amendments within them.</para>
+                <orderedlist spacing="compact">
+                    <para>The most notable extracted features are:</para>
+                    <listitem>
+                        <para>Whether the text is inside a heading;</para>
+                    </listitem>
+                    <listitem>
+                        <para>Whether the text starts with a list marker, e.g.: 1., a., 1), etc.;</para>
+                    </listitem>
+                    <listitem>
+                        <para>Whether the sentence matches a Regular Expression testing for article titles.</para>
+                    </listitem>
+                </orderedlist>
+                <orderedlist spacing="compact">
+                    <para>The tags used are:</para>
+                    <listitem>
+                        <para>preamble</para>
+                    </listitem>
+                    <listitem>
+                        <para>heading</para>
+                    </listitem>
+                    <listitem>
+                        <para>paragraph</para>
+                    </listitem>
+                    <listitem>
+                        <para>amendments</para>
+                    </listitem>
+                    <listitem>
+                        <para>article</para>
+                    </listitem>
+                    <listitem>
+                        <para>clause (clause of an article, can be nested)</para>
+                    </listitem>
+                    <listitem>
+                        <para>postamble</para>
+                    </listitem>
+                </orderedlist>
+                <para>The first model is evaluated on the entire text of the amendments documents. The result of the first segmentation is then fed into the evaluation of the second model which segments the individual articles and amendments within them.</para>
+                <para>Both models are trained using Conditional Random Fields on a training. The corpus size of the text segmentation model is 35 documents. The corpus size of the amendments segmentation model is 40 documents. Both corpora are drawn from published Dutch amendment documents and tagged by hand. Both models were trained with a maximum iteration count of 1000 using L2 regularization running on 8 threads in parallel. The training of the text segmentation model took 4 minutes while training the article model takes around 6 minutes on a laptop with an Intel i7-4702HQ processor and 16GB of RAM. Training was clearly CPU bound; the 8 logical processors were 100% utilized. Memory usage was around 1.5 GB. Training speed can possibly be improved using the GPU rather than the CPU. However, this was not explored.</para>
+                <para>The trained models are evaluated against previously unseen examples. Both models are scored on the overall performance of all their labels. Both models are scored using the accuracy and F<subscript>1</subscript> metrics which are common scoring metrics.</para>
+                <table frame="all" tocentry="1" xml:id="table-evaluation-results">
+                    <title>Evaluation results</title>
+                    <tgroup cols="3" align="left" colsep="1" rowsep="1">
+                        <colspec colname="c1"/>
+                        <colspec colname="c2"/>
+                        <colspec colname="c3"/>
+                        <thead>
+                            <row>
+                                <entry>
+                                    <para>Model name</para>
+                                </entry>
+                                <entry>
+                                    <para>Accuracy</para>
+                                </entry>
+                                <entry>
+                                    <para>F<subscript>1</subscript></para>
+                                </entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry>
+                                    <para>Text segmentation</para>
+                                </entry>
+                                <entry>
+                                    <para>99,53%</para>
+                                </entry>
+                                <entry>
+                                    <para>99,72%</para>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <para>Amendment segmentation</para>
+                                </entry>
+                                <entry>
+                                    <para>95,36%</para>
+                                </entry>
+                                <entry>
+                                    <para>95,31%</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+                <para>As seen in <xref xlink:href="#table-evaluation-results"/>, the models are quite accurate. This is mostly due to the predictable and precise nature of the amendment documents.</para>
+                <para>The result of the evaluation of both models is fed back to the UI where the user sees a suggestion to apply markup an entire article by pressing one button. This UI allows the user to make corrections in case the model did not predict the correct structure.</para>
+            </section>
+            
+        </section>
+        
+        <section xml:id="solution-2" xreflabel="Recognizing location, action and operand information (Problem #2)">
+            <title>Recognizing location, action and operand information (Problem #2)</title>
+            <para>For each amendment, the location, action and operation information must be extracted from the raw amendment text so the system can reason about it. The location information contained details on where the change should be effectuated with respect to the law(s) being modified.</para>
+            <itemizedlist spacing="compact">
+                <para>This information includes for example:</para>
+                <listitem>
+                    <para>The name of the law;</para>
+                </listitem>
+                <listitem>
+                    <para>The number of the article;</para>
+                </listitem>
+                <listitem>
+                    <para>The number of the clause;</para>
+                </listitem>
+                <listitem>
+                    <para>The position in the text;</para>
+                </listitem>
+            </itemizedlist>
+            <para>The action and operand information are related. The action describes the type of modification. For example, a replacement of a word in the text or the insertion of a new clause. The required operand information depends on the action. For example, a word replacement requires the string to match and the string to replace each match with. A deletion of a clause does not require any further info.</para>
+            <para>The implementation uses the analysis pipeline architecture again in order to divide the problem into sub-problems. The first stage of the pipeline uses lexicons to detect names of laws and common action words like "substitute".</para>
+            <para>The second stage of this analysis pipeline is a modified version of Stanford TokensRegex <citation>Chang and Manning 2014</citation>. TokensRegex is a generic framework for defining patterns over text (sequences of tokens) and mapping it to semantic annotations. TokensRegex emphasizes describing the text as a sequence of tokens (words, punctuation marks, etc.), which may have additional annotations, and writing patterns over those tokens, rather than working at the character level, as with standard regular expression packages.</para>
+            <para>An example of a rule would be:</para>
+            <programlisting>'for' '"' (:&lt;left-op&gt;[]+) '"' ',' [have(app:action)] '"' (:&lt;right-op&gt;[]+) '"'</programlisting>
+            <para>This pattern matches the string: <emphasis>for "his", substitute "their"</emphasis>. The pattern consists of literal tokens, ‘for’ and ‘"’ which must be matched exactly. The pattern also contains named capture groups (left-op and right-op) to extract the operands. Finally, the pattern contains a token which must have an app:action annotation. The action annotation is set in the previous stage of the pipeline using a lexicon. The extraction rules were written by hand.</para>
+            <para>A notable extension made to the TokensRegex syntax is to also allow XPath expressions to be used within the expression. This extension allows rules which take the XML tagging into account. This feature is extensively used to allow users to manually tag something that has not been recognized automatically. Consider the following expression:</para>
+            <programlisting>(:&lt;left-op&gt;'"' []+ '"' | [matches-xpath(‘ancestor-or-self::operand’)]+)</programlisting>
+            <para>This expression would match one or more token which make up either a quoted string -or- tokens which are wrapped in an <tag class="emptytag">operand</tag> element.</para>
+            <para>The third stage of this analysis pipeline disambiguates and combines the extracted annotations into an amendment graph representing all the extracted information of each individual amendment. This graph represents both the location information as well as the action information. It is convenient to combine both types of information into a single graph because some of the information overlaps. For example, the word to replace is both location information (which word) as well as an action operand.</para>
+            <para>The final stage validates the constructed amendment graph. It for example, tests whether the target does actually exist in law being amended. It also tests the amendment for having at least one target and one action. More details of the location validation are provided in the section <xref xlink:href="#solution-4"/>.</para>
+        </section>
+        
+        <section xml:id="solution-validating-amendments" xreflabel="Validating amendments">
+            <title>Validating amendments</title>
+            <para>In section <xref xlink:href="#solution-2"/> it is shown how a graph is constructed and validated. The result of that validation is shown in the UI as well as the graph in the form of a table of extracted information.</para>
+            <figure xml:id="figure-validation-errors" pgwide="0">
+                <title>Validation warnings</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata align="center" fileref="validation-errors.png" scalefit="1" width="100%" contentdepth="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+            <para>See <xref xlink:href="#figure-validation-errors"/>: on the left-hand side you’ll see the amendment document. The amendment in clause B is valid, meaning all the location- and action information was extracted and validated successfully. Clause B# is invalid because article 2000 does not exist in the target law. This is signaled by the red squiggle underline. Clause B## is invalid because it is missing a colon after the words "vervangen door". On the right-hand side you’ll see the details of the warning for clause B##.</para>
+        </section>
+        
+        <section xml:id="solution-3" xreflabel="Ordering the amendments (Problem #3)">
+            <title>Ordering the amendments (Problem #3)</title>
+            <para>Warning: this section has not been implemented and presents only the conceptual idea of the implementation.</para>
+            <para>Ordering amendments in voting order is a time-consuming task. The order is defined by a set of rules. This problem can be solved with a topological sort with constraints. The conceptual algorithm is straightforward:</para>
+            <orderedlist spacing="compact">
+                <listitem>
+                    <para>Gather all amendments graphs extracted from the amendment document.</para>
+                </listitem>
+                <listitem>
+                    <para>Create a fictitious root node in the merged graph G<subscript>m</subscript>.</para>
+                </listitem>
+                <listitem>
+                    <para>For each graph G<subscript>a</subscript> in the gathered amendments graphs:</para>
+                    <orderedlist spacing="compact">
+                        <listitem>
+                            <para>Add to- or reuse in G<subscript>m</subscript> the location nodes in G<subscript>m</subscript> for each location part in G<subscript>a</subscript>.</para>
+                        </listitem>
+                        <listitem>
+                            <para>Add to- or reuse in G<subscript>m</subscript> the action node.</para>
+                        </listitem>
+                        <listitem>
+                            <para>Add the amendment node to G<subscript>m</subscript>.</para>
+                        </listitem>
+                    </orderedlist>
+                </listitem>
+                <listitem>
+                    <para>Assign weights to all the location and action nodes.</para>
+                </listitem>
+                <listitem>
+                    <para>Sort the amendment nodes based on the weight of the shortest path to the root node.</para>
+                </listitem>
+            </orderedlist>
+            <para>Once the amendment nodes are sorted it is easy to create the ordered list as the system thinks it should be. The system can then use that ordered list to determine whether it differs from the current ordering in the amendment document and warn the user if they differ.</para>
+            <para>The tricky part of such an implementation is not the algorithm: it is understanding the ordering rules and defining a weighting scheme based on those rules. These ordering rules are different for each legal system. It may very well be that for some systems it may not be possible to express the rules as a weighting scheme. In all cases, the final order must be left to the user.</para>
+        </section>
+        
+        <section xml:id="solution-4" xreflabel="Simulating the effect (Problem #4)">
+            <title>Simulating the effect (Problem #4)</title>
+            <para>Simulating the effect of an amendment to the original text of the law may help users to understand its impact. This is essentially a transformation problem where the transformation is generated from the extracted information in the amendment.</para>
+            <orderedlist spacing="compact">
+                <para>The system performs the following steps accomplish this task:</para>
+                <listitem>
+                    <para>Retrieve the original law.</para>
+                </listitem>
+                <listitem>
+                    <para>Generate a transformation.</para>
+                </listitem>
+                <listitem>
+                    <para>Apply the transformation.</para>
+                </listitem>
+                <listitem>
+                    <para>Show the result to the user.</para>
+                </listitem>
+            </orderedlist>
+            <para>The first step is to retrieve the original law. Fortunately, the Dutch government publishes the laws as XML documents on the web. For the purpose of this experiment, we downloaded a couple of laws and we implemented a simple web-service to retrieve the XML content of a law based on its name. The name of the law is available in the amendment graph as described in section <xref xlink:href="#solution-2"/>. This service does not yet take time into account: in the Dutch legal system, laws change over time due to amendments becoming effective on certain dates. Figuring out the effective law is a subject of its own and is out of scope for this paper.</para>
+            <para>The second step is to generate the transformation. Essentially this step is generating an XSLT stylesheet with a single template. The templates match attribute is generated by creating an XPath expression based on the location information in the amendment graph. The body of the template is generated based on the action and operand information in the same graph. In this step, the amendment graph acts as an Abstract Syntax Tree (AST) which is compiled to XSLT.</para>
+            <para>The third step is as easy as applying the generated XSLT stylesheet on the retrieved law document.</para>
+            <para>The final step is to create a rendition of the modified law document. This rendition includes change highlighting to make it easier for a user to see what will be changed.</para>
+            <para>As seen in <xref xlink:href="#figure-amendment-preview"/>, The UI highlights the changes using familiar change representation: text in red and strikethrough is deleted and green underlined text is added. The yellow dotted border indicates the area affected by the simulated amendment.</para>
+            <figure xml:id="figure-amendment-preview" pgwide="0">
+                <title>Simulation result</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata align="center" fileref="amendment-preview.png" scalefit="1" width="100%" contentdepth="100%"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+            <para>The system does not allow the simulation to be stored and it makes it clear to the user that it is a simulation holding no legal value.</para>
+        </section>
+        
+    </section>
+    
+    <section>
+        <title>Human in the loop</title>
+        <para>Actual field testing has not been performed at this stage. However, it is already clear that the system will not be accurate in all cases. This is because human language is ambiguous, even in the case of amendments where language is tightly controlled.</para>
+        <para>In order to not come to a grinding halt, the system is designed to keep the human-in-the-loop (HITL). This effectively means the user and the system work together to accomplish the tasks. The system provides a UI through an XML editor.</para>
+        <para>If, for example, an operand seems to be missing (e.g. not recognized by the system), the user is provided with a warning. The user can determine whether the required information was indeed missing or whether the information was present but not recognized. In the latter case, the user can manually label the operand by wrapping it in the appropriate XML tag.</para>
+    </section>
+    
+    <section>
+        <title>Conclusions and further work</title>
+        <para>The experiment shows that it is possible to build a system that can aid in the drafting lifecycle of amendments using some relatively straight-forward techniques. The system includes a mechanism to validate the correctness of an amendment from a technical perspective. Furthermore, the system aids in the ordering of amendments for voting. Finally, the system provides a method for simulating the effect of an amendment on the actual law.</para>
+        <para>The main problem is reliable information extraction. Although information extraction algorithms are getting more powerful, there is still noise due to the nature of human language. With XML authoring a hybrid approach can be created where users disambiguate during the authoring process by simply applying markup in case the system gets it wrong. With the addition of XPath to the TokensRegex regular expression language, it is possible to write rules that take manual disambiguation into account.</para>
+        <para>The described Apache UIMA inspired analysis pipeline architecture works well for this kind of information extraction problems. An observation to make is the described system is essentially a compiler for human language: It takes in the text of an amendment which is essentially lexing and tokenizing. From the tokens, an amendment graph is constructed which is an Abstract Syntax Tree (AST). From the AST an XSLT stylesheet is generated which outputs the modified law. Compiler errors are shown to the user as warnings providing hints that something is not correct just yet.</para>
+        <para>From a technical perspective, the next step would be to be able to automatically learn patterns. This would make the system scalable across different legal systems without the need of rewriting all the rules from scratch every time. The idea is to augment systems like RAPIER <citation>Califf and Mooney 1997</citation> or WHISK <citation>Soderland 1999</citation> to work with the XML-aware TokensRegex.</para>
+        <para>So far, we approached this experiment from a technical perspective, although it is based on actual issues encountered in the parliaments today. The next step is to take such a system in production. For a legal system, this would mean writing more rules to deal with edge cases. The biggest hurdle are the legal implications though: some of the features described in this paper may not be used legally in some legal systems due to rules of the parliamentary procedures.</para>
+    </section>
+    
+    <bibliography>
+        <bibliomixed><abbrev>Califf and Mooney 1997</abbrev>Califf, Mary Elaine, and Raymond J. Mooney. 1997. "Relational Learning of Pattern-Match Rules for Information Extraction." CoNLL. </bibliomixed>
+        <bibliomixed><abbrev>Chang and Manning 2014</abbrev>Chang, Angel X., and Christopher D. Manning. 2014. TokensRegex: Defining cascaded regular expressions over tokens. Stanford University Technical Report, Department of Computer Science, Stanford University. <bibliomisc><link xlink:href="https://nlp.stanford.edu/pubs/tokensregex-tr-2014.pdf">https://nlp.stanford.edu/pubs/tokensregex-tr-2014.pdf</link></bibliomisc>.</bibliomixed>
+        <bibliomixed><abbrev>Fu 2017</abbrev>Fu, Zhongkai . 2017. CRFSharp. <bibliomisc><link xlink:href="https://github.com/zhongkaifu/CRFSharp">https://github.com/zhongkaifu/CRFSharp</link></bibliomisc>.</bibliomixed>
+        <bibliomixed><abbrev>GROBID 2008-2017</abbrev>2008-2017. GROBID. <bibliomisc><link xlink:href="https://github.com/kermitt2/grobid">https://github.com/kermitt2/grobid</link></bibliomisc>.</bibliomixed>
+        <bibliomixed><abbrev>Kudo 2017</abbrev>Kudo, Taku. 2017. CRF++: Yet Another CRF toolkit. <bibliomisc><link xlink:href="https://taku910.github.io/crfpp/">https://taku910.github.io/crfpp/</link></bibliomisc>.</bibliomixed>
+        <bibliomixed><abbrev>Lafferty, Andrew and Fernando 2001</abbrev>Lafferty, John D, McCallum Andrew, and Pereira Fernando. 2001. "Conditional Random Fields: Probabilistic Models for Segmenting and Labeling Sequence Data." Proceedings of the International Conference on Machine Learning. 282–289.</bibliomixed>
+        <bibliomixed><abbrev>Lally and Ferrucci 2004</abbrev>Lally, Addam, and David A. Ferrucci. 2004. "UIMA: an architectural approach to unstructured information processing in the corporate research environment." Natural Language Engineering 10: 327-348.</bibliomixed>
+        <bibliomixed><abbrev>McCallum 2002</abbrev>McCallum, Andrew Kachites. 2002. MALLET: A Machine Learning for Language Toolkit. <bibliomisc><link xlink:href="http://mallet.cs.umass.edu">http://mallet.cs.umass.edu</link></bibliomisc>.</bibliomixed>
+        <bibliomixed><abbrev>Peng and Andrew 2004</abbrev>Peng, Fuchun, and McCallum Andrew. 2004. "Accurate Information Extraction from Research Papers using Conditional Random Fields." HLT-NAACL. </bibliomixed>
+        <bibliomixed><abbrev>Soderland 1999</abbrev>Soderland, Stephen. 1999. "Learning Information Extraction Rules for Semi-Structured and Free Text." Machine Learning 34: 233-272.</bibliomixed>
+        <bibliomixed><abbrev>Sutton and McCallum 2012</abbrev>Sutton, Charles A., and Andrew McCallum. 2012. "An Introduction to Conditional Random Fields." Foundations and Trends in Machine Learning 4: 267-373.</bibliomixed>
+    </bibliography>
+    
+</article>

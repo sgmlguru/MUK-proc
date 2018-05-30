@@ -1,0 +1,363 @@
+<article version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en">
+  <title>The Wolfenbüttel emblem2rdf Pipeline</title>
+  <info>
+    <author>
+      <personname>David Maus</personname>
+      <affiliation>
+        <orgname>Herzog August Bibliothek Wolfenbüttel</orgname>
+      </affiliation>
+      <email>maus@hab.de</email>
+    </author>
+    <abstract>
+      <para>
+        The project "Emblematica Online – Linked Open Emblem Data" set out to publish the Wolfenbüttel collection of
+        emblem books as a resource for digital emblem studies. At the end we managed to publish information about
+        approximately 12300 emblems and 220 emblem books.
+      </para>
+      <para>
+        After a short introduction into the field of digital emblem studies at the Herzog August Bibliothek Wolfenbüttel
+        the article presents the challenges we faced when working with XML encoded information that dates back to the
+        beginnings of web and the infancy of today's Digital Humanities, the solutions we employed to tackle these
+        problems and how we ended up implementing a publication pipeline implemented in XProc.
+      </para>
+      <para>
+        Some of the topics I like to discuss are missing documentation and schema validation, legacy technology
+        (i.e. DTD), the creative use of XML specifications, and the benefits of XProc as a declarative language for XML
+        processing pipelines that allowed us to quickly iterate possible solutions.
+      </para>
+    </abstract>
+  </info>
+  <section>
+    <title>Introduction</title>
+    <para>
+      The Herzog August Bibliothek (HAB) is an independent research institute specializing in the study of European
+      cultural history in the medieval and early modern period. The library’s holdings from these periods form an
+      archive of Western culture that is nearly unique in its scope. Manuscripts, incunabula, early imprints and special
+      collections such as graphic art and maps provide material for almost limitless investigation into European
+      cultures of knowledge in a global context.
+    </para>
+    <para>
+      Since 2004 the library contributes to the field of digital emblem studies in close cooperation with the University
+      of Illinois at Urbana-Champaign and the wider digital emblem studies community.  A series of projects labeled
+      "Emblematica Online" aims to digitize, index, and do research on two of the greatest collections of emblem books
+      worldwide. The most important outcome of the project series' efforts is the <link
+      xlink:href="http://emblematica.grainger.illinois.edu/">Open Emblem Portal</link>, a portal that provides access to
+      more than 30000 emblems of six emblem book collections from the University of Illinois at Urbana-Champaign, the
+      Herzog August Bibliothek Wolfenbüttel, Glasgow University, Utrecht University, Duke University, and the Getty
+      Research Institute.
+    </para>
+  </section>
+  <section>
+    <title>Emblematica Online – Linked Open Emblem Data</title>
+    <para> The latest iteration of the series set out to develop a core ontology for digital emblems
+      and publish the Wolfenbüttel collection of emblems as Linked Open Data. Being an XML-centered
+      library the goal is also to make <quote>principled use RDF/XML</quote> (<biblioref
+        linkend="dodds_2016"/>) and publish the emblems as RDF/XML documents with an accompanying
+      RelaxNG grammar. Early on in the project we chose XProc as language both to recreate a model
+      of the existing publication workflows and to implement the RDF/XML production pipeline. </para>
+    <para>
+      XProc is a declarative language for XML-based processing pipelines. It was standardized by the W3C in 2010 and is
+      currently supported by two Open Source implementations, <link xlink:href="http://xmlcalabash.com">XML
+      Calabash</link> and <link xlink:href="http://xml-project.com/morganaxproc/">Morgana XProc</link>. XProc views a
+      pipeline as <quote>a sequence of operations to be performed on zero or more XML documents</quote> (<biblioref
+      linkend="walsh_2010"/>) and defines control structures as well as a standard library of required and optional steps
+      that perform common operations on XML. A step being an atomic operation that, much like a pipeline, accepts zero
+      or more XML documents as inputs and produces zero or more XML documents as output. XProc also allows for the
+      definition of user-defined steps that combine steps of the standard library into subpipelines.
+    </para>
+    <section>
+      <title>Encoding emblems</title>
+      <para>
+        The project uses a simplified view of an emblem as an intellectual entity. An emblem is viewed as an entity with
+        three distinct parts: A short aphorism from canonical texts of ancient writers or the Bible
+        (<glossterm>motto</glossterm>), an image with meaningful, symbolic and/or allegorical elements
+        (<glossterm>pictura</glossterm>), and an optional verse to be considered in conjunction with
+        <glossterm>motto</glossterm> and <glossterm>pictura</glossterm> (<glossterm>subscriptio</glossterm>).
+      </para>
+      <para>
+        We assign a persistent identifier to every emblem using UIUC's handle system. For each emblem we provide a
+        transcription of all language variations of the emblem's <glossterm>motto</glossterm>. If the emblem has a
+        <glossterm>subscriptio</glossterm> we record just its language variations. E.g. we provide information that the
+        emblem has a german or latin <glossterm>subscriptio</glossterm> but not its actual content. The
+        <glossterm>pictura</glossterm> is further classified with <link
+        xlink:href="http://iconclass.nl">ICONCLASS</link>, a specialized classification for art and iconography. With
+        the help of ICONCLASS scholars can access emblems based on the subject represented in their
+        <glossterm>pictura</glossterm>.
+      </para>
+      <para>
+        Two complementing XML files describe the overall structure of a digital emblem book: The
+        <filename>facsimile.xml</filename> holds information about the images composing the digital facsimile. It is not
+        a complete TEI document but a fragment with <tag class="element">tei:facsimile</tag> as the outermost element
+        and a sequence of <tag class="element">tei:graphic</tag> elements. Each <tag class="element">tei:graphic</tag>
+        links to an an image of the digital facsimile with a <tag class="attribute">url</tag> attribute. An <tag
+        class="attribute">xml:id</tag> attribute serves as anchor for location ladders. The
+        <filename>facsimile.xml</filename> is automatically created at the end of a digitization process.
+      </para>
+      <para>
+        The second file, <filename>tei-struct.xml</filename>, encodes the general structure of the emblem book (chapters,
+        sections, headings etc.) and marks up the emblem parts. It includes the <filename>facsimile.xml</filename> at the
+        appropriate location, i.e. as sibling between the <tag class="element">tei:teiHeader</tag> and the <tag
+        class="element">tei:text</tag> element, and references the pages of the digital facsimile by linking to the
+        included <tag class="element">tei:graphic</tag> elements.
+      </para>
+      <para>
+        An emblem part is encoded by a <tag class="element">tei:div</tag> element with a <tag class="attribute">type</tag>
+        attribute that indicates the type of the part, a <tag class="attribute">facs</tag> attribute pointing to a
+        location in the emblem book, and a <tag class="attribute">n</tag> attribute that holds the allocated emblem
+        identifier. One or more <tag class="element">tei:index</tag> elements contain the ICONCLASS classification of the
+        <glossterm>pictura</glossterm>.
+      </para>
+      <para>
+        The structural metadata document is keyed in by undergraduates with a structural metadata editor colloquially
+        known as <productname>TOC Editor</productname>. A structural metadata editor allows describing the structural elements of a digital
+        facsimile, their nesting and extent, as well as page- or structure-related descriptive metadata. It is worth
+        noting that the editor does not provide means to record the required information as such. It only provides free
+        form text fields meant for indexing terms, so that data entry relies on a micro syntax to record the emblem
+        identifier, the type of the emblem part, the language, and the textual content. The editor serializes an
+        XML-based format developed during the project <link
+        xlink:href="http://diglib.hab.de?link=007"><productname>Decentral Digital Incunabula
+        Collection</productname></link> which in turn is transformed into the TEI encoded structural metadata document.
+      </para>
+
+      <figure>
+        <title>Emblem E018850 encoded in TEI</title>
+        <programlisting language="xml"><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tei-struct.xml" parse="text"/></programlisting>
+      </figure>
+
+      <para>
+        Structural metadata documents are then published as Emblem Schema documents to be used in the Open Emblem
+        Portal. The <link xlink:href="http://diglib.hab.de/rules/schema/emblem">Emblem Schema</link> was developed to
+        foster the exchange and aggregation of emblem book descriptions (<biblioref linkend="staecker_2007"/>). It
+        closely follows Rawles' <citetitle>Spine of Information headings</citetitle> (<biblioref linkend="rawles_2004"/>)
+        and can be used both, to encode the entire structure of an emblem book (as is done in Utrecht) or to just
+        provide a flat list of contained emblems. At the library the schema is exclusively used for that latter.
+      </para>
+      <para>
+        The schema defines its own vocabulary to encode emblem information but also imports elements from the <link
+        xlink:href="http://www.loc.gov/standards/mods/">Metadata Object Description Standard (MODS)</link> for a
+        bibliographic description of the emblem book, elements from the <link
+        xlink:href="http://www.w3.org/TR/skos-reference/">Simple Knowledge Organization System (SKOS)</link> vocabulary
+        for the ICONCLASS information, and elements from the TEI vocabulary as an alternative to MODS and for a
+        structured transcription of an emblem's <glossterm>motto</glossterm> or <glossterm>subscriptio</glossterm>.
+      </para>
+      <para>
+        The Emblem Schema document is created in two steps. First an XSL transformation creates a list of emblems
+        contained in a structural metadata document and adds a placeholder for the bibliographic description. A PHP
+        script then fetches the bibliographic description from the library catalog and inserts it into the Emblem Schema
+        document. All Emblem Schema documents are available via a web service that conforms to the Open Archive
+        Initiative's <link xlink:href="http://www.openarchives.org/OAI/openarchivesprotocol.html">Protocol for Metadata
+        Harvesting (OAI-PMH)</link>.
+      </para>
+      <figure>
+        <title>The same emblem E018850 encoded as Emblem Schema</title>
+        <programlisting language="xml"><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="emblem.xml" parse="text"/></programlisting>
+      </figure>
+    </section>
+    <section>
+      <title>The publication process as XProc pipeline</title>
+      <para> Recreating the publication process as a sequence of XSL transformations interspersed
+        with validation seemed straight forward. Unluckily we hit a first wall when we tried to
+        reimplement the initial transformation with XSL. The transformation is done by a PHP script
+        that uses a mixture of string concatenation and DOM manipulation to create the structural
+        metadata document. From the looks of it the conversion script was developed for an earlier
+        project (i.e. the <productname>Digital Incunabula Collection</productname>) and later
+        modified by adding one special case after another. We decided to skip the first
+        transformation and start with the structural metadata document instead. This didn't work
+        either: The transformation from TEI to Emblem Schema ran but didn't return anything. As a
+        last resort we the turned to the Emblem Schema documents and it was when some of those
+        didn't validate against the Emblem Schema we decided to take a step back and start a deeper
+        investigation. </para>
+      <para>
+        The library engaged in the creation of digital content since the late nineties, specifically in the creation
+        resources for digital emblem studies since the early 2000s. Not surprisingly the overall biggest problem we
+        faced was the lack of proper documentation. Altough we were lucky to still have staff around that was involved
+        in the projects back then we had to resort to a certain amount of guesswork regarding the reasons why documents
+        looked the way they did. Human memory turned out to unreliable and no substitute for proper
+        documentation. Having an XML database at hand to run queries across the documents helped a lot. What struck us
+        as odd was that even though documents were associated with a DTD or a schema the DTD or schema was not used to
+        actually validate the documents. This meant that we had to base our guesses on existing transformation and
+        processing scripts, the source items, and anecdotal evidence.
+      </para>
+      <para>
+        All in all we found the following flaws in our data and processes.
+      </para>
+      <section>
+        <title>Data entry and initial transformation</title>
+        <para>
+          The reliance on micro syntax to record emblem information is prone to errors. In order to e.g. state the fact
+          that the current page shows <glossterm>pictura</glossterm> and <glossterm>motto</glossterm> of emblem E018850,
+          and the <glossterm>motto</glossterm> is a the german text <quote>So muß es mir ergehn, Soll ich sonst fäste
+          Stehn.</quote> an undergraduate has to use the code <code>E018850_P_M-de@So muß es mir ergehn. Soll ich sonst
+          fäste Stehn.</code>.
+        </para>
+        <para>
+          The conversion script does not validate this micro syntax and silently drops information that doesn't fit the
+          expected structure. We observed <glossterm>motti</glossterm> ending up in language tags and missing emblem
+          parts alltogether. We assume that most of those errors are catched during data entry by a manual inspection of
+          the emblem book's web representation, though.
+        </para>
+        <para> More problematically are "semantic errors" that are introduced to the document
+          structure. In some cases the conversion script adds a superfluous section after a
+            <glossterm>pictura</glossterm>. Our current theory is that the section is added to hold
+          a paragraph which in turn holds page breaks. This could be explained by a more or less
+          informal rule for structural metadata documents that states that page break elements are
+          only allowed inside "logical units"<footnote>
+            <para>
+              <link xlink:href="http://diglib.hab.de/rules/documentation/structuralMD.xml"/>:
+                <quote>Zu beachten ist, dass ein pagebreak pb immer innerhalb einer logischen
+                Einheit, z.B. p, gesetzt wird und den Beginn einer Seite
+              kennzeichnet.</quote></para>
+          </footnote>. We are still uncertain if the addition of this superfluous section was done
+          deliberately or is an artifact of the conversion process. We believe the latter is the
+          case because the TEI guidelines would have provided an anonymous block element <tag class="element">tei:ab</tag>
+          without the semantics of a textual division. </para>
+        <para> Given the complicated nature of this problem and constraints of the project we
+          decided against trying to further analyze and fix the initial conversion. We hope that
+          replacing the ancient structural metadata editor with the one from the <link
+            xlink:href="http://kitodo.org">Kitodo software suite</link> will allow us to get rid of
+          the micro syntax and replace the PHP-based with an XSLT based transformation. What we
+          could do is fix the most blatant errors (e.g. <glossterm>motti</glossterm> in language
+          tags) and provide a list of questionable emblem structures to our expert scientist. </para>
+      </section>
+      <section>
+        <title>TEI to Emblem Schema</title>
+        <para>
+          The transformation from TEI to Emblem Schema failed because the structural metadata document was declared to
+          be a TEI document by a DOCTYPE-declaration but the TEI namespace was not declared in the document. Instead the
+          DTD declared an <tag class="attribute">xmlns</tag> attribute with a default value of <tag
+          class="attvalue">http://www.tei-c.org/ns/1.0</tag>. Thus in order for the namespace binding to be present the
+          XML processor had to process the DTD when loading the document. The reason why the transformation failed was
+          simply that XProc used the DTD to supply the <tag class="attribute">xmlns</tag> attribute with its default
+          value while the original transformation was initiated in PHP which disables DTD processing by default. The
+          transformation script thus expected the elements of the structural metadata document to be in the null
+          namespace, while they were placed in the TEI namespace in our pipeline.
+        </para>
+        <para> To allow for consistent namespace-aware processing we relocated the elements to the
+          TEI namespace by applying an appropriate XSL transformation and modified the existing
+          transformations accordingly. We also removed the DOCTYPE-declaration and changed the
+          inclusion mechanism of <filename>facsimile.xml</filename> from external entity references
+          to <link xlink:href="http://www.w3.org/TR/xinclude/">XInclude</link>. The latter prompted
+          us to add a namespace declaration to <filename>facsimile.xml</filename>, which was
+          missing. What we did not realize back then (and still have to do) is that we need to
+          change references to the <tag class="element">tei:graphic</tag> elements due to XInclude's
+          base URI fixup. Referencing attributes like <tag class="attribute">facs</tag> are typed as
+            <code>xsd:anyURI</code> and thus need to reference the originating file and not just
+          document local <tag class="attribute">xml:id</tag>s.</para>
+        <para> We furthermore noticed that all structural metadata documents defined an <tag
+            class="attribute">xml:base</tag> attribute on the outermost element. The content of this
+          attribute varied. Some documents used the persistent URL of the digital object, some used
+          a relative URI reference denoting the object identifier with, and some without trailing
+          slash. It is unclear, why <tag class="attribute">xml:base</tag> was used in the first
+          place and what caused the variations in its content. Effectively the attribute was used as
+          if it holds the digital object identifier which happens to be the relative path to the
+          object in most cases. </para>
+        <para>
+          Although the use of <tag class="attribute">xml:base</tag> caused no apparent error we removed it to avoid
+          problems in the future.
+        </para>
+      </section>
+      <section>
+        <title>Emblem Schema documents</title>
+        <para>
+          Lastly we figured out why some of the Emblem Schema documents did not validate against the Emblem
+          Schema. Unexpectedly some of the oldest documents <emphasis>did</emphasis> provide a transcription of an
+          emblem's <glossterm>subscriptio</glossterm> as structured markup of lines and line groups. The version of the
+          TEI vocabulary used by the then current version of the Emblem Schema did not allow line group elements (<tag
+          class="element">tei:lg</tag>) as children of a paragraph (<tag class="element">tei:p</tag>). We find it
+          interesting to note that apparently no one ever validated the documents against the Emblem Schema or found the
+          validation error worth reporting.
+        </para>
+        <para>
+          We solved this problem by updating Emblem Schema to use a newer version of the TEI vocabulary that allows <tag
+          class="element">tei:lg</tag> as child of a <tag class="element">tei:p</tag>.
+        </para>
+      </section>
+    </section>
+    <section>
+      <title>Running the emblem2rdf pipeline</title>
+      <para>
+        Having solved the problems with the structural metadata documents and their transformation to Emblem Schema
+        documents we decided to base our RDF/XML on the Emblem Schema documents. This idea was driven by the plan to
+        consolidate the structural metadata documents in the near future by removing the emblem related information and
+        storing them as documents in their own right.
+      </para>
+      <para>
+        To run the final pipeline we harvest all emblem book descriptions from the OAI-PMH web service. The pipeline
+        then iterates every emblem book description and validates it against the revised Emblem Schema. The document is
+        skipped with a warning message if validation fails. Otherwise an XSL transformation converts the every emblem
+        from its Emblem Schema representation to RDF/XML conforming to our emblem ontology. The bibliographic
+        description is transformed as well and added to every emblem contained in a particular emblem book. The
+        resulting RDF/XML document is validated with a RelaxNG grammar and serialized to disc. Because we publish the
+        emblem descriptions as static files on a web server we apply a transformation to HTML and serialize it to disc.
+      </para>
+      <para>
+        Due to the lack of native support for RDF serialization in XProc we use the <link
+        xlink:href="http://librdf.org/raptor/rapper.html"><productname>rapper</productname></link> command line tool to
+        convert the resulting RDF/XML documents to NTriples, and <link
+        xlink:href="https://github.com/TopQuadrant/shacl"><productname>TopBraid SHACL</productname></link>, an open
+        source implementation of the <link xlink:href="https://www.w3.org/TR/shacl/">W3C Shapes Constraint Language
+        (SHACL)</link> based on Apache Jena, to validate the RDF graph.
+      </para>
+    </section>
+  </section>
+  <section>
+    <title>Summary</title>
+    <para>
+      With the project "Emblematica Online – Linked Open Emblem Data" we set out to publish the Wolfenbüttel
+      collection of digitized emblem books as Linked Open Data and utilized XProc, first to model the existing
+      publication workflow and then to execute the transformation of TEI-encoded structural metadata documents to
+      RDF/XML.
+    </para>
+    <para>
+      In the modelling phase we detect flaws in the underlying data and conversion routines. We were able to fix most
+      of the problem and construct an XProc pipeline turns Emblem Schema documents into RDF/XML documents. With the
+      help of the latter pipeline we published information about approximately 12300 emblems in 220 emblem books as
+      Linked Open Data.
+    </para>
+  </section>
+  <bibliography>
+    <title>Bibliograph</title>
+    <bibliomixed xml:id="dodds_2016" xreflabel="Dodds 2016">
+      <personname>Dodds, Leigh</personname>
+      <pubdate>2012</pubdate>.
+      <title>Principled use of RDF/XML</title>
+      <biblioid>https://blog.ldodds.com/2012/06/12/principled-use-of-rdfxml</biblioid>
+      [22.06.2016]
+    </bibliomixed>
+
+    <bibliomixed xml:id="rawles_2004" xreflabel="Rawles 2004">
+      <personname>Rawles, Stephen</personname>
+      <pubdate>2004</pubdate>.
+      <title>A spine of information headings for emblem-related electronic resources</title>.
+      In
+      <title>Digital Collections and the Management of Knowledge: Renaissance Emblem Literature as a Case Study for the Digitization of Rare Texts and Images</title>.
+      <publisher>
+        <publishername>Salzburg: DigiCULT,</publishername>
+      </publisher>
+      <pagenums>19–26</pagenums>.
+    </bibliomixed>
+
+    <bibliomixed xml:id="staecker_2007" xreflabel="Stäcker 2007">
+      <personname>Stäcker, Thomas</personname>
+      <pubdate>2007</pubdate>.
+      <title>Setting the Emblem Schema to Work</title>.
+      In
+      <title>Learned Love. Proceedings of the Emblem Project Utrecht Conference on Dutch Love Emblems and the Internet (November 2006)</title>.
+      <publisher>
+        <publishername>The Hague,</publishername>
+      </publisher>
+      <pagenums>201–210</pagenums>.
+    </bibliomixed>
+
+    <bibliomixed  xml:id="walsh_2010" xreflabel="Walsh et al. 2010">
+      <personname>Walsh, Norman</personname>,
+      <personname>Milowski, Alex</personname> &amp;
+      <personname>Thompson, Henry S.</personname>
+      <pubdate>2010</pubdate>.
+      <title>XProc: An XML Pipeline Language</title>.
+      <biblioid>http://www.w3.org/tr/xproc</biblioid>
+      [2016-03-19].
+    </bibliomixed>
+
+  </bibliography>
+</article>

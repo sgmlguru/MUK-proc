@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<article xmlns="http://docbook.org/ns/docbook"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <title>When Overlapping XML Meets Changing XML Does Confusion Reign?</title>
+    <info>
+        <abstract>
+            <para>The issue of how best to represent overlapping hierarchy in XML has been the topic
+                of a number of papers over the years. This paper is a further contribution to this
+                important issue, but approaching the problem from a different direction. Our goal is
+                to represent changes to documents, and one type of change is change to the markup
+                hierarchy. Therefore our ultimate goal is to be able to represent not only changes
+                to the hierarchy, typically resulting in overlapping hierarchy, but also changes to
+                attributes and text. This is a more ambitious goal than simply representing
+                overlapping hierarchy, and one aspect of this is to make a clear distinction between
+                the different hierarchical structures and the text that corresponds with each one. </para>
+            <para>Our work started with a delta format for two or more documents, which easily
+                represents inline changes, but handles hierarchy change by duplicating content. In
+                order to avoid duplication, we introduce a distinction between the name of the
+                element (its tag) and the element content, so that assertions can be made
+                separately. We then introduce @dx (change) and @dxTag (change tag) attributes to
+                mark changes. This representation allows us to define overlapping hierarchies in a
+                completely XML way without declaring a dominant hierarchy and while keeping element
+                fragmentation to a minimum. While this solution probably will not scale for large
+                numbers of variants, it shows promise for many classes of documents.</para>
+        </abstract>
+        <author>
+            <personname>
+                <firstname>Robin</firstname>
+                <surname>La Fontaine</surname>
+            </personname>
+            <personblurb>
+                <para>Robin is the founder and CEO of DeltaXML. He holds an Engineering Science
+                    degree from Oxford University and an MSc in Computer Science. His background
+                    includes computer aided design software and he has enjoyed addressing the
+                    challenges and realising the opportunities associated with information change
+                    since XML first appeared.</para>
+            </personblurb>
+        </author>
+    </info>
+    <section>
+        <title>Introduction and Background</title>
+        <para>Our focus has been on the representation of change to structured documents, and in
+            this work our original objective was to find a way to represent change to structure, and
+            this turned out to provide a useful representation for overlapping hierarchy, but with
+            the advantage that other changes could also be represented.</para>
+        <para>Jeni Tennison says in one of her excellent blogs, "Overlap is arguably the main
+            remaining problem area for markup technologists." [<xref linkend="Tennison1"/>]. She
+            points out that this is not only an issue for academics looking at poetry and historical
+            documents, but is also an issue in managing change to structured documents. The example
+            she cites is legislation which is amended over time where the authors are not concerned
+            about changes to structure, their primary interest is in the textual changes.</para>
+        <para>There are a number of different approaches to this problem, and some excellent reviews
+            of the advantages and disadvantages of the approaches [<xref linkend="Overlapping"/>] 
+            [<xref linkend="Overlapping2"/>] [<xref linkend="Overlapping3"/>] [<xref linkend="Overlapping4"/>].
+            Our own goal is to represent changes to documents, such as versions of documents over a
+            period of time as they are amended, and to represent them in a way that is easy to
+            process. This reflects the classic advantage of XML, where content can be re-purposed to
+            meet different needs. If the document can be re-purposed, then we need to be able to
+            re-purpose changes also, and this means changes need to be represented in way that is
+            easy to process.</para>
+        <para>Ignoring for the moment changes to attributes, most changes can be represented by the
+            addition and deletion of elements and their content. Additionally, we need to be able to
+            mark segments of text that are either added or deleted. This approach allows us to
+            represent any change, although not always in an optimal way. For example, in the
+            extreme, the deletion of the 'old' document and addition of the 'new' document correctly
+            represents the changes, but not in a very useful way. This leads to the observation that
+            by duplicating content it is always possible to represent a change in a structured
+            document. The problem is that we do not wish to duplicate content because this appears
+            to the user as a change to the content, whereas in practice the only change may be to
+            the structural markup around that content. This leads to the need to represent the
+            addition, deletion, and overlapping of structural elements representing
+            hierarchy.</para>
+        <para>The TEI format [<xref linkend="TEI"/>] has powerful, though complex, ways of
+            representing different hierarchies, and also variants of text within a document. The
+            goal is to provide rich semantic information about the document, representing all of
+            this information in a single place. Using this semantically rich representation, it
+            would be possible to generate all the different variants of the document, including
+            variants of the text and variants of the hierarchy. When we are considering change, it
+            is essentially all these different variants that we use as a starting point. Therfore in
+            this respect our goal is very similar to, but not quite the same as, the goal of the TEI
+            format. As our starting point is a set of document variants, it is natural that we
+            clearly identify each of these source variants in the single merged document. We
+            therefore always make a very precise differentiation between two overlapping structures,
+            because these are considered to have come from different source documents.</para>
+        <para>The inherent model that we adopt here, i.e. one that addresses the representation of
+            variants of the whole document, is important because it does differ from a model where
+            the desire is to represent variants in structure within a document. The latter model can
+            lead to a very large number of whole document variants, and our model is not well suited
+            to a large number of variants because the attribute values representing the variants
+            become long and therefore difficult to manage. Our model addresses primarily overlap in
+            the context of change to a document and is not intended as a solution to all overlap
+            representation problems.</para>
+        <para>Although TEI has these mechanisms, most XML document formats, such as DITA[<xref
+                linkend="DITA"/>] or DocBook[<xref linkend="DocBook"/>], do not and would therefore
+            benefit from a way of representing overlap. In these formats, overlap representation is
+            needed in order to better represent change. There is a clear advantage to having a
+            standard way to enhance an existing schema with change and overlap representation
+            because structured document editing applications then need to understand only one way of
+            handling this. Schmidt [<xref linkend="Schmidt2"/>] suggests that a good way to manage
+            documents that have overlapping hierarchy is to split them into separate documents and
+            merge them as needed, though this idea does not seem to have gained a significant
+            following.</para>
+        <para>There is another distinguishing feature of this solution. In other solutions for
+            representing overlap, identifier attributes (which may or may not be strictly of type
+            xml:id) are often used to indicate which fragments are part of the same element, but
+            with this solution there is no such use of identifier attributes. The problem with using
+            identifier attribtues is that it is difficult to denote a fragment that is part of two
+            separate hierarchies because only one identifier attribute can be present on each
+            element. The identifier attribute could contain a list of identifiers but this does lead
+            to make it more difficult to process.</para>
+        <para>The representation described here is pure XML. As such, standard XML processing tools
+            such as XSLT and XQuery can be used to process it. Each of the original document
+            variants can be extracted: this was our primary goal and is an important feature. We
+            have verified that it is quite simple in XSLT to extract a single version, and it is
+            simple to determine the ancestors of a particular element or piece of text. We are
+            currently researching alternative types of processing. One XSLT approach shows
+            particular promise for processing n-way comparison results. This uses a template that
+            employs sibling recursion and XSLT 3.0 maps, the maps keep track of the state of each
+            tree using an extension to the principle of a common stack. </para>
+        <para>There are validation rules, which we express in Schematron, for this representation.
+            Validation against the original schema of the source documents would need to be done by
+            extracting each version and validating it. In other words, we can assert that the
+            representation is correct if the Schematron rules are passed and if we can extract each
+            of the original documents correctly, i.e. the extracted document is deep equal to the
+            original.</para>
+    </section>
+    <section>
+        <title>How Content Duplication Represents Any Change</title>
+
+        <para>Our starting point was an existing solution (a delta format) for representing change
+            to elements, attributes and text in XML documents.<footnote>
+                <para>The delta format being used here is a simplified form of the DeltaXML
+                    DeltaV2.1 format [<xref linkend="DeltaXML"/>]. The dx attribute would normally
+                    be a deltaxml:deltaV2 and the content would indicate whether or not the
+                    documents were the same or different for this element. This distinction is not
+                    important for this paper and so has been omitted to make the examples
+                    simpler.</para>
+            </footnote> Any change could be represented, but
+            changes to structure required some duplication of content. For example, two paragraphs
+            (denoted A and B) might
+            be:<programlisting>&lt;p&gt;The quick brown fox.&lt;/p&gt;</programlisting></para>
+        <para>and<programlisting>&lt;p&gt;The &lt;s&gt;quick&lt;/s&gt; brown fox.&lt;/p&gt;</programlisting></para>
+        <para>This is a change only to the XML tag structure, the textual content is unchanged.
+            However, we can represent the change by deleting the word ‘quick’ and adding the element
+            <programlisting>&lt;s&gt;quick&lt;/s&gt;</programlisting>This is a perfectly valid
+            representation of the change, but it implies that there has been deletion and addition
+            and thus that the text has changed. This is shown below. The dx attribute indicates the
+            documents in which the element and its content were present. The deltaxml:textGroup and
+            deltaxml:text elements are wrappers introduced to delineate the word that has been
+            deleted. We need the wrapper as a container for the dx attribute that applies to the
+            text. The reason for the double wrapper here is that there may be more than one variant
+            of the text, so more than one deltaxml:text element, and it is then useful to have these
+            grouped in the outer deltaxml:textGroup for easier
+            processing.<programlisting>&lt;p dx="A,B">The
+   &lt;deltaxml:textGroup dx="A">
+      &lt;deltaxml:text dx="A">quick&lt;/deltaxml:text>
+   &lt;/deltaxml:textGroup>
+   &lt;s dx="B">quick&lt;/s>
+   brown fox.
+&lt;/p></programlisting></para>
+        <para>It would be preferable if we could represent this change without implying change to
+            the content. This is discussed in the next section. </para>
+    </section>
+    <section>
+        <title>Representing Structural Change without Content Duplication</title>
+        <para>In order to avoid duplication of content, we need to distinguish between the element
+            tag and its content so that we can make assertions about the tag and content separately
+            and independently.</para>
+        <para>As a starting point, we can add an attribute to an element to indicate whether or not
+            this element was present in a particular variant of the document. If the element was
+            present, then the implication is that both the tag and the contents were present. In the
+            above situation, we want to indicate that the content, i.e. the word 'quick', was
+            present in two versions, but the tag, i.e. the &lt;s>, was only present in one version.
+            We can take a simple approach to this and add an additional attribute with this
+            information.<programlisting>&lt;p dx=”A,B” dxTag=”A,B”>The 
+  &lt;s dx=”A,B” dxTag=”B”>quick&lt;/s> 
+  brown fox.&lt;/p></programlisting></para>
+        <para>Here, the dx attributes tells us the documents in which the element (and its content)
+            were present, as described above. But now the dxTag attribute tells us a bit more:
+            whether or not the tag itself was present. So where the document identifiers are the
+            same in both the dx attribute and the dxTag attribute, the element and its content were
+            present. Where we see dx='A,B' and dxTag='B' we can deduce that the tag was present only
+            in B. This means that A contained ‘quick’ and B contained ‘&lt;s>quick&lt;/s>’.</para>
+        <para>We can optimize this a little by omiting the dxTag attribute if its value is the same
+            as the dx value. Therefore we
+            get:<programlisting>&lt;p dx=”A,B”&gt;The 
+  &lt;s dx=”A,B” dxTag=”B”&gt;quick&lt;/s&gt;
+  brown fox.&lt;/p&gt;</programlisting></para>
+        <para>This is a simple representation of a simple change. We can make an adjustment to this
+            to represent, for example, a change from &lt;i> in document A to &lt;s> in document B as
+            follows:<programlisting>&lt;p dx=”A,B”&gt;The 
+  &lt;i dx=”A,B” dxTag=”A”&gt;&lt;s dx=”A,B” dxTag=”B”&gt;quick&lt;/s&gt;&lt;/i>
+  brown fox.&lt;/p&gt;</programlisting></para>
+        <para>We can now introduce some overlap and see how the principles above are extended. When
+            overlap occurs, in order to avoid duplicating content, we need to split some of the
+            elements into fragments - this is the approach that Jeni Tennison calls 'fragmentation'.
+            When we fragment an element, then clearly one original element becomes two or more
+            fragments. The dxTag attribute refers to the whole tag, so we need to extend this to
+            represent the start and the end. To achieve this we have dxTagStart and dxTagEnd so that
+            we clearly distinguish between the start fragment and the end fragment. In more complex
+            situations where an element is split into more than two fragments, we also introduce
+            dxTagMiddle for any fragement betwen the start and end fragments.</para>
+        <para>This is an example of simple
+            overlap:<programlisting>&lt;p&gt;The quick brown fox. It jumped over the lazy dog.&lt;/p&gt;</programlisting><programlisting>&lt;p&gt;The quick brown fox.&lt;/p>&lt;p> It jumped over the lazy dog.&lt;/p&gt;</programlisting></para>
+        <para>This is represented
+            as:<programlisting>&lt;p dxTagStart="A" dxTag="B" dx="A,B">The quick brown fox.&lt;/p>
+&lt;p dxTagEnd="A" dxTag="B" dx="A,B"> It jumped over the lazy dog.&lt;/p></programlisting></para>
+        <para>This shows two &lt;p> elements, and for the B document each of these represents a
+            complete element, denoted by dxTag="B". For the A document, the two &lt;p> elements are
+            fragements and so the first is identified by dxTagStart="A" and the second one by
+            dxTagEnd="A". This is an unambiguous representation that requires no duplication of
+            textual content. The astute observer may comment that the leading space in the second
+            paragraph of the B document would probably have been deleted. Proper handling of
+            whitespace is a consumer of considerable time and effort in XML document processing.
+            This type of change could be represented but it complicates the story so is ignored for
+            this example.</para>
+        <para>We can now consider an example of double overlap, where text is moved from one
+            paragraph to
+            another:<programlisting>&lt;p&gt;The quick brown fox. It jumped over the lazy dog.&lt;/p>&lt;p> Yes!&lt;/p&gt;</programlisting><programlisting>&lt;p&gt;The quick brown fox.&lt;/p>&lt;p> It jumped over the lazy dog. Yes!&lt;/p&gt;</programlisting></para>
+        <para>This is represented
+            as:<programlisting>&lt;p dxTagStart="A" dxTag="B" dx="A,B">The quick brown fox.&lt;/p>
+&lt;p dxTagEnd="A" dxTagStart="B" dx="A,B"> It jumped over the lazy dog.&lt;/p>
+&lt;p dxTag="A" dxTagEnd="B" dx="A,B"> Yes!&lt;/p></programlisting></para>
+        <para>This shows three &lt;p> elements, all of which are fragments in at least one document.
+            In the B document the first of these represents a complete element, denoted by
+            dxTag="B". The last two &lt;p> elements are fragments and so the first is identified by
+            dxTagStart="B" and the second one by dxTagEnd="B". This mechanism will scale to any
+            level of complexity, for example three or more overlapping hierarchies. As overlap
+            increases, so does the fragmentation and therefore the complexity of the result.</para>
+        <para>Although there is not time to explore this more fully in this paper, it would
+            certainly be interesting to determine how easy it is to perform queries on this
+            structure such as, "find all the paragraphs containing both the word 'fox' and the word
+            'dog'" and have this return just the A document because in the B document these words
+            are in different paragraphs.</para>
+        <para>We can now look at a larger example including a change. We will for the example ignore
+            white space changes. The A document
+            is:<programlisting>&lt;book>
+    &lt;p>
+        &lt;seg>Scorn not the sonnet;&lt;/seg>
+        &lt;seg>critic, you have frowned, Mindless of its just honours;&lt;/seg>
+        &lt;seg>with this key SHAKESPEARE unlocked his heart;&lt;/seg>
+        &lt;seg>the melody Of this small lute gave ease to Petrarch's wound.&lt;/seg>
+    &lt;/p>
+&lt;/book></programlisting></para>
+        <para>And the second, B, document is as
+            follows:<programlisting>&lt;book>
+    &lt;l>Scorn not the sonnet; critic, you have frowned,&lt;/l>
+    &lt;l>Mindless of its just honours; with this key&lt;/l>
+    &lt;l>Shakespeare unlocked his heart; the melody&lt;/l>
+    &lt;l>Of this small lute gave ease to Petrarch's wound.&lt;/l>
+&lt;/book></programlisting></para>
+        <para>There are different representations that we can generate for this depending on how we
+            decide to nest the fragments. For example, if we generally nest the &lt;seg> elements
+            inside the &lt;l> elements, we get this
+            result:<programlisting>&lt;book dx="A,B">
+    &lt;p dx="A,B" dxTag="A">
+        &lt;l dx="A,B" dxTag="B">
+            &lt;seg dx="A,B" dxTag="A">Scorn not the sonnet; &lt;/seg>
+            &lt;seg dx="A,B" dxTagStart="A">critic, you have frowned,&lt;/seg>
+        &lt;/l>
+        &lt;l dx="A,B" dxTag="B">
+            &lt;seg dx="A,B" dxTagEnd="A">Mindless of its just honours; &lt;/seg>
+            &lt;seg dx="A,B" dxTagStart="A">with this key&lt;/seg>
+        &lt;/l>
+        &lt;l dx="A,B" dxTag="B">
+            &lt;seg dx="A,B" dxTagEnd="A">
+                &lt;deltaxml:textGroup dx="A,B">
+                    &lt;deltaxml:text dx="A">SHAKESPEARE&lt;/deltaxml:text>
+                    &lt;deltaxml:text dx="B">Shakespeare&lt;/deltaxml:text>
+                &lt;/deltaxml:textGroup> unlocked his heart;&lt;/seg>
+            &lt;seg dx="A,B" dxTagStart="A">the melody&lt;/seg>
+        &lt;/l>
+        &lt;l dx="A,B" dxTag="B">
+            &lt;seg dx="A,B" dxTagEnd="A">Of this small lute gave ease to Petrarch's
+                wound.&lt;/seg>
+        &lt;/l>
+    &lt;/p>
+&lt;/book> </programlisting></para>
+        <para>It is instructive to visualize this structure as shown below. Here we are looking at
+            it primarily as document A, so the tags and text that belong only to B have been greyed
+            out. This is to visualize more clearly the A structure. Some of the &lt;seg> elements
+            are still split so these would need to be merged in order to get back to the original A
+            document, although the basic original structure of A is apparent.<inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="lafo061201.jpg" width="7.5in" format="jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>This visualization illustrates the very simple nature of this approach. The attributes
+            we are adding provide information about an element, specifically for each variant the
+            attributes tell us which of the following is true: <itemizedlist>
+                <listitem>
+                    <para>The tag and its content are present in this variant and the element is not
+                        fragmented</para>
+                </listitem>
+                <listitem>
+                    <para>The tag and its content are present in this variant and the element is
+                        fragmented, so this is the start, the end or a middle fragment</para>
+                </listitem>
+                <listitem>
+                    <para>The content is present in this variant but not the tag</para>
+                </listitem>
+                <listitem>
+                    <para>The tag and its content are not present in this variant</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>Therefore it is very simple to extract any one variant from the whole document or any
+            part of it. It is also very simple to work out, for a given piece of content, the list
+            of ancestors in any variant. An important characteristic of this representation is that
+            as the overlap reduces to zero so the representation reduces to the original
+            structure.</para>
+    </section>
+    <section>
+        <title>Dominant Hierarchy</title>
+        <para>Methods for representing overlapping hierarchy often need to know the dominant
+            hierarchy in order to know which tree structure 'overrides' the others. In this proposed
+            representation, there is no need for a concept of a dominant hierarchy. We are at
+            liberty to create a hierarchy that reduces the fragmentation as far as possible.
+            Therefore it is possible to adopt various different algorithms to generate different
+            results. The format describes how to represent overlapping hierarchy, it does not
+            dictate what the overlap should be. Therefore another valid representation of the
+            example above would be as
+            follows:<programlisting>&lt;book xmlns:dx="xx" dx="A,B">
+    &lt;p dx="A,B" dxTag="A">
+        &lt;seg dx="A,B" dxTag="A">
+            &lt;l dx="A,B" dxTagStart="B">Scorn not the sonnet;&lt;/l>
+        &lt;/seg>
+        &lt;seg dx="A,B" dxTagStart="A">
+            &lt;l dx="A,B" dxTagEnd="B">critic, you have frowned, &lt;/l>
+        &lt;/seg>
+        &lt;seg dx="A,B" dxTagEnd="A">
+            &lt;l dx="A,B" dxTagStart="B">Mindless of its just honours;&lt;/l>
+        &lt;/seg>
+        &lt;seg dx="A,B" dxTag="A">
+            &lt;l dx="A,B" dxTagEnd="B">with this key &lt;/l>
+            &lt;l dx="A,B" dxTagStart="B">
+                &lt;dx:textGroup dx="A,B">
+                    &lt;dx:text dx="A">SHAKESPEARE&lt;/dx:text>
+                    &lt;dx:text dx="B">Shakespeare&lt;/dx:text>
+                &lt;/dx:textGroup> 
+                unlocked his heart;&lt;/l>
+        &lt;/seg>
+        &lt;seg dx="A,B" dxTag="A">
+            &lt;l dx="A,B" dxTagEnd="B">the melody &lt;/l>
+            &lt;l dx="A,B" dxTag="B">Of this small lute gave ease to Petrarch's
+                wound.&lt;/l>
+        &lt;/seg>
+    &lt;/p>
+&lt;/book></programlisting></para>
+        <para>We can also take this a step further, and look at the representation for what might be
+            called full fragmentation, i.e. each piece of text that has a different set of ancestors
+            is put into a single fragment. It would also be possible to treat the paragraph element
+            in the same way, but ideally this can be kept as a single element around all of the
+            text, providing a clearer and simpler representation.</para>
+        <para>
+            <programlisting>&lt;book dx="A,B">
+    &lt;p dx="A,B" dxTag="A">
+        &lt;seg dx="A,B" dxTag="A">
+            &lt;l dx="A,B" dxTagStart="B">Scorn not the sonnet;&lt;/l>
+        &lt;/seg>
+        &lt;seg dx="A,B" dxTagStart="A">
+            &lt;l dx="A,B" dxTagEnd="B">critic, you have frowned, &lt;/l>
+        &lt;/seg>
+        &lt;seg dx="A,B" dxTagEnd="A">
+            &lt;l dx="A,B" dxTagStart="B">Mindless of its just honours;&lt;/l>
+        &lt;/seg>
+        &lt;seg dx="A,B" dxTagStart="A">
+            &lt;l dx="A,B" dxTagEnd="B">with this key &lt;/l>
+        &lt;/seg>
+        &lt;seg dx="A,B" dxTagEnd="A">
+            &lt;l dx="A,B" dxTagStart="B">
+                &lt;dx:textGroup dx="A,B">
+                    &lt;dx:text dx="A">SHAKESPEARE&lt;/dx:text>
+                    &lt;dx:text dx="B">Shakespeare&lt;/dx:text>
+                &lt;/dx:textGroup>
+                unlocked his heart;&lt;/l>
+        &lt;/seg>
+        &lt;seg dx="A,B" dxTagStart="A">
+            &lt;l dx="A,B" dxTagEnd="B">the melody &lt;/l>
+        &lt;/seg>
+        &lt;seg  dx="A,B" dxTagEnd="A">
+            &lt;l dx="A,B" dxTag="B">Of this small lute gave ease to Petrarch's wound.&lt;/l>
+        &lt;/seg>
+    &lt;/p>
+&lt;/book></programlisting>
+        </para>
+        <para>The actual hierarchy of the overlapping elements can be determined based on any
+            criteria. One criterion might be to minimise the fragmentation. The results of an
+            automated generation of the above by comparing the two documents and aligning them
+            according to their text content is shown below. In this example the attribute names are
+            shown in full, e.g. dx attribute is shown as deltaxml:deltaV2 and its content indicates
+            whether the two documents are equal, i.e. "A=B" or not equal, i.e. "A!=B". The hierarchy
+            is reconstructed to reduce
+            fragmentation.<programlisting>&lt;book xmlns:deltaxml="http://www.deltaxml.com/ns/well-formed-delta-v1"
+    deltaxml:deltaV2="A!=B"
+    deltaxml:version="2.1" deltaxml:content-type="full-context">
+    &lt;p deltaxml:deltaV2="A!=B" deltaxml:deltaTag="A">
+        &lt;seg deltaxml:deltaV2="A!=B" deltaxml:deltaTag="A">
+            &lt;l deltaxml:deltaV2="A!=B" deltaxml:deltaTagStart="B" 
+                >Scorn not the sonnet;&lt;/l>
+        &lt;/seg>
+        &lt;l deltaxml:deltaV2="A!=B" deltaxml:deltaTagMiddle="B"> &lt;/l>
+        &lt;seg deltaxml:deltaV2="A!=B" deltaxml:deltaTag="A">
+            &lt;l deltaxml:deltaV2="A!=B" deltaxml:deltaTagEnd="B">critic, you have frowned,&lt;/l>
+            &lt;l deltaxml:deltaV2="A!=B" deltaxml:deltaTagStart="B">Mindless of its just honours;&lt;/l>
+        &lt;/seg>
+        &lt;l deltaxml:deltaV2="A!=B" deltaxml:deltaTagMiddle="B"> &lt;/l>
+        &lt;seg deltaxml:deltaV2="A!=B" deltaxml:deltaTag="A">
+            &lt;l deltaxml:deltaV2="A!=B" deltaxml:deltaTagEnd="B">with this key&lt;/l>
+            &lt;l deltaxml:deltaV2="A!=B" deltaxml:deltaTagStart="B">
+               &lt;deltaxml:textGroup deltaxml:deltaV2="A!=B">
+                   &lt;deltaxml:text deltaxml:deltaV2="A"
+                        >SHAKESPEARE&lt;/deltaxml:text>
+                   &lt;deltaxml:text deltaxml:deltaV2="B"
+                        >Shakespeare&lt;/deltaxml:text>
+               &lt;/deltaxml:textGroup>
+               unlocked his heart;&lt;/l>
+        &lt;/seg>
+        &lt;l deltaxml:deltaV2="A!=B" deltaxml:deltaTagMiddle="B"> &lt;/l>
+        &lt;seg deltaxml:deltaV2="A!=B" deltaxml:deltaTag="A">
+            &lt;l deltaxml:deltaV2="A!=B" deltaxml:deltaTagEnd="B">the melody&lt;/l>
+            &lt;l deltaxml:deltaV2="A!=B" deltaxml:deltaTag="B">Of this
+                small lute gave ease to Petrarch's wound.&lt;/l>
+        &lt;/seg>
+    &lt;/p>
+&lt;/book></programlisting></para>
+        <para>In addition there are several elements that contain only white space, e.g. the second
+            &lt;l> element. This is because the A document contained a space between the two
+            &lt;seg>
+            elements:<programlisting>&lt;seg>Scorn not the sonnet;&lt;/seg> &lt;seg>critic, you have frowned, Mindless of its just honours;&lt;/seg></programlisting>The
+            B document had this space within the &lt;l>
+            element:<programlisting>&lt;l>Scorn not the sonnet; critic, you have frowned,&lt;/l></programlisting></para>
+        <para>As mentioned earlier, correct handling of white space is often very complicated
+            because a careful distinction needs to be made between white space that can be ignored
+            and white space that is part of the content. Element boundaries are not always word
+            separators, for example elements that represent formatting are not considered word
+            separators whereas a new line would be considered a word separator. This is often not
+            clearly specified or represented in the XML schema.</para>
+        <para>The overlapping hierarchy representation described here is therefore suited to a
+            number of different situations. </para>
+    </section>
+    <section>
+        <title>Attributes</title>
+        <para> Attributes are an important part of the XML structure, and have not yet been
+            mentioned. Where an element appears in a particular document variant, and is not
+            fragmented, it is simple to add the attributes onto that element as part of the start
+            tag. When an element has been fragmented, then the attributes for that element will
+            appear in the start tag, i.e. the element with the dxTagStart attribute. This means that
+            any attributes that appear on a middle tag or end tag would not be relevant to a
+            particular document variant.</para>
+        <para>This is an example of simple overlap including some attribute
+            data:<programlisting>&lt;p>The quick brown fox. It jumped over the lazy dog.&lt;/p&gt;</programlisting><programlisting>&lt;p&gt;The quick brown fox.&lt;/p>&lt;p class="B"> It jumped over the lazy dog.&lt;/p&gt;</programlisting></para>
+        <para>This is represented
+            as:<programlisting>&lt;p dxTagStart="A" dxTag="B" dx="A,B">The quick brown fox.&lt;/p>
+&lt;p dxTagEnd="A" dxTag="B" dx="A,B" class="B"> It jumped over the lazy dog.&lt;/p></programlisting></para>
+        <para>This shows the class attribute but an attribute applies only to those variants where
+            the tag is a dxTag or dxTagStart. Therefore class="B" applies only to the B document
+            because for A this &lt;p> is an end tag.</para>
+        <para>Changes to attributes can also be represented. This is done by converting the
+            attribute into markup as part of a new first child of the element. Although
+            theoretically possible to represent changes to attributes within attributes, this leads
+            to some dedicated syntactic conventions within the attribute string, which is not easy
+            to process. Therefore separating change attributes out into XML markup makes processing,
+            particularly using XSLT, much easier.</para>
+
+        <para>This is an example of simple overlap, including some changed attribute
+            data:<programlisting>&lt;p class="B" align="left">The quick brown fox. It jumped over the lazy dog.&lt;/p&gt;</programlisting>
+            <programlisting>&lt;p class="B" align="right">The quick brown fox.&lt;/p>&lt;p> It jumped over the lazy dog.&lt;/p&gt;</programlisting></para>
+        <para>This is represented
+            as:<programlisting>&lt;p dxTagStart="A" dxTag="B" dx="A,B" class="B">
+  &lt;deltaxml:attributes>
+    &lt;dxa:align dx="A,B">
+      &lt;deltaxml:attributeValue dx="A">left&lt;/deltaxml:attributeValue>
+      &lt;deltaxml:attributeValue dx="B">right&lt;/deltaxml:attributeValue>
+    &lt;/dxa:align>
+  &lt;/deltaxml:attributes>
+The quick brown fox.&lt;/p>
+&lt;p dxTagEnd="A" dxTag="B" dx="A,B"> It jumped over the lazy dog.&lt;/p></programlisting></para>
+        <para>This shows that the unchanged attribute, class="B", remains as an attribute, but the
+            changed align attribute is represented as markup to show the two values. This is a
+            simplified representation and full details can be found in the documentation of the
+            DeltaXML DeltaV2.1 format [<xref linkend="DeltaXML2"/>].</para>
+        <para>The delta representation also allows an alternative representation because the &lt;p>
+            tag in the A document can be wrapped around the two &lt;p> tags in the B document, as
+            shown below:
+            <programlisting>&lt;p dxTag="A" dx="A,B" class="B" align="left">
+ &lt;p dxTag="B" dx="A,B" class="B" align="right">The quick brown fox.&lt;/p>
+ &lt;p dxTag="B" dx="A,B"> It jumped over the lazy dog.&lt;/p>
+&lt;/p></programlisting></para>
+        <para>This is, in this case, a shorter representation though it has in effect used
+            duplication of the (unchanged) attributes and tags to show the change. However, this may
+            be a preferred representation for some formatting elements, for example if the class
+            attribute in a &lt;span> is changed then it may be more useful to represent this as a
+            different &lt;span>. Both representations conform to the delta format.</para>
+    </section>
+    <section>
+        <title>Processing Observations</title>
+        <para>This representation requires that some elements are split, although there is no
+            requirement for a dominant hierarch as such. A given overlap situation can be
+            represented in a number of different ways, all of which are valid in that they correctly
+            represent the overlap. As mentioned earlier, a representation is deemed to be correct if
+            it is possible to generate each of the original hierarchies without loss from the
+            overlap representation, and this implies there may be more than one correct
+            representation. There may be different ways to define what might be an 'optimal'
+            representation, but it seems that minimising the splitting of elements is a key aspect
+            of this.</para>
+        <para>Some form of milestone representation may be a starting point because this is one of
+            the most intuitive ways to represent overlap. How then do we process a milestone
+            representation to get to an optimal solution using the delta format described here? The
+            problem is to work out where there is overlap and which element or elements need to be
+            split to remove this overlap. This is fairly easy for simple overlaps of two elements
+            but it is not simple in the situation where there are multiple, arbitary overlaps.
+            Minimising splits can result in having different XML hierarchies, e.g. a particular
+            element type in document A may be both surrounding and within the same element type from
+            document B. Both the A and B document can be generated from this but it can look odd in
+            the delta file and a processor cannot rely on the same nesting in all situations. It is
+            also true that although elements such as &lt;b> or &lt;i> could be nested either one
+            inside the other (the nesting is commutative), this may not be the case with all element
+            combinations.</para>
+        <para>In practice, different representations are useful for different purposes. In some
+            cases it is preferable to avoid overlap by duplication of content but then the issue is
+            to find the minimum duplication to achieve this. It may be easy in some situations to
+            process milestones but again it is preferable that milestones are only used when they
+            need to be and by finding the minimul split representation it is simple then to achieve
+            minimum milestones from this.</para>
+    </section>
+    <section>
+        <title>Conclusions</title>
+        <para>This paper has described a  representation for overlapping hierarchy which is also
+            capable of representing changes to text and attributes. This makes it suitable for some
+            important use cases for overlapping hierarchy, particularly the representation of change
+            between two or more variants of a document.</para>
+        <para>A significant advantage over some previous representations is that it is pure XML, and
+            therefore can be processed using standard XML tools. The dominance of one hierarchy over
+            another does not need to be fixed and this means that the actual hierarchy of the
+            overlapping structures can be determined for other reasons and indeed varied throughout
+            the document. This flexibility allows fragmentation of elements to be kept to a
+            minimum.</para>
+        <para>The underlying data model is based on document variants and therefore is better suited
+            to situations where the number of variants is small. Although it does scale to any
+            number of variants, its complexity increases as the number of variants increases, e.g.
+            each new variant has an identifier in the dx attribute so this will become longer and
+            more difficult to interpret.</para>
+        <para>Overlapping hierarchy is a powerful tool to use in certain markup situations, though
+            its use can lead to complex situations and any solution is also likely to look
+            complicated. This paper is intended to contribute to the discussion as the XML community
+            continues to strive for a simple, generic and universal solution to this problem.</para>
+        <para>An earlier version of this paper was presented at Balisage 2016 [<xref linkend="Balisage1"/>].</para>
+    </section>
+    <bibliography>
+        <title>References</title>
+        
+        <bibliomixed xml:id="Tennison1" xreflabel="1">Overlap, Containment and Dominance. URN:
+                "http://www.jenitennison.com/2008/12/06/overlap-containment-and-dominance.html"
+            </bibliomixed>
+
+        <bibliomixed xml:id="Overlapping" xreflabel="2">Modeling overlapping structures, Yves
+            Marcoux, Michael Sperberg-McQueen, Claus Huitfeldt, URN:
+            "http://www.balisage.net/Proceedings/vol10/html/Marcoux01/BalisageVol10-Marcoux01.html" </bibliomixed>
+        
+        <bibliomixed xml:id="Overlapping2" xreflabel="3">Markup Overlap: A Review and a Horse,
+            Steven DeRose, URN:
+            "http://conferences.idealliance.org/extreme/html/2004/DeRose01/EML2004DeRose01.html" </bibliomixed>
+        
+        <bibliomixed xml:id="Overlapping3" xreflabel="4">Multiple hierarchies: new aspects of an old
+            solution, Andreas Witt, URN:
+            "http://conferences.idealliance.org/extreme/html/2004/Witt01/EML2004Witt01.html"
+            /></bibliomixed>
+        
+        <bibliomixed xml:id="Overlapping4" xreflabel="5">Representation of overlapping structures,
+            Michael Sperberg-McQueen, URN:
+            "http://conferences.idealliance.org/extreme/html/2007/SperbergMcQueen01/EML2007SperbergMcQueen01.html" </bibliomixed>
+        
+        <bibliomixed xml:id="TEI" xreflabel="6"> TEI: Text Encoding Initiative, URN:
+            "http://www.tei-c.org/index.xml"</bibliomixed>
+
+        <bibliomixed xml:id="DITA" xreflabel="7">OASIS Darwin Information Typing Architecture (DITA)
+            TC, URN: "https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=dita"
+            </bibliomixed>
+        <bibliomixed xml:id="DocBook" xreflabel="8">OASIS DocBook TC,  URN: "https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=docbook"
+            /></bibliomixed>
+        <bibliomixed xml:id="Schmidt2" xreflabel="9">Schmidt, Desmond. “Merging Multi-Version Texts:
+            a Generic Solution to the Overlap Problem.” Balisage Series on Markup Technologies, vol.
+            3 (2009),  URN: "http://www.balisage.net/Proceedings/vol3/html/Schmidt01/BalisageVol3-Schmidt01.html"
+            </bibliomixed>
+        <bibliomixed xml:id="DeltaXML" xreflabel="10">Overlapping Hierarchies in DeltaV2 Format
+            , URN: "http://www.deltaxml.com/support/documents/deltav21"
+            </bibliomixed>
+        <bibliomixed xml:id="DeltaXML2" xreflabel="11">Two and Three Document DeltaV2 Format
+            (patent pending), URN: "http://www.deltaxml.com/support/documents/deltav2"
+            </bibliomixed>
+        <bibliomixed xml:id="Balisage1" xreflabel="12">La Fontaine, Robin, "Representing Overlapping Hierarchy 
+            as Change in XML",
+            Presented at Balisage: The Markup Conference 2016, Washington, DC, August 2 - 5, 2016, 
+            URN: "https://doi.org/10.4242/BalisageVol17.LaFontaine01"
+        </bibliomixed>
+    </bibliography>
+
+</article>

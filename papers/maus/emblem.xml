@@ -1,0 +1,42 @@
+<emblem:emblem globalID="http://hdl.handle.net/10111/EmblemRegistry:E018850" xmlns:emblem="http://diglib.hab.de/rules/schema/emblem" xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <emblem:motto>
+    <emblem:transcription xlink:href="http://diglib.hab.de/drucke/xb-4362/start.htm?image=00122" xml:lang="de">
+      <tei:p xml:lang="de">So muß es mir ergehn, Soll ich sonst fäste Stehn.</tei:p>
+    </emblem:transcription>
+  </emblem:motto>
+  <emblem:pictura medium="engraving" xlink:href="http://diglib.hab.de/drucke/xb-4362/start.htm?image=00122">
+    <emblem:iconclass>
+      <skos:notation>86(…)</skos:notation>
+      <skos:prefLabel xml:lang="de">Sprichwörter, Redewendungen, etc.</skos:prefLabel>
+      <emblem:keyword xml:lang="de">Redewendung</emblem:keyword>
+      <emblem:keyword xml:lang="de">Sprichwort</emblem:keyword>
+    </emblem:iconclass>
+    <emblem:iconclass>
+      <skos:notation>26C0</skos:notation>
+      <skos:prefLabel xml:lang="de">Ripa: Venti</skos:prefLabel>
+      <emblem:keyword xml:lang="de">Wind</emblem:keyword>
+      <emblem:keyword xml:lang="de">Eolo</emblem:keyword>
+      <emblem:keyword xml:lang="de">venti</emblem:keyword>
+    </emblem:iconclass>
+    <emblem:iconclass>
+      <skos:notation>25G3</skos:notation>
+      <skos:prefLabel xml:lang="de">Bäume</skos:prefLabel>
+      <emblem:keyword xml:lang="de">Baum</emblem:keyword>
+    </emblem:iconclass>
+    <emblem:iconclass>
+      <skos:notation>53A1</skos:notation>
+      <skos:prefLabel xml:lang="de">Wille; Ripa: Volontà</skos:prefLabel>
+      <emblem:keyword xml:lang="de">Wille</emblem:keyword>
+      <emblem:keyword xml:lang="de">volontà</emblem:keyword>
+    </emblem:iconclass>
+    <emblem:iconclass>
+      <skos:notation>54A7</skos:notation>
+      <skos:prefLabel xml:lang="de">…</skos:prefLabel>
+      <emblem:keyword xml:lang="de">Kraft</emblem:keyword>
+      <emblem:keyword xml:lang="de">Stärke</emblem:keyword>
+      <emblem:keyword xml:lang="de">Macht</emblem:keyword>
+      <emblem:keyword xml:lang="de">fortezza</emblem:keyword>
+      <emblem:keyword xml:lang="de">forza</emblem:keyword>
+    </emblem:iconclass>
+  </emblem:pictura>
+</emblem:emblem>

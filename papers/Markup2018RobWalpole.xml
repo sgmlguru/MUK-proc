@@ -1,0 +1,1173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.0">
+    <info>
+        <title>How to Make a Flying Start with S1000D – Lessons Learned at the Airport</title>
+        <abstract>
+            <para>S1000D is a specification for tech pubs which has been broadly adopted in the
+                aerospace industry. It provides XML schemas for common doc types and defines how
+                these documents should be structured in a common source database. S1000D is
+                replacing the ATA SGML format as the primary spec for OEM aircraft manuals and is
+                used for new aircraft such as the Boeing 787 and Airbus A350. At the same time,
+                mobile devices are playing an increasing role in aircraft maintenance, allowing
+                engineers to access technical information at the point of need.</para>
+            <para>Airlines are pressured to keep fares low but still maintain the highest safety
+                standards. A single source for engineering content is one way to reduce overheads.
+                It follows that other documents for engineers should also be S1000D to allow common
+                tools for managing and rendering content.</para>
+            <para>This paper discusses implementing S1000D for a major UK airline’s engineering
+                procedures. While OEM manuals cover much information needed by engineers, airlines
+                still need their own procedures for topics like health and safety, planning and
+                quality control. In fact, to cover all aspects of keeping aircraft functioning
+                safely and comfortably for passengers.</para>
+            <para>S1000D can be daunting for the inexperienced though. The version 4.1 spec is over
+                3500 pages long and not an easy read. There is a shortage of S1000D information in
+                the public domain, perhaps because it is still quite new, the majority of aircraft
+                manuals are still in SGML and the industry is understandably cautious about
+                change.</para>
+            <para>Of course, you could skip the spec and start creating some S1000D schema compliant
+                XML, only referring to it when you hit a snag. This is a very bad idea. By this
+                time, you will likely have created a number of problems for yourself which will be
+                hard to unwind. This paper will explain some of the design decisions you need to
+                make before going anywhere near a keyboard and hopefully save you from some of the
+                pain that you will inevitably experience.</para>
+        </abstract>
+        <author>
+            <personname>
+                <firstname>Rob</firstname>
+                <surname>Walpole</surname>
+            </personname>
+            <personblurb>
+                <para>Rob Walpole is a freelance software engineer and structured data enthusiast
+                    who has worked as a Java, Scala, XML and Semantic Web developer for
+                    organisations such as the UK Meteorological Office, the UK National Archives and
+                    LexisNexis legal publishers. Currently Rob is the implementation lead on a
+                    project with Flatirons Solutions to deliver single-system technical publication
+                    management for a well-known UK airline. </para>
+            </personblurb>
+            <affiliation>
+                <orgname>Devexe Limited</orgname>
+            </affiliation>
+            <email>rob.walpole@devexe.co.uk</email>
+        </author>
+    </info>
+    <note>
+        <para>Unless otherwise stated, all mention of  S1000D in this paper is specifically
+            referring to issue 4.1 of the specification.</para>
+        <para> </para>
+    </note>
+    <sect1>
+        <title>Introduction to S1000D</title>
+        <sect2>
+            <title>What is S1000D?</title>
+            <para>S1000D describes itself variously as an “international specification for technical
+                publication using a common source database”[<xref linkend="s1kd01"/>] and “an
+                international specification for the procurement and production of technical
+                    publications”[<xref linkend="s1kd02"/>]. Essentially it is an XML specification
+                designed to standardise data exchange and enable both producers and consumers to
+                create, manage and exchange content without being tied to any one proprietary
+                solution. It is predominantly used for defence and civil aviation purposes and
+                increasingly in areas such as construction, shipping and the automotive industry.
+                The specification itself notes that there is nothing to stop it being used for
+                non-technical publications as well<xref linkend="s1kd02"/>.</para>
+        </sect2>
+        <sect2>
+            <title>History</title>
+            <para>The S1000D concept originated in the early 1980s and was initially developed by
+                the <link xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://www.asd-europe.org/">AeroSpace and Defence Industries
+                    Association of Europe</link> (ASD) for military use. At the time there were
+                various national military specifications for documentation. As computers were
+                becoming more prevalent there was a drive to develop computer-based methods of
+                document management. To avoid having too many different, complex and expensive
+                systems, it was apparent there was a need to standardise the documentation
+                methodology.</para>
+            <para>At the time most civil aviation projects were documented using the ATA 100
+                specification, developed by the Air Transport Association of America (now known as
+                    <link xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://airlines.org/">Airlines for America</link>) in the United
+                States and first published in 1956. Originally this specification was just a
+                document numbering system but has developed over time into the current ATA iSpec
+                2200 specification which also covers content, structure and exchange of engineering
+                and maintenance information from manufacturer to operator [<xref linkend="s1kd03"/>] </para>
+            <para>ASD decided to set up the Documentation Working Group (DWG) to try to harmonise
+                civil and military documentation and to use ATA 100 as a base. The group realised
+                that creating a harmonised specification would have many advantages including[<xref
+                    linkend="s1kd02"/>]:</para>
+            <itemizedlist>
+                <listitem>
+                    <para>cost saving in information generation - avoidance of duplications</para>
+                </listitem>
+                <listitem>
+                    <para>more economic support planning</para>
+                </listitem>
+                <listitem>
+                    <para>cheaper deliverable publications</para>
+                </listitem>
+                <listitem>
+                    <para>uniformity of standard for participants in the project</para>
+                </listitem>
+                <listitem>
+                    <para>standard format for data exchange to exploit future developments</para>
+                </listitem>
+                <listitem>
+                    <para>enhanced interoperability</para>
+                </listitem>
+            </itemizedlist>
+            <para>Early versions of S1000D provided a set of Document Type Definitions (DTDs) for
+                producing Standard Generalized Markup Language (SGML) but gradually it became and
+                remains an Extensible Markup Language (XML) specification defined in XML Schemas.</para>
+            <para>Since 2003 ASD has been working with the <link
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="https://www.aia-aerospace.org/">Aerospace Industries Association of
+                    America</link> (AIA) and, since 2005, with the <link
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="http://www.ataebiz.org/Pages/default.aspx">ATA e-Business
+                    Program</link> as well, to harmonise US and European technical publication
+                guidance. These three organisations are now working together to develop, maintain
+                and promote S1000D internationally.</para>
+        </sect2>
+        <sect2>
+            <title>Principal Concepts</title>
+            <para>The S1000D specifications defines a number of principal concepts which allow the
+                creation, management and exchange of technical publications. Perhaps the most
+                important concept behind S1000D is that of modularisation; the idea that a document
+                can be broken down into individual segments known as Data Modules that can then be
+                reused across multiple publications. This concept allows content to be updated in
+                one location and for that change to then appear in multiple publications. </para>
+            <sect3>
+                <title>Data Modules</title>
+                <para>A data module represents the smallest self-contained information unit within a
+                    technical publication. Exactly what constitutes a data module is for the author
+                    to decide and it will depend on the size of the publication and how much content
+                    is suitable for reuse. A data module could represent an entire document, if it
+                    is only a few pages and the content is only suitable for re-use in its entirety;
+                    or it could represent a chapter, section, sub-section, paragraph or something as
+                    small as a list, if that list could be re-used in multiple documents. The data
+                    module consist of a single XML file with a root element &lt;dmodule> and two
+                    main sections: the identification and status section &lt;identAndStatusSection>
+                    and the content section.</para>
+                <programlisting>
+                    &lt;dmodule>
+                        &lt;identAndStatusSection>
+                            &lt;dmAddress>
+                            ...
+                            &lt;/dmAddress>
+                            &lt;dmStatus>
+                            ...
+                            &lt;/dmStatus>
+                        &lt;/identAndStatusSection>
+                        &lt;content>
+                        ...
+                        &lt;/content>
+                    &lt;/dmodule>
+                </programlisting>
+                <para>The identification and status section contains the metadata and management
+                    information and is further broken down into the data module address element
+                    &lt;dmAddress> which contains identification information such as numbering,
+                    revision and title, and the data module status element &lt;dmStatus> which
+                    contains information such as providence, security classification and applicable
+                    business rules.</para>
+                <para>The content section of the data module contains the text and illustrations
+                    displayed to the user. The structure of this section varies depending on the
+                    type of publication and the data module schema being used. The available schemas
+                    (version 4.1) are shown in the following table:</para>
+                <table xml:id="table1">
+                    <caption>S1000D Data Module Schemas</caption>
+                    <thead>
+                        <tr>
+                            <td>Data module type</td>
+                            <td>Schema</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Applicability cross-reference table (ACT)</td>
+                            <td>appliccrossreftable.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Business rules exchange information (BREX)</td>
+                            <td>brex.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Checklist information</td>
+                            <td>checklist.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Common information repository (CIR)</td>
+                            <td>comrep.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Conditions cross-reference table (CCT)</td>
+                            <td>condcrossreftable.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Container information</td>
+                            <td>container.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Crew/operator information</td>
+                            <td>crew.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Descriptive information</td>
+                            <td>descript.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Fault isolation information</td>
+                            <td>fault.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Front matter</td>
+                            <td>frontmatter.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Learning information</td>
+                            <td>learning.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Maintenance planning information</td>
+                            <td>schedul.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Parts information</td>
+                            <td>ipd.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Procedural information</td>
+                            <td>proced.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Process module information</td>
+                            <td>process.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Products cross-reference table</td>
+                            <td>prdcrossreftable.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>SCO (Shareable content objects) information</td>
+                            <td>scocontent.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Service bulletins</td>
+                            <td>sb.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Wiring data</td>
+                            <td>wrngdata.xsd</td>
+                        </tr>
+                        <tr>
+                            <td>Wiring data description information</td>
+                            <td>wrngflds.xsd</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </sect3>
+            <sect3>
+                <title>Publication Modules</title>
+                <para>Publication modules define the content and structure of a publication. Content
+                    can be packaged and delivered as one or more publication modules, each of which
+                    contain a series of references to data modules or other publication modules.
+                    Every publication has a single top level publication module. As with data
+                    modules, the degree to which publications are split and broken down by sections
+                    is a matter for authors to decide. A publication module is represented by a
+                    single XML file with a &lt;pm> root element and the same two main sections as a
+                    data module but with the content section containing one or more publication
+                    module entries.</para>
+                <programlisting>
+                    &lt;pm>
+                        &lt;identAndStatusSection>
+                            &lt;pmAddress>
+                            ...
+                            &lt;/pmAddress>
+                            &lt;pmStatus>
+                            ...
+                            &lt;/pmStatus>
+                        &lt;/identAndStatusSection>
+                        &lt;content>
+                            &lt;pmEntry>
+                                &lt;pmRef>
+                                ...
+                                &lt;/pmRef>
+                            &lt;/pmEntry>
+                            &lt;pmEntry>
+                                &lt;dmRef>
+                                ...
+                                &lt;/dmRef>
+                            &lt;/pmEntry>
+                        &lt;/content>
+                    &lt;/pm>
+                </programlisting>
+                <para>A publication module entry &lt;pmEntry> can contain references to other
+                    publication modules &lt;pmRef>, data modules &lt;dmRef> and also contain other
+                    &lt;pmEntry> elements if the entry exists only to give structure to the
+                    publication. The &lt;pmEntry> elements can be thought of as providing the table
+                    of contents, so there may be a heading which contains only other sub-headings
+                    for example. A &lt;pmEntry> can also have a title &lt;pmEntryTitle> which is
+                    seen by the viewer. If no title is provided then alternatively the reference
+                    number can be shown to the viewer or the title could be derived from the target
+                    document.</para>
+            </sect3>
+            <sect3>
+                <title>Common Source Database</title>
+                <para>The S1000D specification defines the Common Source Database (CSDB) as “an
+                    information store and management tool for all objects required to produce the
+                    technical publications within projects”[<xref linkend="s1kd04"/>]. In practice
+                    that means that it is the repository for all data modules and publication
+                    modules plus any graphics or other multimedia used. It must also contain
+                    supporting management files such as Data Dispatch Notes (DDN) and Data
+                    Management Lists (DML). The specification explicitly does not define how a CSDB
+                    should be implemented.</para>
+                <para>The most important concept behind the CSDB is that it is a single source for
+                    content and should not contain any duplicated data. Data modules should be
+                    sufficiently granular in their content to allow re-use in multiple outputs. The
+                    word ‘module’ in ‘data module’ and ‘publication module’ has been carefully
+                    chosen. Publications can be built up of many modules. There is nothing to stop
+                    different publications re-using the same data module, in fact this is positively
+                    encouraged. It means authors only need to update content in one location and
+                    multiple publications will contain the revised content.</para>
+            </sect3>
+        </sect2>
+    </sect1>
+    <sect1>
+        <title>Introduction to the Knowledge Warehouse Project</title>
+        <para>Knowledge Warehouse was the name of a legacy SAP document management system used by a
+            major UK airline to manage engineering procedures, work instructions, user guides and
+            other content created in house for use by aircraft engineers. Much of the content was in
+            Microsoft Word format but it also contained Excel spreadsheets and PDF files.</para>
+        <para>The airline had already procured an ATA/S1000D content management system (<link
+                xlink:href="https://www.flatironssolutions.com/">Flatirons Solutions CORENA
+                Suite</link>) that would enable their engineers to access OEM aircraft maintenance
+            manuals via tablet computer at the point of need. It therefore made sense to migrate the
+            Knowledge Warehouse content to the same platform so that engineers could also view this
+            content on their tablets using the same applications. Prior to this, engineers had to
+            access on-line content via computer terminals in the hangar. This would mean walking
+            from the aircraft to the terminal between each job, printing the relevant content and
+            then returning to the aircraft. While no huge distances were involved, any time and
+            motion study would show that being able to access the content from anywhere in the
+            hangar via tablet has the potential to bring significant time and cost savings.</para>
+        <para>In order to manage these documents on the same platform as the OEM manuals it was
+            decided to convert them into, and maintain them as, S1000D. This would have the added
+            benefit of turning them into structured XML documents which would allow powerful
+            searches to be performed using XQuery and multiple representations to be generated for
+            different devices using XSLT. It would also mean that the content could be managed using
+            the same tool-set as the OEM manuals.</para>
+    </sect1>
+    <sect1>
+        <title>Migration Planning</title>
+        <para>Migrating publications to S1000D is essentially a matter of creating data modules for
+            content and publication modules for structure. A decision was taken to reuse the
+            navigation structure in the legacy system to create the publication module structure and
+            to convert each document into a single data module. The only data module schema that was
+            found to be suitable for all of the very varied content was the descriptive schema which
+            allows a reasonably free content layout. Although some of the documents were procedures
+            and might have benefited from the procedural schema, this schema was found to be too
+            strict for the airline’s needs.</para>
+        <table xml:id="table2">
+            <caption>A word of advice..</caption>
+            <tbody>
+                <tr>
+                    <td>This was perhaps the first point in the project where we came up against a
+                        fundamental fact of S1000D, namely that it’s development has been heavily
+                        influenced by the needs of product manufacturers. Because of this, tailoring
+                        S1000D to fit wider applications can be a challenge. Aspects that have a
+                        clear purpose when talking about a specific product are hard to make sense
+                        of when talking in more general terms. For example, the procedural schema
+                        insists on a preliminary requirements section. This might make sense when
+                        dismantling a specific component from an aircraft, where the component first
+                        has to be removed and certain tools will need to be on hand, but when
+                        talking about a more general procedure, for example cleaning up a spillage,
+                        then that probably depends on the type of spillage and you might want the
+                        freedom to explain that.</td>
+                </tr>
+            </tbody>
+        </table>
+        <sect2>
+            <title>Data Modules</title>
+            <para>The legacy system was able to produce an <link
+                    xlink:href="https://www.w3.org/TR/html/">HTML</link> rendering of the Word
+                documents it stored. By converting this HTML to <link
+                    xlink:href="https://www.w3.org/TR/html/">XHTML</link> (using the <link
+                    xlink:href="http://www.it.uc3m.es/jaf/html2xhtml/">html2xhtml</link> command
+                line tool) and then transforming the XHTML to an S1000D data module using <link
+                    xlink:href="https://www.w3.org/TR/xslt/all/">XSLT</link>, it was possible to
+                obtain a rough and ready but valid S1000D document which could be manually enhanced
+                at a later date.</para>
+            <para>For PDF documents it was decided to create the data module using the text
+                extracted from the PDF using the <link xlink:href="https://itextpdf.com/"
+                    >iText</link> library. Although it was not possible to preserve any of the
+                document’s internal structure in this way, the PDF could also be stored in the CSDB
+                as a binary resource. As an interim solution the users would see the PDF document
+                when accessing the data module until the data module had been enhanced to resemble
+                the PDF, at which point it could be removed.</para>
+            <para>While this approach worked well for the vast majority of documents there were a
+                small number of very large documents that were later discovered to be too big to
+                manage efficiently in the CSDB. Working with them in an XML editor was slow or even
+                impossible on certain low specification workstations and rendering them for viewing
+                could also be problematic.</para>
+            <table xml:id="table3">
+                <caption>A word of advice..</caption>
+                <tbody>
+                    <tr>
+                        <td>With the benefit of hindsight, a review of very large documents should
+                            have done before they were converted to S1000D. Breaking these documents
+                            up in their original format would have probably been easier than
+                            breaking them up after they had been converted to S1000D and loaded into
+                            the CSDB.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <sect3>
+                <title>The Data Module Code</title>
+                <para>Before it was possible to generate any S1000D documents at all, an
+                    identification numbering system, or data module code, had to be devised as this
+                    information is stored internally in the data module, in the
+                    &lt;indentAndStatusSection> mentioned earlier, and also forms part of the data
+                    module file name. The data module code is built up of a number of sections which
+                    are described in detail below.</para>
+                <table xml:id="table5">
+                    <caption>A word of advice..</caption>
+                    <tbody>
+                        <tr>
+                            <td>Once again S1000D clearly shows its roots in component
+                                manufacturing. Codes such as model identification, system
+                                difference, subsystem and assembly make a lot of sense when talking
+                                about the components of an aircraft engine but not so much in other
+                                contexts such as general procedural documents and it can be hard to
+                                make meaningful sense of them.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </sect3>
+            <sect3>
+                <title>Model Identification Code</title>
+                <para>The Model Identification Code (MIC) is used to identify an individual product
+                    or project. To be valid it has to be between 2 and 14 characters long which can
+                    include only numbers and upper-case letters. According to the specification,
+                    projects must apply to the North Atlantic Treaty Organisation (NATO) Support and
+                    Procurement Agency (NSPA) to register an MIC. In practice however, this is more
+                    relevant to equipment suppliers and if the data is not going to be exported to
+                    other organisations then it should be sufficient to think up a code which is (a)
+                    unlikely to be used by anyone else, perhaps by including an organisation name,
+                    and (b) which is not one of those already registered. The registered codes can
+                    be seen at <link xmlns:xlink="http://www.w3.org/1999/xlink"
+                        xlink:href="http://www.nspa.nato.int/en/organization/Logistics/LogServ/asds2000m.htm"
+                        >http://www.nspa.nato.int/en/organization/Logistics/LogServ/asds2000m.htm</link></para>
+                <para>During the Knowledge Warehouse migration project, the model identification
+                    code when through several iterations of change. Initially a very project
+                    specific name was chosen but it was soon realised that the project name would
+                    become meaningless over time. A thought experiment was carried out to envisage
+                    what content might be managed as S1000D in the future. This led to a very
+                    high-level name which would cover any content from anywhere within, not only the
+                    airline, but its parent company as well. This idea was soon dropped when it was
+                    realised that the rest of the numbering system would be exhausted long before it
+                    could manage that many documents. In the end a name which was airline specific
+                    and signified internal company documents was chosen. If other types of documents
+                    from the same airline or documents from other associated organisations were
+                    placed in the repository then new model identification codes would be chosen for
+                    them.</para>
+            </sect3>
+            <sect3>
+                <title>System Difference Code</title>
+                <para>The System Difference Code (SDC) is intended to identify different versions of
+                    a system. To be valid it must be between one and four characters long which can
+                    only include numbers and upper-case letters. Once the model identification code
+                    had been selected, choosing a system difference code was found to be relatively
+                    easy. As they MIC identified internal airline documents it was natural to use
+                    airline divisions for the SDC. As the migration project only covered the
+                    engineering part of the business a code that signified this was chosen.</para>
+            </sect3>
+            <sect3>
+                <title>Standard Numbering System</title>
+                <para>The Standard Numbering System (SNS) consists of groups of characters (numbers
+                    or upper-case letters) separated by dashes. The first group or two or three
+                    characters is the system code, the second group, rather confusingly, has one
+                    character for the sub-system and another for the sub-sub-system code and the
+                    final group of two or four characters is the assembly code, e.g. XX-XX-XX or
+                    XX-XX-XXXX</para>
+                <para>Once again component manufacturing shows its strong influence on the
+                    specification. One way to make sense of this is to think of the three groups in
+                    terms of chapter, section and subject. The Knowledge Warehouse content already
+                    had a number of top level headings which could be thought of as chapters, which
+                    themselves were divided into sections, so this seemed at first a straightforward
+                    mapping. It also highlighted an important point, which is the relationship
+                    between the content in the repository and what is seen by the viewer. While
+                    S1000D advocates a modular approach, meaning content can be re-used anywhere, it
+                    is also important to consider that authors need to be able to locate the content
+                    quickly in the CSDB. Having a numbering system that means something is one way
+                    to achieve this. If an author knows they want to edit a procedure and all of the
+                    procedures are in chapter 1 which has a SNS starting 01 then this makes locating
+                    the content in the repository much easier than if a randomly allocated number is
+                    used. It was also discovered that having to consider a new numbering system
+                    prompted a rethink of how the airline’s engineering content was structured. For
+                    example, several chapters contained a section on health and safety. While some
+                    of this content could be re-used in a modular way, some was unique to the
+                    context of the chapter. It was decided to use the same section number to signify
+                    health and safety in each chapter so that authors knew immediately where to find
+                    health and safety content, as shown below:</para>
+                <para>01-02-XXXX – Health and safety section in chapter 1</para>
+                <para>02-02-XXXX – Health and safety section in chapter 2</para>
+                <table xml:id="table6">
+                    <caption>A word of advice..</caption>
+                    <tbody>
+                        <tr>
+                            <td>With hindsight, perhaps it would’ve been even better to put all
+                                Health and Safety content under a common code, maybe using HS as the
+                                system identifier and forgetting about the chapter context all
+                                together. In truth, there are many different and equally valid ways
+                                to organise content in S1000D and in the end it is for those who
+                                will be using the system to decide what works for them.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <para>Another important factor to consider is allowing space to for the content to
+                    grow. For this reason it was decided quickly to use 4 characters for the
+                    assembly (or subject) code so that no artificial constraints were created early
+                    on in the project.</para>
+                <para>Similar restrictions exist on the total number of chapters and sections
+                    available, depending on whether it is decided to use numbers only or letters as
+                    well. Whatever system is chosen it is important to ensure that there is plenty
+                    of growing room at every level.</para>
+            </sect3>
+            <sect3>
+                <title>Other Codes</title>
+                <sect4>
+                    <title>Disassembly Code and Disassembly Code Variant</title>
+                    <para>The Disassembly Code (DC) and Disassembly Code Variant (DCV) are two parts
+                        of the data module code which are very hard to make sense of outside of a
+                        component manufacturing or maintenance context. They relate to the idea that
+                        a dismantled part is made up of a series of other parts. They are however
+                        compulsory parts of the data module code so, for the purposes of the
+                        Knowledge Warehouse project, they were left as zeros.</para>
+
+                </sect4>
+                <sect4>
+                    <title>Information Code and Information Code Variant</title>
+                    <para>The Information Code (IC) is used to identify the type of information in
+                        the S1000D document. The specification defines a number of generic
+                        information codes and it is also possible to define custom codes, specific
+                        to a project. For simplicity it was decided to use one generic code for all
+                        Knowledge Warehouse content: "040" meaning “description” which fits with the
+                        use of the descriptive schema. The Information Code Variant (ICV) is
+                        intended to signify variations of the activity covered by the information
+                        code. The default value is the character A.</para>
+                </sect4>
+                <sect4>
+                    <title>Item Location Code</title>
+                    <para>The Item Location Code (ILC) is another very component specific code which
+                        had no meaningful use in the context of Knowledge Warehouse. As a value is
+                        mandatory the character D was chosen meaning all locations apply.</para>
+                </sect4>
+            </sect3>
+            <sect3>
+                <title>Putting It All Together</title>
+                <para>The complete data module code is put together as shown in the example table
+                    below. </para>
+                <table xml:id="table4">
+                    <caption>Data Module Code</caption>
+                    <tbody>
+                        <tr>
+                            <td>MIC</td>
+                            <td>SDC</td>
+                            <td>SNS</td>
+                            <td>DC + DCV</td>
+                            <td>IC + ICV</td>
+                            <td>ICL</td>
+                        </tr>
+                        <tr>
+                            <td>AIRLINEDOCS</td>
+                            <td>ENG</td>
+                            <td>01-01-0001</td>
+                            <td>00000</td>
+                            <td>040A</td>
+                            <td>D</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <para>When used in file names or URIs the data module code is preceded by "DMC" and
+                    the elements joined together with dashes, for example: </para>
+                <para><emphasis>DMC-AIRLINEDOCS-ENG-01-01-0001-00000-040A-D.xml</emphasis></para>
+            </sect3>
+        </sect2>
+        <sect2>
+            <title>Data Module Title</title>
+            <para>A data module title &lt;dmTitle> is made up of 2 elements, the technical name
+                &lt;techName> which is mandatory, and the information name &lt;infoName> which is
+                optional.</para>
+            <programlisting>
+                &lt;dmTitle>
+                    &lt;techName>Headset&lt;/techName>
+                    &lt;infoName>Install procedure&lt;/infoName>
+                &lt;/dmTitle>
+            </programlisting>
+            <para> If the information name is present then it is normally appended to the technical
+                name when displayed. So the example above would be displayed as:</para>
+            <para>
+                <emphasis>Headset – Install procedure</emphasis></para>
+            <para>For the Knowledge Warehouse content being migrated, document titles were already
+                well established and in fact most documents already had two titles, the name and the
+                document reference number. For example: <emphasis>Airplane Health Management and
+                    Airman Systems – EN-WD-3-5</emphasis>. While an argument could be made that the
+                historic reference number was being replaced by the data module code, many users had
+                memorised the reference number and would search for this rather than the document
+                title. It was therefore a straightforward decision to map the document title to the
+                &lt;techName> and the document number, where available, to the optional
+                &lt;infoName>.</para>
+            <table xml:id="table7">
+                <caption>A word of advice..</caption>
+                <tbody>
+                    <tr>
+                        <td>One of the most important points re-enforced by this project is not to
+                            alienate your users. S1000D may be a totally new concept to them but
+                            frankly they are unlikely to be impressed unless they can find the
+                            content they need quickly. Listening carefully to the users and
+                            understanding how they want to use the system is essential for a
+                            successful S1000D migration. A certain degree of adapting is going to be
+                            inevitable for them but they should not be forced into new ways of doing
+                            things if it can be avoided.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </sect2>
+    </sect1>
+    <sect1>
+        <title>Publication Modules</title>
+        <para>The legacy Knowledge Warehouse system had seven top-level navigation headings, so in
+            order to provide the same top-level navigation in S1000D, it made sense to create a
+            publication module for each heading. Creating the publication modules seemed
+            straightforward as the legacy navigation structure was available as HTML and, by
+            converting this first to XHTML, it was possible to transform the navigation structure
+            into S1000D XML publication modules using XSLT.</para>
+        <table xml:id="table8">
+            <caption>A word of advice..</caption>
+            <tbody>
+                <tr>
+                    <td>Although this was a relatively straightforward task, with the benefit of
+                        hindsight copying the existing navigation exactly was not the best decision.
+                        It was later discovered that some of the publication modules were so large
+                        that it was almost impossible to work with them in an editor. These
+                        publication modules had to be split later into multiple smaller publication
+                        modules which were then referenced from the top-level publication module,
+                        making it a much smaller and more manageable file. Reviewing the number of
+                        entries at each level in the structure before the migration began, and
+                        restructuring where prudent, would’ve avoided this extra work later.</td>
+                </tr>
+            </tbody>
+        </table>
+        <para>In order to match the entry in the publication module with the correct data module, a
+            title look up was used. It soon became apparent that in some cases the lookup was unable
+            to resolve the correct data module as multiple data modules had the same title. Further
+            investigation showed that the reason for this was that the legacy system did not support
+            content re-use and therefore the same document had been copied into multiple locations
+            in the structure as it was needed. On examination it was found that the documents were
+            not always identical, some having been edited and this created inconsistency in the
+            content. This is exactly the kind of situation that S1000D is designed to prevent
+            through module reuse. To resolve the problem a manual effort was needed by authors to
+            merge the content and remove the duplicates prior to running the migration.</para>
+        <sect2>
+            <title>The Publication Module Code</title>
+            <sect3>
+                <title>Model Identification Code</title>
+                <para>The Model Identification Code (MIC) used would normally be the same as that
+                    chosen for the Data Modules and this was the case for Knowledge
+                    Warehouse.</para>
+            </sect3>
+            <sect3>
+                <title>Issuing Authority</title>
+                <para>The Issuing Authority is the organisation that produced the publication. This
+                    five-character code can be made up of numbers and upper-case letters. The
+                    specification recommends using a Commercial and Government Entity (CAGE) code
+                        [<xref linkend="s1kd05"/>] for the issuing authority, which happens to fit
+                    the criteria exactly. CAGE codes are widely used and many aerospace
+                    organisations, including airlines, are already using them, as was the case in
+                    the Knowledge Warehouse project. If in doubt there are various CAGE code search
+                    engines available online such as <link xlink:href="https://www.cagecode.info/"
+                        >https://www.cagecode.info/</link>.</para>
+            </sect3>
+            <sect3>
+                <title>Publication Number</title>
+                <para>The publication number is a five-character identifier made up of numbers or
+                    upper-case letters. For the Knowledge Warehouse project there were only seven
+                    publications to begin with and it was natural to number these 00001 to
+                    00007.</para>
+            </sect3>
+            <sect3>
+                <title>Volume Number</title>
+                <para>The volume number is a two digit identifier. Initially all Knowledge Warehouse
+                    publication modules had only one volume and so "01" was used. Later, some
+                    publication modules were split into multiple smaller modules and for these "01"
+                    remained the top-level publication modules with the referenced modules being
+                    numbered from "02" onwards.</para>
+            </sect3>
+            <sect3>
+                <title>Putting It All Together</title>
+                <para>When used in file names or URIs the publication module code is preceded by
+                    "PMC" and the elements joined together with dashes, for example:</para>
+                <para><emphasis>PMC-AIRLINEDOCS-CAG01-00001-01.xml</emphasis></para>
+            </sect3>
+        </sect2>
+        <sect2>
+            <title>Publication Module Entry Title</title>
+            <para>The &lt;pmEntryTitle> element contains the title for a group of entries in the
+                publication table of contents. On other words, these can be thought of as chapter or
+                section titles.</para>
+        </sect2>
+    </sect1>
+    <sect1>
+        <title>Business Rules</title>
+        <para>The S1000D specification talks a great deal about business rules which it defines as
+            “decisions that are made by a project or an organization on how to implement
+                S1000D”[<xref linkend="s1kd06"/>. Initially there was a feeling in the project team
+            that business rules were probably unnecessary for the Knowledge Warehouse project. Of
+            course they would be essential if for developing technical documentation for an aircraft
+            but for general-purpose document management they seemed an unnecessary concern. This
+            thinking was quickly proved wrong once users were let loose on the system for the first
+            time. Business rules are in fact absolutely key to the success of any S1000D project and
+            it is for this reason that the specification talks about them so much, and especially,
+            about the Business Rule Decision Points (BRDP) and Business Rules Exchange (BREX).
+            Without any business rules, authors are free to create whatever content they want,
+            provided that the document remains valid according to the relevant schema.</para>
+        <table xml:id="table9">
+            <caption>A word of advice..</caption>
+            <tbody>
+                <tr>
+                    <td>Don’t be shy of business rules. Business rules are your friends and will
+                        makes the lives of everyone involved in the project easier with a little
+                        up-front investment in time and effort. Without business rules, you may
+                        suddenly find your beautifully crafted S1000D system no longer functions as
+                        expected just because a user has entered an incorrect code or has failed to
+                        enter required information in a particular field.</td>
+                </tr>
+            </tbody>
+        </table>
+        <sect2>
+            <title>Business Rule Decision Points</title>
+            <para>The S1000D specification includes a set of Business Rule Decision Points (BRDP).
+                In S1000D issue 4.1 there are over 550 individual BRDP. These decision points are
+                there to help implementers to make important decisions about their project before
+                starting the implementation. Not all decision points are relevant to all projects,
+                so the first step should be to review all the points and select the ones that apply.
+                Some of the decisions to be made will be simple, such as which language to use, and
+                some will require consideration at a broader business level because the decisions
+                made for one project may have an impact on other projects at a later date, for
+                example the model identification code to be used.</para>
+            <para>For the Knowledge Warehouse project, a proper review of the BRDP was not done
+                prior to the implementation for the reasons mentioned earlier, although many of the
+                decision still had to be made. With the benefit of hindsight, a proper BRDP review
+                would’ve been beneficial and prevented some inconsistencies that had to be rectified
+                later. For example there was confusion about whether the country code of modules
+                should be UK or GB and both codes were used in documents. In fact only GB is an ISO
+                valid identifier and formalising this decision in advance would’ve prevented the
+                wrong code being used and having to be corrected later.</para>
+            <para>It should be acknowledged however that for those unfamiliar with S1000D, the
+                purpose of a particular BRDP may not become clear until the project is well under
+                way. Therefore only a baseline review of BRDP may be possible initially with further
+                reviews later to understand if rules have become relevant. For the Knowledge
+                Warehouse project, the following BRDP were very important and could probably be
+                considered baseline requirements for any S1000D implementation. <xref
+                    linkend="appendix-a"/> contains further decision points that were also important
+                for Knowledge Warehouse as well as some that were not considered but which, with the
+                benefit of hindsight, probably should have been. </para>
+            <table xml:id="table10">
+                <caption>Baseline BRDP for the Knowledge Warehouse project</caption>
+                <thead>
+                    <tr>
+                        <td>Identifier</td>
+                        <td>Title</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>BRDP-S1-00002</td>
+                        <td>List of permitted CAGE codes and/or names of the originator companies to
+                            be used for the technical publications</td>
+                    </tr>
+                    <tr>
+                        <td>BRDP-S1-00003</td>
+                        <td>Issue of S1000D to be used</td>
+                    </tr>
+                    <tr>
+                        <td>BRDP-S1-00005</td>
+                        <td>Publications to be produced</td>
+                    </tr>
+                    <tr>
+                        <td>BRDP-S1-00006</td>
+                        <td>Schemas to be used</td>
+                    </tr>
+                    <tr>
+                        <td>BRDP-S1-00047</td>
+                        <td>Country and language codes</td>
+                    </tr>
+                    <tr>
+                        <td>BRDP-S1-00050</td>
+                        <td>Source of the technical names</td>
+                    </tr>
+                    <tr>
+                        <td>BRDP-S1-00070</td>
+                        <td>Use of the element &lt;enterpriseName> and/or the attribute
+                            enterpriseCode for the responsible partner company</td>
+                    </tr>
+                    <tr>
+                        <td>BRDP-S1-00071</td>
+                        <td>Use of the element &lt;enterpriseName> and/or the attribute
+                            enterpriseCode for the responsible originator</td>
+                    </tr>
+                    <tr>
+                        <td>BRDP-S1-00106</td>
+                        <td>Population of the element &lt;refs></td>
+                    </tr>
+                    <tr>
+                        <td>BRDP-S1-00332</td>
+                        <td>Allocation of Product model identification code</td>
+                    </tr>
+                    <tr>
+                        <td>BRDP-S1-00334</td>
+                        <td>Allocation of system difference code</td>
+                    </tr>
+                    <tr>
+                        <td>BRDP-S1-00336</td>
+                        <td>Product SNS structure</td>
+                    </tr>
+                    <tr>
+                        <td>BRDP-S1-00338</td>
+                        <td>Number of characters in assembly code</td>
+                    </tr>
+                    <tr>
+                        <td>BRDP-S1-00344</td>
+                        <td>Use of CAGE code and/or model identification code based ICN</td>
+                    </tr>
+                    <tr>
+                        <td>BRDP-S1-00366</td>
+                        <td>Use of a project specific BREX data module</td>
+                    </tr>
+                    <tr>
+                        <td>BRDP-S1-00368</td>
+                        <td>Applicable sets of business rules</td>
+                    </tr>
+                </tbody>
+            </table>
+        </sect2>
+        <sect2>
+            <title>Business Rules Exchange (BREX)</title>
+            <para>Every S1000D data module must refer to a BREX data module. The reference BREX data
+                module defines the business rules that apply to that data module. Because it is a
+                data module it can be rendered and viewed just like any other data module. This
+                means that it not only defines the rules in a computer-readable way but also in a
+                human-readable way as well. It is an excellent example of  how S1000D enables you to
+                reuse data modules and have a single source for information.</para>
+            <para>BREX data modules themselves are layered and each S1000D issue defines its own
+                BREX at the highest level. This means that even if a project-specific BREX has not
+                been defined, data modules will need to reference the S1000D BREX. If a
+                project-specific BREX is defined, and hopefully it is now clear that is strongly
+                recommended, then this BREX will need to refer to the S1000D BREX and will inherit
+                the rules therein. It is possible to layer BREX, perhaps by having a BREX for the
+                organisation and then a BREX for the project which references the organisational
+                BREX and ultimately the S1000D BREX.</para>
+            <para>The business rules defned in a BREX data module can be divided into three
+                categories: the context rules, the context independent rules and the SNS
+                rules.</para>
+            <sect3>
+                <title>Context Rules</title>
+                <para>Context rules are contained in the &lt;contextRules> element and define
+                    permitted values using one or more &lt;objectValue> elements; a permitted
+                    structure, using an &lt;objectPath> element that is specified with an XPath
+                    expression; and an &lt;objectUse> element which is used to describe and document
+                    the rule. These elements are bound together in a &lt;structureObjectRule>
+                    element to form a complete rule. </para>
+            </sect3>
+            <sect3>
+                <title>Context Independent Rules</title>
+                <para> Non-context rules are contained in a &lt;nonContextRules> element and apply
+                    throughout the project. They can be used to document rules such as how data
+                    modules and publication modules should be reviewed and approved.</para>
+            </sect3>
+            <sect3>
+                <title>SNS Rules</title>
+                <para>SNS rules define how the Standard Numbering System is to be used in the
+                    context of a project.</para>
+            </sect3>
+        </sect2>
+    </sect1>
+    <sect1>
+        <title>Lessons Learned</title>
+        <para>Perhaps the single most important lesson learned from the Knowledge Warehouse project
+            is not a revelation but more of a reminder and it could be summarised by the five Ps –
+            Proper Preparation Prevents Poor Performance. The S1000D specification may be daunting
+            but the authors have tried to help implementers with the notion of the Business Rule
+            Decision Points. Reviewing these rules and making appropriate decisions in preparation
+            for an implementation will go a long way to making the project run more smoothly.
+            Enforcing these decision using BREX will ensure that this discipline is maintained, even
+            after the implementation is complete.</para>
+        <sect2>
+            <title>Spreadsheet It!</title>
+            <para>The other key way to prepare for a project is to engage with the customer or users
+                and help them to design what the project delivery will look like. Following the
+                migration of the Knowledge Warehouse data several other data sets for the same
+                airline were also migrated to S1000D. These migrations were many times easier to
+                perform thanks to the lessons learned from the original project. Perhaps the single
+                most important way that these migrations were different is that the decision making
+                was completely handed over to the customer. Rather than the implementation team
+                taking the source data and trying to reproduce it in S1000D, the customer decided
+                exactly what the S1000D would like when the migration was complete. To facilitate
+                this a list of documents to be migrated was made and placed in a spreadsheet. The
+                customer then decided what publication, chapter and section the document would
+                appear in when migrated. They also decided what the technical name and information
+                name of each document would be, what the SNS number would be, what model
+                identification and system difference codes would be used. So that ultimately they
+                knew exactly what to expect when the content was migrated. This also allowed the
+                implementation team to highlight any potential problem areas before the migration
+                started. Using this approach was extremely successful, to the extent that the
+                customer knew exactly what to expect. In fact when viewing the content
+                post-migration it appeared so exactly to match their expectation that they had to be
+                persuaded to conduct thorough acceptance testing! “What’s the point?” they said “it
+                looks perfect!”. In fact, of course, it wasn’t perfect and a few changed did need to
+                be made but nothing compared to the restructuring that had to be done for Knowledge
+                Warehouse post-migration.</para>
+        </sect2>
+        <sect2>
+            <title>Hearts and Minds</title>
+            <para>You might think that when you have migrated your customer’s content to beautiful
+                S1000D, and it all looks great, that your job is done! Think again. You have created
+                an S1000D XML-based system for people who are almost certainly not XML experts,
+                never mind S1000D experts. While they may be experts in the inner workings of an
+                aircraft undercarriage you should not expect them to feel right at home with S1000D.
+                Probably they had achieved a level of comfort with Microsoft Word or Adobe Acrobat
+                but now you are asking them to start again with XML authoring. Let’s be clear, there
+                are big advantages to having structured S1000D over unstructured documents but the
+                advantages come at a price. You will need to have rigorous procedures around
+                managing, authoring and publishing content. S1000D is not lightweight because the
+                aviation industry and the military need robust information management tools to be
+                able to ensure flight and equipment safety. You may need to rethink your own
+                business process, perhaps by upskilling a core team of technical authors to manage
+                this content.</para>
+            <para>You will also need to provide quality training materials for your users, which
+                they can refer to whenever they need. One of the big advantages of S1000D in this
+                regard is that it is a document management system so you can use it can document
+                itself! This means that not only can users access training and materials easily but
+                they can see, through real examples in the system, how to do the things they need to
+                do.</para>
+        </sect2>
+    </sect1>
+    <sect1>
+        <title>Conclusion</title>
+        <para>The Knowledge Warehouse project implementation was a steep learning curve all
+            involved. S1000D is not just about XML and being an XML expert does not automatically
+            make you an S1000D expert. S1000D is built on decades of experience in maintaining
+            documentation for complex civil aviation and military systems and  because of this, it
+            is a robust and complex system in itself. It has also been designed to meet a very broad
+            spectrum of requirements and it is for this reason that the specification is a bulky and
+            intimidating document. </para>
+        <para>Perhaps the key to getting the most out of S1000D is in chapter 1.4.1 of the
+                specification[<xref linkend="s1kd07"/>] where it talks about tailoring for a
+            specific project or organisation. I think this is a very helpful way to think about it,
+            especially if you take the analogy of a tailor a little further. We all know that
+            tailors cut cloth and sew the pieces together to create a bespoke item of clothing for
+            the customer. Before getting out the scissors though, the tailor asks what the customer
+            is looking for and then proceeds to take a series of measurements to ensure the finished
+            article is exactly what is requested and that it fits perfectly. The application of
+            S1000D business rules are the way to understand your customer's requirements and get the
+            measurements of your project. With these measurements you can then tailor the
+            specification to fit, leaving out all the parts that aren't relevant. Furthermore,
+            business rules give you the thread to sew the different components of your project
+            together and hold them together securely in the long term.</para>
+    </sect1>
+    <appendix xml:id="appendix-a">
+        <title>Appendix A</title>
+        <table>
+            <caption>Other important BRDP for the Knowledge Warehouse project</caption>
+            <thead>
+                <tr>
+                    <td>Identifier</td>
+                    <td>Title</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>BRDP-S1-00008</td>
+                    <td>Possible deliverables</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00012</td>
+                    <td>Define security classification values and terms (attribute
+                        securityClassification)</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00020</td>
+                    <td>Specify the language</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00026</td>
+                    <td>Highlighting text</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00036</td>
+                    <td>Presentation of the issue number and the inwork number on the title
+                        page</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00049</td>
+                    <td>Definition of the issue date</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00051</td>
+                    <td>Rules for the information names</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00052</td>
+                    <td>Allocation of the information codes and the information names</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00129</td>
+                    <td>Suitability of multimedia use</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00130</td>
+                    <td>Permitted types of multimedia</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00171</td>
+                    <td>Use of the symbols</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00179</td>
+                    <td>Granularity of data in descriptive data modules</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00180</td>
+                    <td>Level of depth of descriptive data modules</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00333</td>
+                    <td>Allow the use of one or several model identification codes</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00342</td>
+                    <td>Use of the disassembly code variant</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00343</td>
+                    <td>Use of numeric values in the information code variant</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00347</td>
+                    <td>Structure and rules for ICN for model identification code based ICN</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00348</td>
+                    <td>Allocation of responsible partner company codes for model identification
+                        code based ICN</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00349</td>
+                    <td>Security classifications to be used for model identification based ICN</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00365</td>
+                    <td>Use of the attribute pmIssuer</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00367</td>
+                    <td>Use of layered BREX data modules</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00387</td>
+                    <td>Use of applicability</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00475</td>
+                    <td>Page size</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00478</td>
+                    <td>Presentation of "Produced by" - "Printed in"</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00479</td>
+                    <td>Presentation of publication module code</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00480</td>
+                    <td>Presentation of data module code</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00481</td>
+                    <td>Presentation of issue date</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00482</td>
+                    <td>Presentation of page number</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00496</td>
+                    <td>Presentation of the document title</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00519</td>
+                    <td>Presentation of change marking of individual table rows</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00520</td>
+                    <td>Presentation of data module titles in the reference table</td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <caption>BRDP that were may have been beneficial to consider for Knowledge Warehouse but
+                were not</caption>
+            <thead>
+                <tr>
+                    <td>Identifier</td>
+                    <td>Title</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>BRDP-S1-00021</td>
+                    <td>Use of ASD Simplified Technical English</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00022</td>
+                    <td>Standard dictionary</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00023</td>
+                    <td>Use of a terminology database or glossary</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00024</td>
+                    <td>Use of a standard list of abbreviations</td>
+                </tr>
+                <tr>
+                    <td>BRDP-S1-00025</td>
+                    <td>Units of measurement</td>
+                </tr>
+            </tbody>
+        </table>
+    </appendix>
+
+
+
+
+
+
+    <bibliography>
+        <title>References</title>
+        <bibliomixed xml:id="s1kd01" xreflabel="1">S1000D Official Homepage<bibliosource
+                xlink:href="http://public.s1000d.org/Pages/Home.aspx"
+                >http://public.s1000d.org/Pages/Home.aspx</bibliosource>
+        </bibliomixed>
+        <bibliomixed xml:id="s1kd02" xreflabel="2">"International specification for technical publications using a common source database", Issue No. 4.1, published by ASD/AIA, 2012: Chapter 1.1</bibliomixed>
+        <bibliomixed xml:id="s1kd03" xreflabel="3">ATA e-Business Program: Standards <bibliosource
+                xlink:href="http://ataebiz.org/Pages/standards.aspx"
+                >http://ataebiz.org/Pages/standards.aspx</bibliosource></bibliomixed>
+        <bibliomixed xml:id="s1kd04" xreflabel="4">"International specification for technical publications using a common source database", Issue No. 4.1, published by ASD/AIA, 2012: Chapter 4.2</bibliomixed>
+        <bibliomixed xml:id="s1kd05" xreflabel="5">Commercial and Government Entity Program
+                <bibliosource xlink:href="https://cage.dla.mil/"
+                >https://cage.dla.mil/</bibliosource></bibliomixed>
+        <bibliomixed xml:id="s1kd06" xreflabel="6">"International specification for technical publications using a common source database", Issue No. 4.1, published by ASD/AIA, 2012: Chapter 2.5</bibliomixed>
+        <bibliomixed xml:id="s1kd07" xreflabel="7">"International specification for technical publications using a common source database", Issue No. 4.1, published by ASD/AIA, 2012: Chapter 1.4.1</bibliomixed>
+    </bibliography>
+</article>

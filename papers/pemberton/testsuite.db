@@ -1,0 +1,704 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet href="docbook.css" type="text/css"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0">
+  <info>
+    <title>The XForms 2.0 Test Suite</title>
+    <author>
+      <personname><firstname>Steven</firstname><surname>Pemberton</surname></personname>
+      <email>steven.pemberton@cwi.nl</email>
+      <uri>http://www.cwi.nl/~steven/</uri>
+      <affiliation>
+        <orgname>CWI, Amsterdam</orgname>
+      </affiliation>
+    </author>
+    <keywordset>
+      <keyword>XML</keyword><keyword>XForms</keyword><keyword>Forms</keyword><keyword>Test Suite</keyword>
+    </keywordset>
+
+
+<abstract>
+<para>XForms 1.0 and 1.1 both had test suites that consisted largely of static
+XForms documents. To run the tests you had to manually activate them one by
+one, and then visually confirm that the output matched the description of what
+should have been produced. If you wanted to add more cases to a test, it
+involved adding to the set of documents, or editing the individual
+documents.</para>
+
+<para>The test suite for XForms 2.0 now being constructed takes a different
+approach, the idea being that the tests should check themselves that they have
+passed; most tests have a similar structure so that only the data used needs to
+be altered to check new cases.</para>
+
+<para>Of course, for a language designed for user-interaction, some tests have to
+be based on physical interaction. But once you have confirmed that clicking on
+a button does indeed generate the activation event, all subsequent tests can
+generate the activation event without user intervention.</para>
+
+<para>The introspection needed for tests to check the workings of the processor
+doing the testing can raise some challenging problems, such as how to test that
+the initial start-up event has been sent when the facilities for recording that
+fact have not yet been initialised.</para>
+
+<para>This paper considers the techniques used to create a self-testing XForms
+test suite, some of the problems encountered, and gives examples of how some of
+them were solved.</para>
+</abstract>
+  </info>
+
+  
+<section>
+  <title>Introduction</title>
+
+<para>XForms <citation>1</citation> is a W3C standard XML-based markup language which, as the name
+would lead you to expect, was originally designed for a new generation of forms
+on the Web. Indeed, version 1 was exactly that, and to a large extent mirrored
+what could be achieved with HTML forms, while adding extra facilities. However,
+after a short period of experience, it was realised that with a small amount of
+generalisation, XForms would be suitable for other sorts of interactive
+applications as well.</para>
+
+<para>And so was born XForms 1.1, a declarative, Turing-complete programming
+language, applicable for interactive applications (and forms) both on and off
+the web.</para>
+
+<para>Since then XForms has been used by a broad, international user population,
+from small companies to multinationals, with more than six implementations
+available from around the world.</para>
+
+<para>One of the surprises has been that experience has repeatedly shown that
+using XForms for applications reduces application development time by an order
+of magnitude, with concomitant reductions in cost. This is largely thanks to
+the declarative style of programming that XForms uses: much of the
+administrative side of regular procedural programming is taken care of
+automatically by the XForms system.</para>
+
+<para>Now, XForms 2.0 is in development <citation>2</citation>, a further generalisation of the
+previous version.</para>
+
+</section>
+<section>
+  <title>Introduction to XForms</title>
+
+<para>The essence of XForms is <emphasis>state</emphasis>, which means that it meshes
+extremely well with the REST (Representational State Transfer) architectural
+style <citation>3</citation>.</para>
+
+<para>An XForms application has two parts: a <emphasis>model</emphasis>, and a
+<emphasis>user-interface</emphasis>. </para>
+
+<para>The model contains all the data being used, stored in <emphasis>instances</emphasis>,
+along with descriptions of properties of, and relationships between, the data.
+For instance, data can be defined inline:</para>
+<programlisting>&lt;instance&gt;
+   &lt;tests xmlns=""&gt;
+      &lt;test pass="" res="" req="valid"&gt;2018-01-20&lt;/test&gt;
+      &lt;test pass="" res="" req="invalid"&gt;2018/01/20&lt;/test&gt;
+   &lt;/tests&gt;
+&lt;/instance&gt;</programlisting>
+
+<para>or can be imported from an external source:</para>
+<programlisting>&lt;instance src="tests.xml"/&gt;</programlisting>
+
+<para>Descriptions of data properties are done using <emphasis>bind</emphasis> statements that
+bind properties to data values:</para>
+<programlisting>&lt;bind ref="today" type="date"/&gt;
+&lt;bind ref="color" readonly="../variant="'basic'"/&gt;
+&lt;bind ref="state" required="../country="'USA'"/&gt;
+&lt;bind ref="state" relevant="../country="'USA'"/&gt;
+&lt;bind ref="total" calculate="../number * ../unitprice"/&gt;
+&lt;bind ref="height" constraint=". &gt; 0"/&gt;</programlisting>
+
+<para>Controls in the user-interface then <emphasis>bind</emphasis> to the data to allow
+interaction:</para>
+<programlisting>&lt;input ref="age" label="Age:"/&gt;</programlisting>
+
+<para>After initialisation the system is in <emphasis>stasis</emphasis>: the data matches the
+descriptions, and the relationships between data are up-to-date. After that,
+<emphasis>events</emphasis> occur, either system-generated or user-initiated, causing data
+values to change, to which the XForms system responds in order to return the
+system to stasis. While in general the system responds to events in standard
+ways, applications can also catch <emphasis>events</emphasis> and specify <emphasis>actions</emphasis>
+that define how to respond to particular events in particular ways:</para>
+<programlisting>&lt;action ev:event="xforms-value-changed"&gt;
+   &lt;setvalue ref="unsaved"&gt;true&lt;/setvalue&gt;
+&lt;/action&gt;</programlisting>
+
+<para>As a --simple-- example, a map application might keep the x and y
+coordinates of a location and a zoom level for looking at the map:</para>
+<programlisting>&lt;instance&gt;
+   &lt;map xmlns=""&gt;
+      &lt;zoom&gt;10&lt;/zoom&gt;
+      &lt;x&gt;511&lt;/x&gt;
+      &lt;y&gt;340&lt;/y&gt;
+      &lt;url/&gt;
+   &lt;/map&gt;
+&lt;/instance&gt;</programlisting>
+
+<para>The URL of the relevant map tile for that location can then
+--automatically-- be kept up-to-date whenever and however any of the values
+change, by using a bind:</para>
+<programlisting>&lt;bind ref="url"
+      calculate="concat('http://tile.openstreetmap.org/',
+                        ../zoom, '/', ../x, '/', ../y, '.png')"/&gt;</programlisting>
+
+<para>See <citation>4</citation> for a further introduction to XForms, and <citation>5</citation> for a fully worked-out
+mapping application in XForms.</para>
+
+</section>
+<section>
+  <title>Test Suites</title>
+
+<para>As part of the process of defining a new standard, it is recognised good
+practice to define a test suite to go along with the specification. The
+principle reason for having a test suite of course is to allow implementers to
+check that their implementations correctly interpret the definitions in the
+specification. However, users of implementations can gain confidence in the
+implementation they use by seeing the results from the test suite. And finally,
+it is useful for the specification writers themselves: by forcing them to think
+of test examples, it can expose corners of the specification that have not yet
+been sufficiently well defined.</para>
+
+</section>
+<section>
+  <title>The XForms 1.* test suite</title>
+
+<para>The original XForms 1.0 and 1.1 test suites <citation>6</citation> were defined as a large
+collection of files, each file testing one feature of the language. Each test
+consisted of some output, plus a description of what you should see if the test
+had passed. Problems experienced with this approach included:</para>
+<itemizedlist>
+  <listitem><para>It was tedious to run each test one by one,</para></listitem>
+  <listitem><para>It was concentrated work deciding if a test had passed,</para></listitem>
+  <listitem><para>Adding tests involved authoring a complete file for each test.</para></listitem>
+</itemizedlist>
+
+</section>
+<section>
+  <title>The XForms 2.0 test suite</title>
+
+<para>The problems experienced with the earlier versions of the test suite led us
+to approach the test suite for the new version of XForms in a totally different
+way. </para>
+
+<para>Firstly, the test suite is now One Big XForm, that loads the details of the
+tests into an XForms instance, and uses that to drive the test suite interface,
+running the tests as sub-forms . The tests are divided over the chapters of the
+specification, and each chapter contains a test case for each feature, each
+test case containing any number of tests for that feature.</para>
+
+<para>The interface allows you to step through the chapters, or to select a
+particular chapter, and for each chapter to step through the tests, or select a
+particular test. </para>
+
+<para>Secondly, as far as possible, the tests are all self testing: apart from a
+description of what is being tested, and the output of the results, tests
+include a big green PASS or a big red FAIL indication at the top of the output,
+signifying whether the output values match with what was expected, with each
+individual failing test within that one test case also being flagged.</para>
+
+<para>However, not all tests can be self-testing. Of course, for a language
+designed for user-interaction, some tests have to be based on physical
+interaction: for instance, does clicking on a button generate the correct
+event? But once you have confirmed it does indeed, subsequent tests can
+generate the activation event without user intervention. </para>
+
+<para>Similarly, some tests can only be confirmed by inspection: does the
+<literal>now()</literal> function indeed generate today's date and time? Once you
+have confirmed that, other tests that depend on the date and time can use that
+function without further inspection.</para>
+
+<para>Some tests are particularly introspective. Are expressions evaluated in the
+correct evaluation context? Such tests are particularly hard to formulate,
+since the very act of introspection alters the context that they are being
+evaluated in.</para>
+
+<para>Finally, testing initialisation can be tricky, because before the system has
+initialised, there is little you can do.</para>
+
+</section>
+<section>
+  <title>The Generic Structure of the Tests</title>
+
+<para>Despite the caveats above regarding tests that cannot be tested
+automatically, the vast majority can, and almost all use a standard
+template.</para>
+
+<para>To demonstrate the workings of this template, let us consider an example
+test case for a function, in this case for the function
+<literal>boolean-from-string().</literal></para>
+
+<para>We want to test that a function calls such as
+<literal>boolean-from-string('true')</literal> return the correct result.</para>
+
+<para>To do this, the parameter value is enclosed in an element:</para>
+<programlisting>&lt;test&gt;true&lt;/test&gt;</programlisting>
+
+<para>and we add attributes where the required result, the actual result, and
+whether the test case passes or not will be stored:</para>
+<programlisting>&lt;test pass="" res="" req="true"&gt;true&lt;/test&gt;</programlisting>
+
+<para>As many such test cases as necessary are then gathered together in an
+instance:</para>
+<programlisting>&lt;instance&gt;
+   &lt;tests pass="" name="boolean-from-string() function" xmlns=""&gt;
+      &lt;test pass="" res="" req="true"&gt;true&lt;/test&gt;
+      &lt;test pass="" res="" req="true"&gt;TRUE&lt;/test&gt;
+      &lt;test pass="" res="" req="true"&gt;tRue&lt;/test&gt;
+      &lt;test pass="" res="" req="true"&gt;1&lt;/test&gt;
+      &lt;test pass="" res="" req="false"&gt;false&lt;/test&gt;
+      &lt;test pass="" res="" req="false"&gt;FALSE&lt;/test&gt;
+      &lt;test pass="" res="" req="false"&gt;faLse&lt;/test&gt;
+      &lt;test pass="" res="" req="false"&gt;0&lt;/test&gt;
+      &lt;test pass="" res="" req="false"&gt;qwertyuiop&lt;/test&gt;
+      &lt;test pass="" res="" req="false"&gt;&lt;/test&gt;
+      ...
+   &lt;/tests&gt;
+&lt;/instance&gt;</programlisting>
+
+<para>A bind is then used to calculate the individual results:</para>
+<programlisting>&lt;bind ref="test/@res" calculate="boolean-from-string(..)"/&gt;</programlisting>
+
+<para>whose effect is to calculate the <literal>res</literal> attribute for all
+<literal>test</literal> elements.</para>
+
+<para>Another bind, independent of which function is being tested, calculates if
+the computer result matches the expected value:</para>
+<programlisting>&lt;bind ref="test/@pass" calculate="if(../@res = ../@req, 'yes', 'no')"/&gt;</programlisting>
+
+<para>and finally a bind for the attribute on the outmost element records if all
+tests have passed:</para>
+<programlisting>&lt;bind ref="@pass" calculate="if(//test[@pass!='yes'], 'FAIL', 'PASS')"/&gt;</programlisting>
+
+<para>which says that if there is a <literal>test</literal> element whose
+<literal>pass</literal> attribute does not have the value <literal>yes</literal>, then the
+test set fails, and otherwise it passes. We may in future also add a percentage
+pass value, that counts the number of passed tests:</para>
+<programlisting>&lt;bind ref="@percent" calculate="100*count(//test[@pass='yes']) div count(//test)"/&gt;</programlisting>
+
+<para>With this structure, every test form has an identical set of controls, that
+output the name of the test, an optional description (which, following XForms
+rules, is only displayed if present in the instance), whether all tests have
+passed, for quick inspection, and the list of each test with an indication of
+what was expected when it has failed:</para>
+<programlisting>&lt;group&gt;
+   &lt;label class="title" ref="@name"/&gt;
+   &lt;output class="block" ref="description"/&gt;
+   &lt;output class="{@pass}" ref="@pass"/&gt;
+   &lt;repeat ref="test"&gt;
+      &lt;output value="."/&gt; → &lt;output ref="@res"/&gt;
+      &lt;output class="wrong" ref="@req[.!=../@res]"/&gt;
+   &lt;/repeat&gt;
+&lt;/group&gt;</programlisting>
+
+<para>Note that with the statement</para>
+<programlisting>&lt;output class="wrong" ref="@req[.!=../@res]"/&gt;</programlisting>
+
+<para>this only selects the <literal>req</literal> attribute if its value does not match
+that of the <literal>res</literal> attribute on the same element. If they match, the
+<literal>req</literal> is not selected, and nothing is output.</para>
+
+<para>This looks like this when run:</para>
+
+<para>
+		<inlinemediaobject>
+		  <imageobject>
+		    <imagedata fileref="boolean-from-string.png"/>
+		  </imageobject>
+		</inlinemediaobject>
+
+</para>
+
+<para>Here is an example of a fail (and in this case with a description as
+well):</para>
+
+<para>		<inlinemediaobject>
+		  <imageobject>
+		    <imagedata fileref="seconds-from-epoch.png"/>
+		  </imageobject>
+		</inlinemediaobject>
+</para>
+
+<para>If we want to test a function with more than one parameter, we structure the
+<literal>test</literal> elements slightly differently, for instance for the
+<literal>compare()</literal> function which has two parameters, by enclosing each
+parameter in an element of its own: </para>
+<programlisting>&lt;test pass="" res="" req="-1"&gt;compare(&lt;a&gt;apple&lt;/a&gt;, &lt;b&gt;orange&lt;/b&gt;)&lt;/test&gt;</programlisting>
+
+<para>and then modify the bind that calculates the results:</para>
+<programlisting>&lt;bind ref="test/@res" calculate="compare(../a, ../b)"/&gt;</programlisting>
+
+<para>Note that in the general template structure, these are the only places where
+there are differences between test cases: in the data, and in the bind
+calculating the result. The rest remains identical.</para>
+
+</section>
+<section>
+  <title>Datatypes</title>
+
+<para>To test datatypes, we want to do something similar. We can collect in the
+<literal>test</literal> elements a, possibly large, group of values of the datatype
+to be tested, and then see if the system thinks they are valid values for that
+type. For instance for the <literal>date</literal> datatype:</para>
+<programlisting>&lt;test pass="" res="" req="invalid"/&gt;
+&lt;test pass="" res="" req="valid"&gt;2018-01-20&lt;/test&gt;
+&lt;test pass="" res="" req="invalid"&gt;2018/01/20&lt;/test&gt;
+&lt;test pass="" res="" req="valid"&gt;-2018-01-20&lt;/test&gt;
+&lt;test pass="" res="" req="invalid"&gt;+2018-01-20&lt;/test&gt;
+&lt;test pass="" res="" req="invalid"&gt;02018-01-20&lt;/test&gt;
+&lt;test pass="" res="" req="valid"&gt;12018-01-20&lt;/test&gt;</programlisting>
+
+<para>and so on, and then calculate with the bind for the results:</para>
+<programlisting>&lt;bind ref="test/@res" calculate="if(valid(.), 'valid', 'invalid')"/&gt;</programlisting>
+
+<para>This would work fine, but for our purposes it has a difficulty. The
+<literal>valid()</literal> function is an XForms 2.0 addition, and we want as litttle
+as possible of the test suite infrastructure to depend on XForms 2.0 features
+-- if anything is likely to fail it is the new features of the language before
+the old features; all the more so since many of the tests will still work with
+older versions of XForms and so can still be used on older implementations.</para>
+
+<para>In XForms 1.1 (and later), if a control is bound to a value, and its value
+changes, an event is dispatched to the control announcing its validity. The
+standard XForms response is to change the display of the value to make it clear
+that it is now newly valid or invalid, but we can catch the event and record
+that it has happened for that value. The only difficulty that we have to deal
+with is that the event is only generated when the value changes.</para>
+
+<para>So what we do is initially set the test value to some random value, it
+doesn't matter what it is, nor whether it is a valid or invalid value for the
+datatype, and when the system has initialised, only then change all the values
+to the data we are actually interested in. Then when the value changes, and the
+event is generated, we catch it and save the result. Something along these
+lines:</para>
+
+<para>Store the value we are interested in in an attribute:</para>
+<programlisting>&lt;test pass="" res="" req="valid" <emphasis role="bold">val="2018-01-20"</emphasis>/&gt;</programlisting>
+
+<para>Add an attribute to the root element to record whether the system has been
+initialised yet:</para>
+<programlisting>&lt;tests pass="" <emphasis role="bold">started=""</emphasis> name="date type" xmlns=""&gt;</programlisting>
+
+<para>And then use a bind to calculate the value of the elements:</para>
+<programlisting>&lt;bind ref="test" type="date" calculate="<emphasis role="bold">if(../@started='', 'xxx', @val)</emphasis>"/&gt;</programlisting>
+
+<para>This ensures that initially the <literal>test</literal> elements have the value
+'xxx', until the <literal>started</literal> attribute is changed, which we do on
+initialisation, by catching the <literal>xforms-ready</literal> event:</para>
+<programlisting>&lt;action ev:event="xforms-ready"&gt;
+   <emphasis role="bold">&lt;setvalue ref="@started"&gt;yes&lt;/setvalue&gt;</emphasis>
+&lt;/action&gt;</programlisting>
+
+<para>Then in the output section, we can catch the validity events, and record
+them:</para>
+<programlisting>&lt;repeat ref="test"&gt;
+   &lt;output ref="."&gt;
+      &lt;action ev:event="xforms-valid"&gt;
+         &lt;setvalue ref="@res"&gt;valid&lt;/setvalue&gt;
+      &lt;/action&gt;
+      &lt;action ev:event="xforms-invalid"&gt;
+         &lt;setvalue ref="@res"&gt;invalid&lt;/setvalue&gt;
+      &lt;/action&gt;
+   &lt;/output&gt;
+   ...</programlisting>
+
+<para>Which might look like this:</para>
+
+<para>		<inlinemediaobject>
+		  <imageobject>
+		    <imagedata fileref="date.png"/>
+		  </imageobject>
+		</inlinemediaobject>
+</para>
+
+</section>
+<section>
+  <title>Events</title>
+
+<para>In the previous example, we saw some events that happen during processing:
+the <literal>xforms-ready</literal> event that is dispatched when the system has
+finished initalising, and the <literal>xforms-valid</literal> and
+<literal>-invalid</literal> events that are dispatched when a value bound to a
+control changes.</para>
+
+<para>In fact, when such a value changes several states are announced via events:
+whether the control is enabled or not, whether the value is optional or
+required, whether the value is readonly or not, as well as the two we have
+already seen. The test to check that these events are sent correctly starts by
+assembling test values that are all zero:</para>
+<programlisting>&lt;test pass="" res="" req="disabled"&gt;0&lt;/test&gt;
+&lt;test pass="" res="" req="enabled"&gt;0&lt;/test&gt;
+&lt;test pass="" res="" req="optional"&gt;0&lt;/test&gt;
+&lt;test pass="" res="" req="required"&gt;0&lt;/test&gt;
+&lt;test pass="" res="" req="readwrite"&gt;0&lt;/test&gt;
+&lt;test pass="" res="" req="readonly"&gt;0&lt;/test&gt;
+&lt;test pass="" res="" req="valid"&gt;0&lt;/test&gt;
+&lt;test pass="" res="" req="invalid"&gt;0&lt;/test&gt;</programlisting>
+
+<para>and binding to the values properties, so that each positive property (such
+as valid) is the case when the value is 1, and the opposite property (such as
+invalid) is the case when the value is 0:</para>
+<programlisting>&lt;bind ref="test/@req[.='enabled']"   relevant="..=1"/&gt;
+&lt;bind ref="test/@req[.='disabled']"  relevant="..=0"/&gt;
+&lt;bind ref="test/@req[.='valid']"     constraint="..=1"/&gt;
+&lt;bind ref="test/@req[.='invalid']"   constraint="..=0"/&gt;
+&lt;bind ref="test/@req[.='required']"  required="..=1"/&gt;
+&lt;bind ref="test/@req[.='optional']"  required="..=0"/&gt;
+&lt;bind ref="test/@req[.='readonly']"  readonly="..=1"/&gt;
+&lt;bind ref="test/@req[.='readwrite']" readonly="..=0"/&gt;</programlisting>
+
+<para>When initialisation is finished, all the test values are flipped to 1:</para>
+<programlisting>&lt;action ev:event="xforms-ready"&gt;
+   <emphasis role="bold">&lt;setvalue iterate="test" ref="."&gt;1&lt;/setvalue&gt;</emphasis>
+&lt;/action&gt;</programlisting>
+
+<para>which causes all the properties to flip. The resultant events are then
+caught in the output section:</para>
+<programlisting>&lt;repeat ref="test"&gt;
+   &lt;output ref="@req"&gt;&lt;label&gt;Event&lt;/label&gt;
+      &lt;setvalue ref="../@res" ev:event="xforms-disabled" value="concat(., 'disabled')"/&gt;
+      &lt;setvalue ref="../@res" ev:event="xforms-enabled" value="concat(., 'enabled')"/&gt;
+      &lt;setvalue ref="../@res" ev:event="xforms-optional" value="concat(., 'optional')"/&gt;
+      &lt;setvalue ref="../@res" ev:event="xforms-required" value="concat(., 'required')"/&gt;
+      &lt;setvalue ref="../@res" ev:event="xforms-readwrite" value="concat(., 'readwrite')"/&gt;
+      &lt;setvalue ref="../@res" ev:event="xforms-readonly" value="concat(., 'readonly')"/&gt;
+      &lt;setvalue ref="../@res" ev:event="xforms-valid" value="concat(., 'valid')"/&gt;
+      &lt;setvalue ref="../@res" ev:event="xforms-invalid" value="concat(., 'invalid')"/&gt;
+   &lt;/output&gt;
+   ...</programlisting>
+
+<para>Note that by concatenating the result, we catch the case where the event is
+(incorrectly) sent more than once.</para>
+
+<para>Here is an example of the output:</para>
+
+<para>
+		<inlinemediaobject>
+		  <imageobject>
+		    <imagedata fileref="notifications.png"/>
+		  </imageobject>
+		</inlinemediaobject>
+
+</para>
+
+</section>
+<section>
+  <title>Actions</title>
+
+<para>Actions often cause a change to the data. A good example of such an action
+is <literal>insert</literal>, that inserts new elements or attributes into a data
+structure.</para>
+
+<para>After an insert, the system has to restore stasis, and goes through a number
+of steps to do that: <emphasis>rebuild</emphasis>: possibly updating internal data
+structures, <emphasis>recalculate</emphasis>: recalculating dependent values,
+<emphasis>revalidate</emphasis>: checking changed values for validity, <emphasis>refresh</emphasis>:
+updating the user interface.</para>
+
+<para>At each step of restoring stasis an event is dispatched. Although seldom
+needed, these events allow applications to do extra steps if necessary.</para>
+
+<para>Doing extra processing during these stages requires care, because, by
+definition, the system is not yet up to date. In particular, changing values
+during these stages necessitates you manually doing an extra
+<emphasis>recalculate</emphasis> afterwards, since the system may not be aware of the
+changes you have made. It also means for instance that we can't keep an index
+of how many events received, and use that to index into a list of events
+received.</para>
+
+<para>So what we do, is start off with the test instance containing elements for
+the expected events, except the very last (refresh):</para>
+<programlisting>&lt;test pass="" res="" req="insert"/&gt;
+&lt;test pass="" res="" req="rebuild"/&gt;
+&lt;test pass="" res="" req="recalculate"/&gt;
+&lt;test pass="" res="" req="revalidate"/&gt;</programlisting>
+
+<para>then on <literal>xforms-ready</literal>, we use <literal>insert</literal> to add the
+missing element. With no further parameters, an <literal>insert</literal> on a list
+just duplicates the last element, so we need to update the <literal>req</literal>
+attribute:</para>
+<programlisting>&lt;action ev:event="xforms-ready"&gt;
+   &lt;insert ref="test"/&gt;
+   &lt;setvalue ref="test[last()]/@req"&gt;refresh&lt;/setvalue&gt;
+&lt;/action&gt;</programlisting>
+
+<para>Then we catch all the events we are expecting, and store them at the
+locations they should be in if the events come in in the right order:</para>
+<programlisting>&lt;action ev:event="xforms-insert"&gt;
+   &lt;setvalue ref="test[1]/@res"&gt;insert&lt;/setvalue&gt;
+&lt;/action&gt;
+&lt;action ev:event="xforms-rebuild"&gt;
+   &lt;setvalue ref="test[@res='insert']/following-sibling::test[1]/@res[.='']"&gt;rebuild&lt;/setvalue&gt;
+&lt;/action&gt;
+&lt;action ev:event="xforms-recalculate"&gt;
+   &lt;setvalue ref="test[@res='rebuild']/following-sibling::test[1]/@res[.='']"&gt;recalculate&lt;/setvalue&gt;
+&lt;/action&gt;
+&lt;action ev:event="xforms-revalidate"&gt;
+   &lt;setvalue ref="test[@res='recalculate']/following-sibling::test[1]/@res[.='']"&gt;revalidate&lt;/setvalue&gt;
+&lt;/action&gt;
+&lt;action ev:event="xforms-refresh"&gt;
+   &lt;setvalue ref="test[@res='revalidate']/following-sibling::test[1]/@res[.='']"&gt;refresh&lt;/setvalue&gt;
+   &lt;recalculate/&gt;
+&lt;/action&gt;</programlisting>
+
+<para>A <literal>setvalue</literal> such as</para>
+<programlisting>&lt;setvalue ref="test[@res='rebuild']/following-sibling::test[1]/@res[.='']"&gt;recalculate&lt;/setvalue&gt;</programlisting>
+
+<para>selects the <literal>test</literal> element after the one whose <literal>res</literal>
+attribute is <literal>rebuild</literal>, and sets the value of its <literal>res</literal>
+attribute only if it has not already been set. Therefore, if the rebuild event
+has not yet been received, we won't record the recalculate.</para>
+
+</section>
+<section>
+  <title>Initialisation</title>
+
+<para>The big obstacle to testing initialisation is that during initialisation
+almost nothing is available: you are unable to use instance values, or
+calculations. The original 1.* test suite just displayed a dialogue box to
+announce that the initialisation events had been received:</para>
+<programlisting>&lt;message ev:event="xforms-model-construct"&gt;xforms-model-construct received&lt;/message&gt;</programlisting>
+
+<para>However, in the version 2 test suite, we have succeeded in finding a way to
+record that the event happened, in an instance value, so that the test can
+self-check.</para>
+
+<para>When we receive the initialisation event, all we do is dispatch a new event
+with a delay long enough to allow initialisation to complete (1000 milliseconds
+is more than enough):</para>
+<programlisting>&lt;action ev:event="xforms-model-construct"&gt;
+   &lt;dispatch name="yes" delay="1000" targetid="M"/&gt;
+&lt;/action&gt;</programlisting>
+
+<para>When the new event is caught, initialisation will have finished, and we can
+then record that the initial event was seen:</para>
+<programlisting>&lt;action ev:event="yes"&gt;
+   &lt;setvalue ref="test[1]"&gt;xforms-model-construct&lt;/setvalue&gt;
+&lt;/action&gt;</programlisting>
+
+</section>
+<section>
+  <title>Conclusion</title>
+
+<para>We wanted to create a test suite that was easy to use, easy to create tests
+for, and easy to update, and we are very happy with the results so far. This is
+still work in progress; we estimate that about half the tests have been written
+to date. However, we already have good experience with the suite, and its easy
+modifyability helps us with constructing it.</para>
+
+<para>Future work, apart from writing the remaining tests, will look at the
+possibilities of running the tests automatically, with minimum human
+intervention.</para>
+
+</section>
+<!--<section>-->
+  <!--<title>References</title>-->
+  <bibliography>
+    
+    <biblioentry>
+      <abbrev>1</abbrev>
+      <title>XForms 1.1</title>
+      <editor>
+        <personname><firstname>John M.</firstname><surname>Boyer</surname></personname>
+      </editor>
+      <publisher>
+        <publishername>W3C</publishername>
+      </publisher>
+      <pubdate>2009</pubdate>
+      <bibliomisc>
+        <link xl:href="https://www.w3.org/TR/xforms/">https://www.w3.org/TR/xforms/</link>
+      </bibliomisc>
+    </biblioentry>
+
+    <biblioentry>
+      <abbrev>2</abbrev>
+      <title>XForms 2.0</title>
+      <editor>
+        <personname><firstname>Erik</firstname><surname>Bruchez et al.</surname></personname>
+      </editor>
+      <publisher>
+        <publishername>W3C</publishername>
+      </publisher>
+      <pubdate>2018</pubdate>
+      <bibliomisc>
+        <link xl:href="https://www.w3.org/community/xformsusers/wiki/XForms_2.0">https://www.w3.org/community/xformsusers/wiki/XForms_2.0</link>
+      </bibliomisc>
+    </biblioentry>
+
+    <biblioentry>
+      <abbrev>3</abbrev>
+      <title>"Chapter 5: Representational State Transfer (REST)". Architectural Styles and the Design of Network-based Software Architectures (Ph.D.).</title>
+      <author>
+        <personname><firstname>Roy Thomas</firstname><surname>Fielding</surname></personname>
+      </author>
+      <publisher>
+        <publishername>University of California, Irvine.</publishername>
+      </publisher>
+      <pubdate>2000</pubdate>
+      <bibliomisc>
+	<link xl:href="https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm">https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm</link>
+      </bibliomisc>
+    </biblioentry>
+
+    <biblioentry>
+      <abbrev>4</abbrev>
+      <title>XForms: an Introduction, </title>
+      <author>
+        <personname><firstname>Steven</firstname><surname>Pemberton</surname></personname>
+      </author>
+      <publisher>
+        <publishername>CWI, Amsterdam</publishername>
+      </publisher>
+      <pubdate>2018</pubdate>
+      <bibliomisc>
+	<link xl:href="https://www.cwi.nl/~steven/xforms/">https://www.cwi.nl/~steven/xforms/</link>
+      </bibliomisc>
+    </biblioentry>
+
+    <biblioentry>
+      <abbrev>5</abbrev>
+      <title>XForms: an Unusual Worked Example</title>
+      <author>
+        <personname><firstname>Steven</firstname><surname>Pemberton</surname></personname>
+      </author>
+      <publisher>
+        <publishername>CWI, Amsterdam</publishername>
+      </publisher>
+      <pubdate>2015</pubdate>
+      <bibliomisc>
+	<link xl:href="https://www.cwi.nl/~steven/Talks/2015/11-05-example/">https://www.cwi.nl/~steven/Talks/2015/11-05-example/</link>
+      </bibliomisc>
+    </biblioentry>
+
+    <biblioentry>
+      <abbrev>6</abbrev>
+      <title>XForms Test Suites</title>
+      <editor>
+        <personname><firstname>Steven</firstname><surname>Pemberton</surname></personname>
+      </editor>
+      <publisher>
+        <publishername>W3C</publishername>
+      </publisher>
+      <pubdate>2008</pubdate>
+      <bibliomisc>
+	<link xl:href="https://www.w3.org/MarkUp/Forms/Test/">https://www.w3.org/MarkUp/Forms/Test/</link>
+      </bibliomisc>
+    </biblioentry>
+
+    <biblioentry>
+      <abbrev>7</abbrev>
+      <title>XForms 2.0 Test Suite</title>
+      <editor>
+        <personname><firstname>Steven</firstname><surname>Pemberton</surname></personname>
+      </editor>
+      <publisher>
+        <publishername>CWI, Amsterdam</publishername>
+      </publisher>
+      <pubdate>2018</pubdate>
+      <bibliomisc>
+	<link xl:href="https://www.cwi.nl/~steven/forms/TestSuite/index.xhtml">https://www.cwi.nl/~steven/forms/TestSuite/index.xhtml</link>
+      </bibliomisc>
+    </biblioentry>
+  </bibliography>
+<!--</section>-->
+  </article>
+  

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-stylesheet type="text/css" href="../../../Applications/oxygen%2017/frameworks/docbook/css/docbook.css"?>
+<article xmlns="http://docbook.org/ns/docbook">
+ <info>
+     <title>Shared Tag Sets as Social Constructs</title>
+     <author><personname><firstname>B. Tommie</firstname><surname>Usdin</surname></personname>
+     <affiliation><orgname>Mulberry Technologies, Inc.</orgname>
+     <address>17 West Jefferson Street, Suite 207, Rockville, MD  USA</address></affiliation>
+     <email>btusdin@mulberrytech.com</email></author>
+ </info>   
+    <section>
+        <title>Introduction</title>
+        <para>Let me start with a confession. These remarks are based solely on my observations and opinions. There is no science here, no controlled experiments, not even rigorously designed cultural anthropology. I would be delighted if someone did that work, but I have not. I have nothing but anecdotal evidence, and that is severely limited by the facts that I am only one person, am fluent in only one natural language, and have only been working with document markup for about 35 years (and databases for 10 before that), and work only in the world of prose documents.  If you tell me that you have different experiences, I will not only not tell you that you are not wrong, I will ask you to tell me about it. There isn’t one way this always works; there isn’t one pattern of interactions that works for everyone; there isn’t  one pattern in which all markup communities interact. These are my opinions, not facts.</para>
+    </section>
+    <section>
+        <title>From the Mouth of a Novice</title>
+        <para>Not long ago I had an interesting conversation with a young man who had just written his first XML document-processing application (of course, he wrote his own document vocabulary). He then showed it to some of the senior people in the organization where he works, and was shocked and disappointed at the responses he got. He had clearly done a lot of reading, worked hard, and build something to impress the powers that be. He wanted recognition, praise, and perhaps additional responsibilities. They laughed at him. </para>
+        <para>He is the son of a friend of a friend, so he felt safe asking me what had gone wrong.
+            The first thing I told him is that the big thing he had done right was to dive in and
+            learn about something he found interesting but knew noting about. I thought that was
+            laudable, and that spirit would serve him well in the future.</para> 
+        <para>Now, let’s look at some of the problems with his XML vocabulary. He said that they laughed at him because:
+        <itemizedlist>
+            <listitem><para><emphasis  role="bold">What it Looks Like:</emphasis> <quote>They told me it was bad XML because there are tags for what things look like and what I want the app to do as well as some for what the stuff means. They said good XML is about meaning, not about look and feel and that, when tagging regular documents, the formatting should be separate from the content.</quote> </para></listitem>
+            <listitem><para><emphasis role="bold">Types of Markup: </emphasis> <quote>They talked about generic markup and
+                        structural markup and containers and procedural markup (which they said was
+                        <quote>deprecated</quote> - a word I did not know but that sounds pretty snooty to
+                        me).</quote></para></listitem>
+            <listitem><para><emphasis role="bold">Mixed Metaphors: </emphasis> <quote>They told me I should not write my own vocabulary until I had made sure one of the <quote>standard</quote> ones would not work for me. Hey, I started with DocBook, but my project is really special, and DocBook did not define all I needed. Then my librarian friend told me that the reference model in JATS is better than the one in DocBook, so I copied it in. Why can’t I do that?</quote></para></listitem>
+            <listitem><para><emphasis  role="bold">Natural/Intuitive Tagging: </emphasis> <quote>I also made my language a lot more natural by using tags from HTML whenever I could. You know, so people would know what the tags meant.</quote></para></listitem>
+        </itemizedlist>
+        </para>
+        <para>And he said: <quote>I read the XML recommendation</quote>: 
+        <itemizedlist>
+            <listitem><para><quote>I didn’t see anything in the XML recommendation that says anything about  avoiding look and feel, and besides, XSL-FO documents are XML and they are all about what the page should look like.</quote> </para></listitem>
+            <listitem><para><quote>And the XML recommendation never mentioned: procedural markup, descriptive markup, generic markup, or structural markup. If this stuff  is so important to making good XML why doesn’t the XML specification talk about it?</quote>   </para></listitem>
+            <listitem><para><quote>If it’s not in the rec, how is a person supposed to know it’s important and how do I learn about it?</quote> </para></listitem>
+        </itemizedlist>
+       </para>
+    </section>
+    <section>
+        <title>The Bare Bones XML specification</title>
+        <para>Well, in a way, he is right. The XML specification does not address separation of content from format, or most other design decisions, and XSL-FO <emphasis>is</emphasis> in XML document syntax and is about page formatting. Yes, but.</para>
+        <para>XML was written as the ‘good parts version’ of SGML. It is a short document that  concentrates on document grammar and well-formedness; DTD grammar and syntax, validity constraints, entities, processors, and the like. It assumes that you want to know <emphasis>how</emphasis> to define a markup vocabulary and says nothing about:
+        <itemizedlist>
+            <listitem><para>Why tag information</para></listitem>
+            <listitem><para>Separating formatting/look-and-feel/behavior from content</para></listitem>
+            <listitem><para>Procedural markup versus descriptive markup </para></listitem>
+            <listitem><para>Generic markup</para></listitem>
+            <listitem><para>Structural markup</para></listitem>
+            <listitem><para>Semantics</para></listitem>
+            <listitem><para>Best (or even recommended) practice for modeling vocabularies</para></listitem>
+            <listitem><para>Data versus documents</para></listitem>
+            <listitem><para>Architectural forms and reuse</para></listitem>
+            <listitem><para>Separation of concerns</para></listitem>
+            <listitem><para>What should or should not be expressed in a grammar</para></listitem>
+            <listitem><para>Element versus attributes</para></listitem>
+        </itemizedlist>            
+        </para>
+        <para>Document-based XML is assumed, by large numbers of its practitioners, to include:
+        <itemizedlist>
+            <listitem><para><emphasis  role="bold">Generic Markup</emphasis> To many of us, the idea of XML incorporates <quote>Generic Markup</quote> that is, the art of identifying information by what it is, not by what it should look like at any moment or how it will be used in any one place. When making up tags for <quote>regular documents</quote> (what ever that means), it is generally considered better if you use generic markup rather than format-based markup or behavioral, procedural markup. Much, but not all, XML benefits from an underlying skeleton of generic markup.</para></listitem> 
+            <listitem><para><emphasis  role="bold">Separating format from content</emphasis> The principle of separating content from format (what it is not what it looks like) is another formulation of the same general idea, although it goes a bit further in that it implies that there can be more than one display or use for the same content. This is, in fact, one of the main virtues of XML as it is generally used.  We can take the same tagged test, extract from it, superset it, repeat anything we need, delete what we want, and each of us make it look-feel-behave in an entirely different way. </para></listitem>
+            <listitem><para><emphasis  role="bold">Separation of concerns</emphasis> Some people think there should be a schema with a widely used grammar for a document type, with perhaps several sets of Schematron rules to enforce more local business rules that are also imposed on those documents, other validations as necessary, and then we can each use a different stylesheet to make it look like we want. There are long discussions of what should be imposed based on a grammar, and what should not.</para></listitem>
+        </itemizedlist>
+But the XML Recommendation mentions none of that.           </para>
+    </section>
+ <section>
+     <title>Advantages of Shared Vocabularies</title>
+     
+     <para>And then my friend was told to use a shared  (common, public, standard) vocabulary.</para>
+     
+     <para>XML grew out of SGML. SGML grew out of an effort to make a universal tag set for typesetting.  (Yes, that is an oversimplification, but it is based on truth.) We couldn’t make a universal tag set because we figured out that this would be making a list of everything that ever mattered to anyone; a task that could not be finished. So instead a syntax for grow-your-own-markup-vocabulary was designed. Shortly after that, people started getting together in groups to make markup vocabularies for specific communities or uses. Some of those have been widely adopted (as recommendations and specifications, and even standards) and are at the center of communities of users. Some of the big winners in this game: DITA, HTML, NIEM, JATS, TEI, UBL, HL7, DocBook, NISO STS, BITS,… </para>
+     
+     <para>There are also thousands of other vocabularies that are not as widely known, discussed, or adopted. Are they failures? Some are. I have written a few vocabularies that were intended to be widely adopted that have no users and never did. Those are failures. But there are others that are at the heart of a dozen or so businesses or activities. Are they failures? Absolutely not. They are enabling their users to create, validate, interchange, and use their content. We don’t need mega-success to have success. You can roll your own successfully. So what do shared vocabularies buy us?</para>
+     
+     <para>The enthusiasm for some shared markup vocabularies is both charming and (sometimes) absurd. Useful and destructive. The impulse of people with similar concerns and needs to get together to create shared markup vocabularies and shared infrastructure to create, manage, and use documents tagged according to this shared vocabulary is admirable, and is the reason there are so many useful markup applications in use. If every user needed to define their own tag set, document it so it was used consistently among various document creators and over time, and write all of the tools needed to create, validate, edit, display, search, and archive their documents, few would make the investment and fewer would stick with it after the first or second bump in the road. Further, it would be virtually impossible to interchange marked-up documents; each organization that wanted to receive documents would need to develop a custom transformation for each document type they wanted to ingest into their system.</para>
+     
+     <para>While a world in which each user defined their own optimal tags would be within the definitions of the XML specification, and some people reading the specification might assume that is what was intended, that world would be very inefficient, tag-set heavy, and isolated. Fortunately for all of us, except perhaps those who revel in vocabulary creation and coding transformations – that is not the world we live in. </para>
+     
+     <para>Markup vocabularies also have traction in communities, partly because using a known vocabulary means that knowledgeable help with be available. If you are a scholar doing literary analysis you probably want to spend your time and energy on the analysis and recording of your documents, not on your infrastructure. You would be well advised to use TEI markup (Text Encoding Initiative academic tag set) partly because it was designed to do what you are doing, but <emphasis>maybe especially</emphasis>  because tools, discussion lists, tutorials, and friendly advice are easily available if you do. And because your colleagues, who will review your funding proposals, journal articles, and your promotion and tenure applications, expect you to. </para>
+  
+<section>
+    <title>Of course All is not sweetness and light</title>
+    <para>Sometimes the enthusiasm for a vocabulary gets absurd. I recently over heard a conversation at a markup-related meeting between two people who had not previously met. One introduced himself as new to XML and there to learn. The other said <quote>You need to learn about MYVOCABLUARY. Don’t waste your time on anything else, MYVOCABULARY is the only smart thing to do in 2018.</quote> Note: this person was recommending a specific vocabulary to a new user without knowing anything about the new user’s data, requirements, or environment. This is stupid. This happens way too often. I have heard a software sales person tell a potential customer that if they didn’t select the markup vocabulary this person’s software best supported, the sales person would call the potential clients manager and tell the manager that the would-be client was incompetent. Fortunately, the object of this bullying was not intimidated, and made a decision that was appropriate for the organization and document collection, not for the salesperson. </para>
+    <para>I have seen it go in the other direction, too. A user with a need saw an application working at another user site, really liked how it was working, and asked about it. We are using this and that tool, our XML is encoded using this vocabulary, and we are getting this performance. Wow! So, the would-be user called those vendors, learned that those tools could be customized to work with almost any XML vocabulary but out of the box (or with minimal customization) worked with the one they had seen demonstrated. So, this user had a customization of that shared vocabulary made to meet their needs, minimize the cost of customizing those impressive tools, and get up and running as quickly and economically as possible. Was it the best vocabulary choice...?
+    </para>
+</section>    
+ <section>
+     <title>Mixing Vocabularies (by cut and paste not namespaces) </title>
+     <para>Mixing vocabularies. My young friend did not realize that you lose a lot of the value of  using a public vocabulary when you pick and choose snippets from one vocabulary and another and then mix them together. You can make a real mess by copying and pasting declarations from one schema into another totally disregarding those pesky namespaces.</para> 
+     
+     <para>The reasons that people got together to create those public vocabularies is so that they can easily and conveniently interchange documents, so they can share in the costs of customizing tools and other document-related infrastructure, and so that they can move from collection to collection and organization to organization without having to start all over learning an unfamiliar application. Also, because habits take a while to develop and once you have them it is easier to work in an environment in which those habits work than to break old habits and form new ones.</para> 
+     
+     <para>By mixing and matching from among several public vocabularies you are walking away from all of the traditional advantages of using them. You will create documents that no one else will be prepared to receive or process, so you have no interchange. You will not be able to use tool customizations or stylesheets that have been developed by any of the use communities. You will not be able to take advantage of the economies provided by using vendors that already know your requirements, nor will you have the built in quality checks that come of vendors knowing your vocabulary. </para>
+ </section>   
+    
+<section>
+    <title>Natural/Intuitive Tagging (Influences of Shared Vocabularies on Thinking)</title>
+    <para>Sorry, my young friend, there is nothing more <quote>natural</quote> about HTML tags than any other tags!  Intuitive markup is like intuitive user interfaces, a lovely but very fragile environment-based fiction.</para>
+    
+    <para>Familiarity with one markup vocabulary often influences others. In the last 25 years or so, HTML has become such a well-known vocabulary that many users don’t think of it as a set of tags that someone made up and that have grown over time. Many users think of the HTML tags as <quote>natural</quote> in some fashion. So, they think it is <quote>natural</quote> to use &lt;p> for paragraphs and &lt;li> for list items. Even odder, they think it is <quote>natural</quote> to have different wrapper tags for numbered and unnumbered lists but to distinguish between numbered and lettered lists with an attribute. I’m not saying that this doesn’t work; clearly it does. But there is nothing more <quote>natural</quote> about this than, for example, having a single list wrapper element and distinguishing between unordered, numbered, and lettered display with an attribute. Users have objected to using unfamiliar tags for familiar structures; we already know HTML, we should use HTML tags when possible. </para>
+    
+    <para>More insidious, we already know the logical model that underlies HTML so well that we think of it as the <quote>natural</quote> model of text. HTML does not allow lists inside paragraphs. Therefore, even in the case where a list occurs inside a sentence, which continues after the end of the list, where the list is obviously inside the paragraph, we should encode that as two paragraphs with a list between them, because HTML would have to code them that way. I have been astonished by users who were shocked by the suggestion that in their content they might allow lists to occur inside paragraphs instead of between them!</para>
+    
+    <para>Of course, we get push-back in the other direction, too. A comment on JATS recently suggested that the <quote>rather old fashioned HTML style (&lt;i>,&lt;b>), e.g. &lt;bold>, &lt;italic></quote> tags be replaced by tags such as  &lt;emph> or &lt;hi> <quote>that at least try to encode the ‘meaning’ of the tagged content</quote>. This, in my opinion, is simply a stylistic suggestion: &lt;i>, &lt;italic> and &lt;emph type="italic"> carry exactly the same amount of semantic information!  The suggestion was to use a more familiar or more comfortable tag set, not to increase the semantic richness of the vocabulary.</para>
+</section> 
+ </section>  
+    <section>
+        <title>Shared Wisdom: the culture and practice of XML</title>
+        <para>So how do we learn XML in general and our shared tag set in specific? That’s harder. People learn by watching others. It is not unlike the old apprentice system, and you can hope you are apprenticed to a master, not a dud.</para>
+        
+        <para>Learning a tag set and good XML practice is sort of a community values thing, transmitted over discussion lists, at conferences, and through examples.  Some, but far from all, introductions to XML and principles of XML design address generic markup, separation of content from formatting, structural markup versus and procedural markup. Some go even further, and talk about separation of concerns at several levels, for example separating the grammar of a document type from local or temporal business rules. But large tag sets are very diverse.
+        </para>
+        <section>
+            <title>Tag Set Cultures</title>
+            <para>Shared tag sets are much more than lists of codes, they are powerful and dynamic social constructs that influence and are influenced by the world. </para> 
+            
+            <para>There is a basic culture surrounding the <quote>practice of markup</quote>, especially as practiced in pervasive, shared XML vocabularies. Each culture, formed in the confluence of people creating, using, and interchanging documents, is both large and quite separate from the standard, specification , or recommendation that defines the tag set. The culture defines the customs and rules about how to interact with and use the tag set. This culture includes mentors and consultants, documentation, webinars, discussion lists, courses, books, conferences, recommended practices and examples, as well as shared tools. Shared tools may be available for both tag set and document creation and editing, document processing including format and display, validation and rules checking, and much more.</para>
+            
+            <para>The needs of those groups, and the changing needs of the various members who have joined or left these activities, have shaped the tag sets. Things the membership, or the sponsors, or the most vocal/powerful members, think are important are enabled and/or emphasized. (For example, we are seeing more and more tag sets providing the ability to enhance documents with Accessibility information as access becomes more important in the world in general.) How the movers and shakers think influences and molds the tag set. </para>
+            
+            <para>Conversely, shared tag sets, and the assumptions that underlie them, shape the world view of their users. Before HTML it was common to build tagging structures that allowed paragraphs to contain lists; these days that is considered surprising. </para>
+            
+            <para>Many of us have bought into the OHCO (Ordered Hierarchy of Content Objects)<xref linkend="renear_1996"/> or
+                <quote>all the world is a tree</quote> model, because XML does those things well. Before SGML and
+                XML it was not unusual to discuss how to identify, markup, and work with the
+                overlapping structures in texts; now it is often considered an <quote>edge case</quote> and thus
+                ignored. To many in the XML world, overlapping structures are simply unthinkable; we
+                have tree-shaped scars in our minds from working with tree-shaped structures. This
+                does not mean that there aren’t significant applications that have, and need,
+                overlapping structures. </para>
+            
+            <para>I have heard <quote>serious XMLers who work with serious documents</quote> dismiss the <quote>overlap fanciers</quote> as airy-fairy academics who don’t need to get <quote>real work</quote> done. It is fun to remind them that standards, aircraft documentation, and military specifications all require strict and accurate change tracking, and that changes often overlap the initial structure of the document. </para>
+        </section>
+      <section>
+          <title>Different use cases make for different cultures</title>
+          <para>Each tag set community has different focuses, practices, and values based on their use cases.  For example:
+              <itemizedlist>
+                  
+             
+              <listitem><para>DITA and DocBook are typically concerned with content creators creating content: authoring (and reuse) by people.</para></listitem>
+              
+              <listitem><para>JATS and BITS were designed as conversion targets; they typically assume that content already exists (probably created in Microsoft Word or legacy in PDF) and needs to be marked up for interchange or archival purposes. (There is an authoring version of JATS, but it is very rarely used.)</para></listitem>
+              
+                  <listitem><para>TEI typically deals with previously-created or historical content, marked up by subject matter specialists who are content analyzers and annotators.</para></listitem> </itemizedlist>
+              
+              Such differences in the who and why lead to significant changes in the mindset of the designers and developers, in the structure of the tag sets, in the nature of use, in the documentation, and in the tools created and shared.</para>
+          
+      </section>  
+        <section>
+            <title>Community coercion: All is still not sweetness and light</title>
+            <para>The communities around various tag sets may pressure users to encode information they do not need in documents because the community expects it: TEI users may feel pressure to provide more metadata, JATS users to provide richly encoded citations, HTML users to use more generic tags in place of visually descriptive tags. </para>
+            
+            <para>As an example, once you have drunk the TEI Kool-Aid, the TEI community may  pressure you to encode your documents in ways that are useful to the full community, even if some of that encoding is of no value to you and your project – because someone else may want to reuse your documents for another project at some indefinite time in the future.</para> 
+            
+            <para>This <quote>do it for the good of the community</quote> is not unique to the TEI. <quote>Do a bit extra for the community</quote> is the energy that is expected to (that does?) power the semantic web. It is also the hope behind groups like JATS4R. JATS is the current most popular Journal Article Tag Suite and JATS4R (JATS for Reuse) is a group of JATS users who believe that the JATS vocabularies and guidelines are too loose; there is too much variation in legal JATS documents to make it convenient to reuse them, particularly for machine reuse such as data-mining. So, JATS4R is developing and publishing a set of guidelines and some Schematron rules to help the creators of JATS documents make more similar use of JATS. For example, JATS provides many ways to encode author names, author affiliations, and the relationship between authors and their affiliations. JATS4R recommends a smaller number of ways to do this (ideally just one). </para>
+        </section>
+        <section>
+            <title>But ...</title>
+            <para>But in spite of any potential downsides, such a culture surrounding a tag set is essential to the effectiveness of the tag set, possibly more important than the shared elements, schemas, or <quote>semantics</quote>.</para> 
+                <para>And there is shared culture in the XML space. Self-taught XMLers have a very difficult time making good XML; designing what a friend of mine calls <quote>colloquial XML applications</quote>. Reading specifications is enough to enable the creation of legal, and probably functional, markup applications, and might enable a genius to create something fresh, brilliant, and better than anything we are doing now.  Most of us are not geniuses, most of us are at best capable with occasional moments in which we shine. And most of us benefit greatly from participating in the culture of the communities in which we work. </para>
+        </section>
+    </section>
+    
+    <section><title>Conclusion</title>
+        <para>Markup culture is time-saving, energy saving, and application enabling. It is transmitted through books, mailing lists and online discussions, classes and tutorials, and conferences. </para>
+        <para>MarkupUK is valuable because it is a place for us to learn from each other. To learn not what just someone else is doing but how they thought about it, how they approached their tasks, how they selected approaches, how they evaluated results, and how they describe their successes and failures. </para>
+    </section>
+
+ 
+<bibliography>
+     
+    <bibliomixed xml:id="renear_1996" xreflabel="Renear, Mylonas, and Durand 1996">
+        Renear, Allen H., Elli Mylonas, and David G. Durand.
+        <quote>
+            Refining our notion of what text really is: the problem of overlapping hierarchies.
+        </quote>
+        <emphasis role="ital">Research in humanities computing</emphasis>
+        , ed. Nancy Ide and Susan Hockey. Oxford: Oxford University Press. 1996. <address><link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://cds.library.brown.edu/resources/stg/monographs/ohco.html">
+            http://cds.library.brown.edu/resources/stg/monographs/ohco.html
+        </link></address>
+        
+    </bibliomixed>
+    
+    
+</bibliography>    
+  
+</article>

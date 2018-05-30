@@ -1,0 +1,2400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.0/sch/docbook.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<article xmlns="http://docbook.org/ns/docbook"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <info>
+        <title>Introduction to CSS for Paged Media</title>
+      <abstract>
+        <para>CSS can be used for making pages as well as for styling websites. Many people are familiar with CSS in the browser: some are very familiar, but others, not so much. Fewer people, however, are as familiar with using CSS for paged media.</para>
+        <para>This paper introduces some of the key features of CSS for paged media, including: differences between screen and paged media; sizing and selecting pages; headers and footers; PDF output and PDF accessibility features; printing colour; and numbering pages. This material is adapted from a more comprehensive tutorial that is available online <biblioref linkend="tutorial"/>.</para>
+      </abstract>
+<author>
+      <personname>
+        <firstname>Tony</firstname>
+        <surname>Graham</surname>
+      </personname>
+      <personblurb>
+        <para>Tony Graham is a Senior Architect with Antenna House, where he works on their XSL-FO
+          and CSS formatter, cloud-based authoring solution, and related products. He also provides
+          XSL-FO and XSLT consulting and training services on behalf of Antenna House.</para>
+        <para>Tony has been working with markup since 1991, with XML since 1996, and with
+          XSLT/XSL-FO since 1998. He is Chair of the Print and Page Layout Community Group at the
+          W3C and previously an invited expert on the W3C XML Print and Page Layout Working Group
+          (XPPL) defining the XSL-FO specification, as well as an acknowledged expert in XSLT. Tony
+          is the developer of the ‘stf’ Schematron testing framework and also Antenna
+          House’s ‘focheck’ XSL-FO validation tool, a committer to both the XSpec
+          and Juxy XSLT testing frameworks, the author of <citation>Unicode: A Primer</citation>, and a
+          qualified trainer.</para>
+        <para>Tony’s career in XML and SGML spans Japan, USA, UK, and Ireland. Before joining
+          Antenna House, he had previously been an independent consultant, a Staff Engineer with Sun
+          Microsystems, a Senior Consultant with Mulberry Technologies, and a Document Analyst with
+          Uniscope. He has worked with data in English, Chinese, Japanese, and Korean, and with
+          academic, automotive, publishing, software, and telecommunications applications. He has
+          also spoken about XML, XSLT, XSL-FO, EPUB, and related technologies to clients and
+          conferences in North America, Europe, Japan, and Australia.</para>
+      </personblurb>
+      <affiliation>
+        <orgname>Antenna House, Inc.</orgname>
+      </affiliation>
+      <email>tony@antennahouse.com</email>
+      <email>tgraham@antenna.co.jp</email>
+      <uri xlink:href="http://www.antennahouse.com/">http://www.antennahouse.com/</uri>
+    </author>
+    </info>
+
+<section role="Preface">
+<title xml:id="Preface">Introduction</title>
+  <para>CSS is widely used in browsers, editors, and other applications.  CSS is used not only for web design but also as the stylesheet specification for a wide range of printing applications as well as for electronic paged media delivered as PDF.</para>
+<para>CSS (Cascading Style Sheets) Level 1 became a W3C Recommendation in 1996. CSS 2 became a W3C Recommendation in 1998, and CSS 2.1 (Cascading Style Sheets Level 2 Revision 1), in 2011. As of early 2018, CSS 2.2 is currently under development.</para>
+  <para>CSS post-Level 2 is popularly known as CSS 3, but there will not be a single, monolithic CSS Level 3 specification.  CSS beyond CSS Level 2 has been broken into multiple modules that define separate parts of CSS.  These modules are numbered individually.  The first versions of modules that build on CSS Level 2 are denoted as Level 3, and each may be superseded by a Level 4 version.  For example, CSS Color Level 3 replaces several sections of CSS Level 2, and CSS Color Level 4, which is currently in development, will eventually replace CSS Color Level 3.  Modules that do not build on CSS Level 2 features start at Level 1: for example, CSS Multi-Column Layout Level 1.  There will not be a CSS Level 4 or beyond.</para>
+  <para>Individual modules are in varying stages of development and varying levels of stability. The stability levels for all W3C specifications range from Working Draft to Recommendation. The CSS Working Group maintains a separate stability categorization for its specifications that ranges from Rewriting and Exploring through to Stable and Completed.</para>
+<para>The CSS Working Group compiles yearly snapshots of the current state of CSS at that point in time.  CSS Snapshot 2017<footnote><para><link xlink:href="https://www.w3.org/TR/css-2017/">https://www.w3.org/TR/css-2017/</link></para></footnote> lists both Recommendation and Candidate Recommendation specifications as comprising the official 2017 definition of CSS (even though the document defines Candidate Recommendation as the test phase of a W3C specification).</para>
+<para>CSS 2.1 (and CSS 2.2) provides only minimal support for paged media output, and its page layout features are not powerful enough. CSS 3, although still under development by the W3C, defines many of the features that are necessary for professional quality formatting, including: advanced page layouts; multiple columns; vertical writing; hyphenation; and multilingual character layout. Antenna House Formatter provides additional features for optimal formatting, including: custom-developed MathML 3, CGM, and SVG rendering; baseline grids; PANTONE<superscript>®</superscript> spot colours; and additional properties for controlling Japanese layout.</para>
+  <para>Using CSS in paged media design for XML and HTML is not yet common but its use is expected to increase as the development of CSS 3 progresses. This tutorial aims to make CSS for Paged Media easy to understand.</para>
+
+</section>
+<!--************************ 目次 ***************************************-->
+
+<!--******************************************************************-->
+
+<section role="Chapter">
+<title xml:id="WebvsPrint">Web and Paged Media</title>
+<section role="rule">
+<title xml:id="MediaRule">@media Rule</title>
+<para>An <code role="rule">@media</code> rule delimits a set of CSS style sheet rules specific to a target medium. Specify <code role="code">@media print</code> for rules specific to paged media and <code role="code">@media screen</code> for rules specific to screen display.<footnote><para>Since AH Formatter is print formatting software, it does not apply <code role="code">@media screen</code> rules for the GUI screen but does apply <code role="code">@media print</code> rules.</para></footnote></para>
+<programlisting><emphasis role="bold">@media print</emphasis> {        /* applies to paged media */
+  body {
+    margin: 0;
+    font-size: 10pt }
+  }
+<emphasis role="bold">@media screen</emphasis> {         /* applies to screen display */
+  body {
+    margin: 10%;
+    font-size: 12px }
+  }
+
+body {                  /* applies to all media */
+  font-family: sans-serif;
+}
+</programlisting>
+</section>
+
+<section>
+<title xml:id="MediaSpecify">Specifying a Print Style Sheet</title>
+
+<section>
+<title xml:id="StyleElement">&lt;style&gt; Element</title>
+<para>A &lt;style&gt; element contains style information for the document. In HTML 4.01, &lt;style&gt; may only appear inside &lt;head&gt;. In HTML 5, &lt;style&gt; may also be used in the body of the document.</para>
+
+<programlisting>
+&lt;style type="text/css" media="print"&gt;
+…
+&lt;/style&gt;
+</programlisting>
+</section>
+
+<section>
+<title xml:id="MediaImport">@import Rule</title>
+<para>A print-only style sheet can be created in another CSS file by including it with <code role="rule">@import</code>.</para>
+
+<programlisting>@import url("PrintOnly.css") print; /* PrintOnly.css printing */
+</programlisting>
+</section>
+
+<section>
+<title xml:id="MediaLink">Media attribute of &lt;style&gt; and &lt;link&gt; elements</title>
+<para>Specifying print as the media attribute value links the print style sheet with the &lt;style&gt; or &lt;link&gt; element.</para>
+<programlisting>&lt;link rel="stylesheet" type="text/css" media="print" href="foo.css"&gt;</programlisting>
+</section>
+</section>
+
+
+<section>
+<title xml:id="differences">Differences Between Screen and Paged Media</title>
+
+<section>
+<title xml:id="approach">Design approach</title>
+<para>Screen display and printing (or any sort of paged media) require different approaches to designing the layout.</para>
+<para>The size and aspect ratio of a screen display may change depending on the display environment, so it is hard to know how to accurately specify the size and arrangement of the layout target. The style specification should consider using relative dimensions to accommodate various environments.</para>
+<para>
+In printing, there is an expectation that formatted objects are arranged neatly on fixed-sized pages, therefore, the layout specification should precisely control the layout by specifying absolute dimensions for the size and position of the formatting objects, starting with the size of its characters.</para>
+</section>
+
+<section>
+<title xml:id="breaks">Breaks</title>
+
+<para>Breaks happen in both paged and unpaged documents. For example, text is broken into lines, and the text in a block that has <code role="property">column-count</code> greater than 1 may be broken into columns.  However, and unsurprisingly, breaks are more common, and more of a concern, when a run of text is also broken across pages.  There are properties for forcing or avoiding breaks within or between elements.  Additionally, the <code role="property">widows</code> and <code role="property">orphans</code> properties control the minimum number of lines of text before or after a break in a block of text.</para>
+</section>
+
+<section>
+<title xml:id="floats">Floats</title>
+
+<para>In unpaged media, a box can float to the left or right.  In paged media, it can also float to the top or bottom of the page (and AH Formatter implements more detailed control over floats).  Items that you might float include graphics, sidebars, and footnotes.</para>
+</section>
+
+<section>
+<title xml:id="Navigation">Navigation</title>
+<para>Paged media (i.e., books) have well-developed conventions for navigating between pages.</para>
+
+<para>Pages are typically numbered, and, often, the front matter is numbered in a different style and sequence to the main text.</para>
+
+<para>The page number and, often, the book, chapter or even section title may appear at the periphery of the page.  Dictionaries have their own conventions for indicating the first and last entries on each page.  CSS defines 16 regions around the edge of the page for presenting this sort of information.</para>
+
+<para>The table of contents (or tables of contents) and index facilitate non-sequential access.</para>
+
+<para>A chapter (or other significant division) may start on a right-hand page (for left-to-right writing mode documents), and the chapter start may have a different appearance to other pages (and possibly different headers and footers).</para>
+</section>
+
+<section>
+<title xml:id="left-and-right">Left and right pages</title>
+
+<para>A document that is printed on both sides of the page and bound into a book-like form (even a document that is duplex-printed on an office printer and placed in a folder) will form two-page spreads with a left-hand and a right-hand page.  Also, because a book is bound, it is easier to see the details near the outer edges of each page as you leaf through the document than it is to see the inner edges of the page near the binding.  Thirdly, the sequential reading order of the pages makes it convenient to think of each two-sided leaf of the document as having a ‘front’ and a ‘back’ side.</para>
+
+<para>All of these aspects can affect the page design. For example, chapter openings are typically (but not exclusively) on the right-hand of a spread, since that is the ‘front’ side of a leaf.  Page numbers and any other navigation aids on a page are more likely to be on or near the outer edge of each page so they can be seen more easily when leafing through the document.  Thinking of the document as a sequence of two-page spreads also raises questions of whether the facing pages should be symmetrical around the gutter and whether items such as graphics can span across the two pages.</para>
+
+</section>
+
+<section>
+<title xml:id="other">The printed book</title>
+
+<para>Several things should be considered for a document that is to be printed rather than only viewed on screen.</para>
+
+<para>There may be constraints on the page size.  A document that is meant to be printed by the end user may be sized to suit the paper size of an office printer: Letter size in the USA; A4 in most of the rest of the world; or A4 or JIS-B5 in Japan. A car handbook, on the other hand, is usually a convenient size for a car glove compartment.  Trade paperbacks have a range of conventional sizes, and choosing an unconventional page size could affect the sales of a book.</para>
+
+<para>If the paper is not sufficiently opaque, the text on the opposite side of the paper may show through.  The effect is made worse if the text on each side of the paper is not aligned.</para>
+
+<figure role="FigureBox">
+<title>Effect of show-through with non-aligned and aligned text</title><mediaobject role="Figure">
+
+<imageobject>
+<imagedata fileref="images/show-through.svg" /></imageobject>
+</mediaobject>
+</figure>
+
+<para>Graphics, and other design elements, that extend to the edge of the page may need to be printed so they extend past the edge of the page (see <xref role="ChapterRef" linkend="PageSetup" />).  If they do not bleed past the edge of the page, then any inaccuracy when trimming the page to its correct size after printing and binding could result in a white strip between the graphic and the edge of the page.  Conversely, the graphic should not have significant details close to the edge of page in case the trimming takes off too much rather than too little.</para>
+
+<para>Even the binding method may need to be considered when designing the book. Perfect binding or a wire binding may reduce the visible or usable area of the gutter between pages.  If the pages of a book are gathered into signatures and then trimmed, the pages in the middle of the signature may have more trimmed from their fore-edge than is trimmed from the pages on the outside of the signature.</para>
+
+<figure role="FigureBox">
+<title>Effect of binding method</title>
+<mediaobject role="Figure">
+
+<imageobject><imagedata fileref="images/binding-method.svg" /></imageobject>
+</mediaobject>
+</figure>
+
+</section>
+</section>
+
+</section>
+<!--******************************************************************-->
+
+<section role="Chapter">
+<title xml:id="PageSetup">Page Setting</title>
+
+<para>In paged media, the document is formatted as one or more page boxes. The content area of a page box is called the page area. The margin area of a page box is used for headers and footers.</para>
+<figure role="FigureBox">
+<title>Page and Margin Area</title>
+<mediaobject role="Figure">
+
+<imageobject><imagedata fileref="images/Pagearea.svg" /></imageobject>
+</mediaobject>
+</figure>
+
+<section>
+<title xml:id="WesternPageDesign">Western Page Design</title>
+
+<para>Western page design tradition places the page area above the center of the page, since the optical center of the page is considered to be above the geometric center.  The gutter margin is traditionally narrower than the fore-edge margin.  This is to make it easier for the eye to move from one page to the other.  The wider fore-edge allows room for the thumbs to hold the page.  The two gutter margins, taken together, balance the wider fore-edge margin.  The height of the page area matches the width of the page.</para>
+<figure role="FigureBox">
+<title>Traditional Western page design</title>
+<mediaobject role="Figure">
+
+<imageobject><imagedata fileref="images/PageSpread.svg" /></imageobject>
+</mediaobject>
+</figure>
+
+<para>In practice, page designs vary quite a lot.  The printed ‘page’ now includes package inserts for medications, marketing brochures, children’s books, parts catalogs, and much more besides.  The economics of printing or the need to print on A4 or Letter size paper on an office printer can influence the page design.  Assymetric page design, where the page area has the same position on facing pages, was once a radical idea but now is not uncommon.  Furthermore, novels, in particular, are often sold in multiple editions with different page sizes that each reuse the same page areas with reduced margins.</para>
+</section>
+
+<section>
+<title xml:id="JapanesePageDesign">Japanese Page Design</title>
+<para>Japanese can be formatted either with horizontal lines of text and pages progressing from left to right or with vertical lines of text and pages progressing from right to left.  Some formatted documents mix the two.  Different types of publication are predominately one writing mode or the other: for example, government documentation and educational materials both predominately use horizontal text, whereas novels predominately use vertical text.</para>
+<para>For both writing modes, the page area is typically centered on the page media and has proportions similar to the proportions of the media.  The best line length is around 52 characters per line for vertical text and around 40 characters per line for horizontal text.</para>
+<para>In Japanese text composition, it is common to set the width of the page area in fullwidth characters. Using em for the <code role="property">width</code> property in the <code role="rule">@page</code> rule sets the width in characters. Setting the left and right margin values to auto aligns the page area in the center of the page.
+</para>
+<programlisting>
+@page {
+ size: A4;
+ width: 43em;        /* set width of page area to 43 em */
+ margin-top: 30mm;
+ margin-bottom: 30mm;
+ margin-left: auto;  /* position page area in the center of the page */
+ margin-right: auto;
+}
+</programlisting>
+</section>
+<section xml:id="Pagerule">
+<title>@page Rule</title>
+
+<para>An <code role="rule">@page</code> rule sets basic settings such as page size, margin, page header, and page footer.</para>
+
+<programlisting>
+<emphasis role="bold">@page</emphasis> {
+  size:   A4;
+  margin: 25mm;
+  @top-center {
+    content: "Sample";
+  }
+  @bottom-center {
+    content: counter(page);
+  }
+}
+</programlisting>
+</section>
+
+<!--<section xml:id="PageSize">
+<title>Page Size : <code role="property">size</code> property</title>
+
+<para>Specifies the width and height of the page box.</para>
+<itemizedlist role="property">
+<listitem><para>auto : Size and orientation chosen by the UA.</para></listitem>
+<listitem><para>&lt;length&gt;{1,2} : One length value sets both the height and width of the page box.  Two length values set the page box width and height, respectively.<!-\-  Values in <code role="unit">em</code> or <code role="unit">ex</code> refer to the page context’s font.-\-></para></listitem>
+<listitem><para>Page size : Defined page name, such as <code role="value">A4</code> or <code role="value">Letter</code>.</para></listitem>
+<listitem><para>portrait : Print the page’s content in portrait orientation<!-\-, where the shorter sides of the page box are horizontal-\->.</para></listitem>
+<listitem><para>landscape : Print the pages content in landscape orientation<!-\-, where the longer sides of the page box are horizontal-\->.</para></listitem>
+</itemizedlist>
+<programlisting>
+@page {
+  <emphasis role="bold">size</emphasis>: 210mm 297mm; ; /* ISO/JIS A4 */
+}
+</programlisting>
+
+<programlisting>
+@page {
+  <emphasis role="bold">size</emphasis>: 4in 6in;
+}
+</programlisting>
+
+<para>Defined page names such as <code role="value">A5</code>, <code role="value">A4</code>, <code role="value">A3</code>, <code role="value">B5</code>, <code role="value">B4</code>, <code role="value">JIS-B5</code>, <code role="value">JIS-B4</code>, <code role="value">letter</code>, <code role="value">legal</code>, and <code role="value">ledger</code> can be used for <code role="property">size</code> property<!-\-<footnote><para>The <code role="property">size</code> property uses the names defined in the ISO Standard and, since the dimensions of the ISO B series and JIS B series are different, <code role="value">JIS-B5</code> and <code role="value">JIS-B4</code> are added as Antenna House extensions that are not yet in a published CSS Working Draft.</span>-\->.</para>
+
+<programlisting>
+@page {
+  <emphasis role="bold">size: A4</emphasis>; /* ISO/JIS A4 (210mm×297mm) */
+}
+</programlisting>
+<!-\-
+<programlisting>
+@page {
+  <emphasis role="bold">size: B5</emphasis>; /* ISO B5 (176mm×250mm) */
+}
+</programlisting>
+-\->
+<programlisting>
+@page {
+  <emphasis role="bold">size: JIS-B5</emphasis>; /* JIS B5 (182mm×257mm) */
+}
+</programlisting>
+
+<para>Landscape orientation can be specified with the keyword <code role="value">landscape</code>. </para>
+<programlisting>
+@page {
+  <emphasis role="bold">size: A4 landscape</emphasis>;   /* A4 landscape (297mm×210mm) */
+}
+</programlisting>
+</section>
+<section>
+<title xml:id="PageMargin">Page Margin : <code role="property">margin</code> property</title>
+
+<para>The <code role="property">margin</code> property is a shorthand for <code role="property">margin-top</code>, <code role="property">margin-bottom</code>, <code role="property">margin-left</code>, and <code role="property">margin-right</code>.</para>
+<itemizedlist>
+<listitem><para>When there is one value : the margin value applies to (up, down, left, right).</para></listitem>
+<listitem><para>When there are two values : the margin values apply to (top, bottom) and (left, right). </para></listitem>
+<listitem><para>When there are  three values : the margin values apply to top, left/right, and bottom.</para></listitem>
+<listitem><para>When there are four values : the margin values apply to top, right, bottom, left. </para></listitem>
+</itemizedlist>
+<para>Specify page margins with the <code role="property">margin</code> property on a <code role="rule">@page</code> rule.</para>
+
+<programlisting>
+@page {
+   <emphasis role="bold">margin</emphasis>: 10%;   /* Top, bottom, left, right margins each take up 10% of the
+page width */
+}
+</programlisting>
+
+<programlisting>
+@page {
+   /* Top/bottom margins are set to 2cm and left/right are set to 3 cm */
+   <emphasis role="bold">margin-top</emphasis>: 2cm;
+   <emphasis role="bold">margin-bottom</emphasis>: 2cm;
+   <emphasis role="bold">margin-left</emphasis>: 3cm;
+   <emphasis role="bold">margin-right</emphasis>: 3cm;
+}
+</programlisting>
+
+<para>If not specified, the initial value of margin-* is zero<footnote><para>In AH Formatter, <!-\-GUIの［組版オプション設定］&#x2014;［ページ］タブなどで-\->the initial value can be set to any value. Since the default page margin value is set to 2 cm, the initial value will not be zero.</para></footnote>. margin-* specified on the (X)HTML body element is taken inside the page area.  If margin-* is specified for both <code role="rule">@page</code> and html (including body element) elements in (X)HTML, the margins are added together.</para>
+-->
+<section role="property">
+<title xml:id="PageMaster">Named Page : <code role="property">page</code> property</title>
+<para>Several types of named <code role="rule">@page</code> rules can be created, and the <code role="property">page</code> property enables switching between them within one document.</para>
+
+
+<programlisting>
+@page <emphasis role="bold">Landscape</emphasis> {   /* "Landscape" named page */
+  size: A4 landscape;
+}
+@page <emphasis role="bold">Portrait</emphasis> {    /* "Portrait" named page */
+  size: A4;
+}
+table.WideTable {
+  page: Landscape;  /* place a large table on the side of a "Landscape" page */
+}
+html {
+  page: Portrait;   /* Use a "Portrait" page as the default */
+}
+</programlisting>
+
+<programlisting>
+&lt;p&gt;Portrait page&lt;/p&gt;
+
+&lt;table role="WideTable" border="1" style="width:100%"&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+…
+&lt;td&gt;18&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+</programlisting>
+<figure role="FigureBox">
+<title><code role="property">page</code> property selects named page</title>
+<mediaobject role="Figure">
+
+<imageobject><imagedata fileref="images/page-property.png"  /></imageobject>
+</mediaobject>
+</figure>
+</section>
+
+<!--<section>
+<title xml:id="ForcePageCount">Constraining The Number of Pages : <code role="property">-ah-force-page-count</code> property</title>
+
+<para>Imposes a constraint on the total number of pages for the document. If the constraint is not satisfied, an additional page (or additional pages) will be added at the end of the document. Reasons for constraining the number of page include: an office document printed on both sides of the paper may need an even number of pages; a document printed as a booklet may need a multiple of four pages; or a document printed by a commercial printer may be printed with 8, 16, 32, or 64 pages on one sheet of paper that is then folded and trimmed to become part of a book.</para>
+<itemizedlist role="property">
+<listitem><para>auto : Do not force any page count.</para></listitem>
+<listitem><para>even : Force an even number of pages.</para></listitem>
+<listitem><para>odd : Force an odd number of pages.</para></listitem>
+<listitem><para>doubly-even : Force a doubly-even (multiple of four) number of pages.</para></listitem>
+<listitem><para>doubly-even-document : Force a doubly-even (multiple of four) number of pages.</para></listitem>
+<listitem><para>end-on-even : Force the last page to be an even page.</para></listitem>
+<listitem><para>end-on-doubly-even : Force the last page to be a doubly-even page.</para></listitem>
+<listitem><para>end-on-odd : Force the last page to be an odd page.</para></listitem>
+<listitem><para>even-document : Force the last page to be an odd page.</para></listitem>
+<listitem><para>doubly-even-document : Force the last page to be a doubly-even page.</para></listitem>
+<listitem><para>odd-document : Force the last page to be an odd page.</para></listitem>
+<listitem><para>[ end-on | document ] &lt;number&gt; [ &lt;number&gt; ] : Force the number of pages to be a multiple of the first number plus the second number, if present.<footnote><para>This feature is not available in AH Formatter Lite.</para></footnote></para></listitem>
+<listitem><para>no-force : Do not force either an even number or an odd number of pages.</para></listitem>
+</itemizedlist>
+
+<para>For example, if the document would generate 5 pages:</para>
+<itemizedlist>
+<listitem><para>-ah-force-page-count: even;</para>
+<para>Equivalent to -ah-force-page-count: 2;.</para></listitem>
+<listitem><para>-ah-force-page-count: odd;</para>
+<para>Equivalent to -ah-force-page-count: 2 1;.</para></listitem>
+<listitem><para>-ah-force-page-count: doubly-even;</para>
+<para>Equivalent to -ah-force-page-count: 4;.</para></listitem>
+<listitem><para>-ah-force-page-count: end-on-doubly-even;</para>
+<para>Equivalent to -ah-force-page-count: end-on 4;.</para></listitem>
+<listitem><para>-ah-force-page-count: end-on 2;</para>
+<para>Total number of pages is 6 with 1 blank page.</para></listitem>
+<listitem><para>-ah-force-page-count: end-on 4;</para>
+<para>Total number of pages is 8 with 3 blank page.</para></listitem>
+<listitem><para>-ah-force-page-count: end-on 4 1;</para>
+<para>Total number of pages is 5 with 0 blank pages.</para></listitem>
+<listitem><para>-ah-force-page-count: end-on 4 3;</para>
+<para>Total number of pages is 7 with 2 blank pages.</para></listitem>
+<listitem><para>-ah-force-page-count: end-on 6 5;</para>
+<para>Total number of pages is 5 with 0 blank pages.</para></listitem>
+<listitem><para>-ah-force-page-count: end-on 6 4;</para>
+<para>Total number of pages is 10 with 5 blank pages.</para></listitem>
+</itemizedlist>
+</section>-->
+
+<section>
+<title xml:id="Marks">Crop and Registration Marks<!--<footnote><para>The crop mark feature is not available in AH Formatter Lite.</para></footnote>--></title>
+
+<para>An <code role="rule">@page</code> rule defines a page box, but the page box may be printed on a page sheet that is larger than the page box.  A common reason for this is so images and other content can extend up to the edge of the page box.  A physical device such as a printer typically has a non-printable area around the edge of the page sheet where it is not capable of printing reliably, if at all.  Printing the page box on a larger page sheet then trimming the page sheet to the size of the page box avoids problems with the non-printable area. Extending images, etc., into the bleed area outside the page box avoids problems if the trimming to size is inaccurate.</para>
+<para>Crop and registration marks are printed outside the page box and are used as guides when trimming the page sheet to size and for checking that content printed on both sides of a duplex sheet is aligned correctly.  Other information that may be printed outside the page box includes colour bars for checking colour fidelity as well as information identifying the page, its containing document, its version number, etc.</para>
+<figure role="FigureBox">
+<title>Crop mark terms</title>
+<mediaobject role="Figure">
+
+<imageobject><imagedata fileref="images/PrinterMarks.svg" /></imageobject>
+</mediaobject>
+</figure>
+
+<!--<section>
+<title xml:id="MarksView">Printer marks display : <code role="property">marks</code> property</title>
+
+<para>Specifies whether to print crop marks when printing.</para>
+<itemizedlist role="property">
+<listitem><para>crop : Outputs crop marks.</para></listitem>
+<listitem><para>cross : Outputs cross marks and registration marks.</para></listitem>
+<listitem><para>&lt;uri-specification&gt; : Location of an SVG, or similar, image representing custom printer marks, colour bars, etc.  Multiple images can be specified.</para></listitem>
+</itemizedlist>
+
+<figure role="FigureBox">
+<title>Cross marks and crop marks</title>
+<mediaobject role="Figure">
+
+<imageobject><imagedata fileref="images/crop-marks.svg" /></imageobject>
+</mediaobject>
+</figure>
+
+<para>You can output crop marks at the four corners and/or cross marks at the centers of the four sides of the page box. Crop marks indicate the alignment for cutting to the finished size, and cross marks can help with registration for multi-colour printing as well as for registration between the front and back of a duplex sheet.  You can also or alternatively output custom printer marks by specifying the location of one or more external images.</para>
+<para>The printer marks feature is not available in AH Formatter Lite.</para>
+
+
+<programlisting>
+@page {
+  size: B5; /* ISO B5 (176mm 250mm) */
+  margin: 28mm 21.325mm;
+  <emphasis role="bold">marks</emphasis>: crop cross;        /* printer marks to display */
+  <emphasis role="bold">-ah-crop-offset</emphasis>: 14mm;    /* distance from the page box edge to the
+                                      page sheet edge */
+  <emphasis role="bold">-ah-printer-marks-line-color</emphasis>: auto;    /* printer marks line colour */
+  <emphasis role="bold">-ah-printer-marks-line-length</emphasis>: 10mm;   /* printer marks line length  */
+  <emphasis role="bold">-ah-printer-marks-line-width</emphasis>: 0.12mm;  /* printer marks line width */
+  <emphasis role="bold">bleed</emphasis>: 3mm;               /* page bleed distance */
+}
+</programlisting>
+</section>
+
+<section role="property">
+<title xml:id="CropAreaVisibility">Printer marks visibility : <code role="property">-ah-crop-area-visibility</code> property</title>
+
+<para>Specifies whether to display the area that extends beyond the finished page size.</para>
+<itemizedlist role="property">
+<listitem><para>hidden : Crop area is hidden.</para></listitem>
+<listitem><para>visible : Crop area is visible.</para></listitem>
+</itemizedlist>
+</section>
+
+<section role="property">
+<title xml:id="MarksColor">Printer marks line colour : <code role="property">-ah-printer-marks-line-color</code> property</title>
+
+<para>Specifies the line colour of printer marks.When the value is set to auto, the registration colour is used.</para>
+</section>
+
+<section role="property">
+<title xml:id="MarksLength">Printer marks line length : <code role="property">-ah-printer-marks-line-length</code> property</title>
+
+<para>Specifies the line length of printer marks. When the value is set to auto, the length is dependent on the system setting. The printer mark default length is 10mm, but <!-\-オプション設定ファイルで-\->this can be adjusted.</para><!-\-p>AH Formatter Lite版では、この拡張プロパティは利用できません。</p-\->
+</section>
+
+<section role="property">
+<title xml:id="MarksWidth">Printer marks line width : <code role="property">-ah-printer-marks-line-width</code> property</title>
+
+<para>Specifies the line width of printer marks. When the value is set to auto, the length is dependent on the system setting. The printer mark default width is 0.2pt, but this can be adjusted.</para>
+</section>
+
+<section role="property">
+<title xml:id="CropOffset">Distance from the end to the trim size of the output medium : -ah-crop-offset property</title>
+
+<para>Specifies the distance from the physical end to the trim size of the output medium.</para><!-\-p>AH Formatter Lite版では、この拡張プロパティは利用できません。</p-\->
+</section>
+</section>-->
+
+<section>
+<title xml:id="Bleed">Page bleed area<!--<footnote><para>The page bleed feature is not available in AH Formatter Lite.</para></footnote>--></title>
+<para>A graphic, or similar, may <emphasis>bleed off</emphasis> (or be <emphasis>bled-out</emphasis> from) the cut edge of the page. Extending an image to the edge of the page is often a useful effect. If the image extends just to the edge of the trimmed page, inaccurate trimming could leave a white area along the outer edge of the image. Extending the image past the edge of the page then trimming to size avoids problems from inaccuracy when trimming.</para>
+<figure role="FigureBox">
+<title>Page bleed</title>
+<mediaobject role="Figure">
+
+<imageobject>
+<imagedata fileref="images/bleed.svg" /></imageobject>
+</mediaobject>
+</figure>
+
+<section role="property">
+<title xml:id="PageBleed">Bleed region width : <code role="property">bleed</code> property</title>
+
+<para>Specifies the width of the bleed region for trimming. The bleed region extends outwards from the page box. By specifying a negative value to the margin box margin, the range of the block can be extended to the bleed region.</para>
+</section>
+</section>
+</section>
+</section>
+  <!--******************************************************************-->
+
+<section role="Chapter">
+<title xml:id="HeadersFooters">Headers and Footers</title>
+
+<section>
+  <title xml:id="MarginBox">Margin Boxes</title>
+
+<para>The page header and page footer are assigned to margin box areas around the page.</para>
+<para>Margin boxes are named according to their position around the page, as follows: <code role="rule" xml:id="top-left-corner">@top-left-corner</code>, <code role="rule" xml:id="top-left">@top-left</code>, <code role="rule" xml:id="top-center">@top-center</code>, <code role="rule" xml:id="top-right">@top-right</code>, <code role="rule" xml:id="top-right-corner">@top-right-corner</code>, <code role="rule" xml:id="left-top">@left-top</code>, <code role="rule" xml:id="left-middle">@left-middle</code>, <code role="rule" xml:id="left-bottom">@left-bottom</code>, <code role="rule" xml:id="right-top">@right-top</code>, <code role="rule" xml:id="right-middle">@right-middle</code>, <code role="rule" xml:id="right-bottom">@right-bottom</code>, <code role="rule" xml:id="bottom-left-corner">@bottom-left-corner</code>, <code role="rule" xml:id="bottom-left">@bottom-left</code>, <code role="rule" xml:id="bottom-center">@bottom-center</code>, <code role="rule" xml:id="bottom-right">@bottom-right</code>, and <code role="rule" xml:id="bottom-right-corner">@bottom-right-corner</code>.</para>
+
+<figure role="FigureBox">
+<title>Location of each margin box</title><mediaobject role="Figure">
+ <imageobject><imagedata fileref="images/margin-boxes.svg" /></imageobject>
+
+</mediaobject>
+</figure>
+
+
+<programlisting>
+@page {
+  <emphasis role="bold">@top-right</emphasis> {        /* page header */
+    <emphasis role="bold">content</emphasis>: "Sample";
+  }
+  <emphasis role="bold">@bottom-center</emphasis> {    /* page footer */
+    <emphasis role="bold">content</emphasis>: counter(page);
+  }
+}
+</programlisting>
+</section>
+
+<section>
+<title xml:id="PageHeaderFooter">Running Headers and Page Numbers</title>
+
+<section>
+<title xml:id="PageHeader">Running header setting : <code role="property">string-set</code> property and <code role="function">string()</code> function</title>
+
+<para>Character strings from the headings in the main body can be displayed in the page header.</para>
+
+<programlisting>
+@page {
+  @top-left {
+    content: <emphasis role="bold">string(Chapter)</emphasis>;
+  }
+}
+
+h1 { <emphasis role="bold">string-set: Chapter content()</emphasis>; }
+</programlisting>
+</section>
+
+<section role="property">
+<title xml:id="StringSet">Variable strings : <code role="property">string-set</code> property</title>
+
+<para>Use the <code role="property">string-set</code> property to make a named variable for a string. </para>
+<para>The string-set value is pairs of a variable name and followed by the content list stored in the named string. Strings defined with a string-set value can be referenced in running headers.</para>
+
+<programlisting>
+h1 {
+  /*set contents of h1:before and h1 in <emphasis role="bold">Chapter</emphasis> content(before) content()*/
+  <emphasis role="bold">string-set: Chapter content(before) content()</emphasis>;
+}
+</programlisting>
+</section>
+
+<section role="property">
+<title xml:id="String"><code xml:id="string" role="function">string()</code></title>
+
+<para>Used to copy the value of a named string into the document.</para>
+<para>Strings defined with a <code role="property">string-set</code> value are referenced as, for example, <code role="code">content: string(Chapter);</code> in running headers.</para>
+<para>The required first value is the name of the string.</para>
+
+<programlisting>
+@top-right {   /* Title in right-hand page header. */
+  content: <emphasis role="bold">string(Chapter)</emphasis>;
+}
+</programlisting>
+
+<para>If multiple elements on one page each set the value of the same named string, then the named string may have several values on that page.  The optional second argument of <code role="function">string()</code> specifies which of the possible values to use.</para>
+
+<programlisting>
+@page Index:right {
+  @top-left {
+    content: <emphasis role="bold">string(IndexTerm, first)</emphasis>;
+  }
+
+  @top-right {
+    content: <emphasis role="bold">string(IndexTerm, last)</emphasis>;
+  }
+}
+</programlisting></section>
+
+<section role="property">
+<title xml:id="running">Move elements to header/footer : <code role="function">running()</code> position value</title>
+
+<para>Use <code role="code">position: running(name);</code> to make an element available for display in a margin box.  The name argument is the name by which the element is referred to in <code role="function">element()</code> functions.</para>
+<para>An element with <code role="code">position: running(name);</code> is not shown in its natural place: it is treated as if <code role="code">display: none;</code> had been set.</para>
+
+<programlisting>
+p.Title {
+    position: running(Title);
+    text-indent: 0;
+}
+</programlisting>
+</section>
+
+
+<section role="property">
+<title xml:id="element">Insert a running element: <code role="function">element()</code></title>
+
+<para>Used to copy a running element into a margin box.</para>
+<para>Elements taken out of their natural place using <code role="code">position: running(name);</code> are referenced as <code role="code">content: element(name);</code> in running headers. A running element can hold one element, including its pseudo-elements and its descendants.  Unlike <code role="function">string()</code>, <code role="function">element()</code> cannot be combined with any other values.</para>
+
+<para>A running element inherits through its normal place in the document.</para>
+<para>The required first value is the name of the running element.</para>
+
+<programlisting>
+@top-left {   /* Title in left-hand page header. */
+  content: element(Title);
+}
+</programlisting>
+
+<para>If multiple elements on one page each set the value of a running element, then the running element may have several values on that page.  The optional second argument of <code role="function">element()</code> specifies which of the possible values to use.</para>
+
+</section>
+
+<section>
+<title xml:id="PageFooter">Page number : counter(page)</title>
+
+<para><code role="function">counter(page)</code> is used for generating page numbers<footnote><para><code role="function">counter()</code>  was defined by CSS 2.1, but in CSS 3, a preassigned counter for page numbers is introduced in the page context.</para></footnote>.</para>
+
+<programlisting>
+@page {
+  @top-right {
+    content: "Page " <emphasis role="bold">counter(page)</emphasis>;
+  }
+}
+</programlisting>
+</section>
+
+<section>
+<title xml:id="Pages">Total pages : counter(pages)</title>
+
+<para>Total pages can be output together with the current page number.</para>
+
+<programlisting>
+@page {
+  @top-right {
+    content: "Page " counter(page physical) " of " <emphasis role="bold">counter(pages)</emphasis>;
+  }
+}
+</programlisting>
+</section>
+</section>
+
+<section>
+<title xml:id="LeftRightFirstPage">Left and Right Page Headers: <code xml:id="page-left">:left</code> and <code xml:id="page-right">:right</code></title>
+
+<para>You can set left and right margins as well as headers and footers<footnote><para>Use <code role="code">string(Title)</code> and <code role="code">string(Chapter)</code>, see "<xref role="SectionRef" linkend="StringSet" />.</para></footnote> separately for left and right pages. These may be different again for the first page. You can also hide the titles and page number from the left-hand side of the left pages and the right-hand side of the right pages when it is the first page.</para>
+<para>When used together with named pages, the style of the left and right pages and of the first page of each named page can be specified.</para>
+
+<programlisting>
+@page <emphasis role="bold">Chapter:left</emphasis> {     /* left page setting */
+  margin-left: 23mm;
+  margin-right: 27mm;
+
+  @top-left {     /* book title in the running head of the left page */
+    content: string(Title);
+  }
+  @bottom-left {  /* page number */
+    content: counter(page);
+  }
+}
+
+@page <emphasis role="bold">Chapter:right</emphasis> {    /* right page setting */
+  margin-left: 27mm;
+  margin-right: 23mm;
+
+  @top-right {    /* section title in the running head of the right page */
+    content: string(Section);
+  }
+  @bottom-right { /* page number */
+    content: counter(page);
+  }
+}
+
+@page <emphasis role="bold">Chapter:first</emphasis> {    /* setting of the first page of a Chapter */
+  /* hide page header */
+  @top-right { content: none }
+  @top-left  { content: none }
+}
+</programlisting>
+
+<figure role="FigureBox">
+<title>Three pages with different headers and footers</title>
+<mediaobject role="Figure">
+ <imageobject><imagedata fileref="images/Firstpage.svg"  /></imageobject>
+</mediaobject>
+</figure>
+</section>
+
+<section>
+<title xml:id="lastonly">Last and only pages: <code xml:id="page-last">:last</code> and <code xml:id="page-only">:only</code></title>
+
+<para>AH Formatter also implements :last and :only pseudo-classes for making page selectors that match on the last and only pages, respectively, of the document.</para>
+
+</section>
+
+<!--<section role="property">
+<title xml:id="WritingMode">Progression Direction : <code role="property">writing-mode</code> property </title>
+
+<para>Specify <code role="property">writing-mode</code> on the root element to set the character, line, and page progression direction of the entire document.  The Initial value is <code>writing-mode: lr-tb</code> (left-to-right, top-to-bottom): the character progression direction is from left to right, the line and block progression directions are from top to bottom, and the pages go from left to right<footnote><para>The writing-mode on the root element is inherited by the page box, and is then inherited by the margin box.</para></footnote>.</para>
+<para>To set documents in Japanese vertical writing mode, specify <code>writing-mode: tb-rl</code>: The character progression direction is from top-to-bottom, line and block from right-to-left, and pages from right to left.</para>
+<itemizedlist role="property">
+<listitem><para>lr-tb : Writing mode progression direction is from left to right, the line and block from top to bottom. Used in conventional horizontal writing.</para></listitem>
+<listitem><para>rl-tb : Writing mode progression direction is from right to left, the line and block from top to bottom. Used in right-to-left languages such as Arabic and Hebrew.</para></listitem>
+<listitem><para>tb-rl : Writing mode progression direction is from top to bottom, the line and block from right to left. Used in vertical writing such as Japanese.</para></listitem>
+</itemizedlist>
+
+<programlisting>
+body {
+  <emphasis role="bold">writing-mode: tb-rl</emphasis>;  /* vertical writing */
+}
+</programlisting>
+</section>-->
+
+</section>
+  <!--******************************************************************-->
+
+<section role="Chapter">
+<title xml:id="PDFOutput">PDF Output</title>
+
+<para>Portable Document Format (PDF) is the most popular ouput format for paged media. AH Formatter provides multiple extensions for taking advantage of PDF features.</para>
+
+<section>
+<title xml:id="PDFVersions">PDF versions</title>
+
+<para>The PDF specification has gone through multiple versions since its first version was published in 1993. Each release has added new features. All non-deprecated features in a PDF version are also included in subsequent versions. A PDF file includes a header identifying the PDF version to which it conforms. A PDF reader will attempt to read any PDF file, even if the file’s version is more recent than the version that the reader implements.</para>
+  
+<table role="StdTable">
+<caption>PDF specification versions</caption>
+<thead>
+<tr>
+<th>Version</th>
+<th>Year</th>
+<th>Acrobat Reader version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.3</td>
+<td>2000</td>
+<td>4.0</td>
+</tr>
+<tr>
+<td>1.4</td>
+<td>2001</td>
+<td>5.0</td>
+</tr>
+<tr>
+<td>1.5</td>
+<td>2003</td>
+<td>6.0</td>
+</tr>
+<tr>
+<td>1.6</td>
+<td>2004</td>
+<td>7.0</td>
+</tr>
+<tr>
+<td>1.7</td>
+<td>2008</td>
+<td>8</td>
+</tr>
+<tr>
+<td>2.0</td>
+<td>2017</td>
+<td>–</td>
+</tr>
+</tbody>
+</table>
+
+
+<para>There are also specialized subsets of PDF that have been standardized by ISO. Some of these have multiple versions that are each based on a specific PDF version.<footnote><para>AH Formatter does not generate either PDF/E or PDF/VT.</para></footnote></para>
+
+<itemizedlist role="property">
+<listitem><para>PDF/X : “PDF for Exchange”.</para></listitem>
+<listitem><para>PDF/A : “PDF for Archiving”.</para></listitem>
+<listitem><para>PDF/E : “PDF for Engineering”.</para></listitem>
+<listitem><para>PDF/VT : “PDF for exchange of variable data and transactional (VT) printing”.</para></listitem>
+<listitem><para>PDF/UA : “PDF for Universal Accessibility”.</para></listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title xml:id="TaggedPDF">Tagged PDF</title>
+
+
+<para>“Tagged PDF” is not a separate PDF specification. It refers to PDF that includes additional information about the logical structure of the document. Tagged PDF was first defined in PDF 1.4.</para>
+
+<para>The text, graphics and images in Tagged PDF can be extracted and reused for other purposes, for example, to make content accessible to users with visual impairments. PDF/UA files are Tagged PDF files that also conform to additional requirements.</para>
+
+<para>AH Formatter embeds PDF tags (StructElem) for HTML/CSS elements and pseudo-elements as shown in the following table:</para>
+
+<informaltable role="StdTable">
+<tgroup cols="2">
+<thead>
+<row>
+<entry>HTML element</entry>
+<entry>PDF element</entry>
+</row>
+</thead>
+<tbody>
+<row><entry>html</entry><entry>Document</entry></row>
+<row><entry>div</entry><entry>Div</entry></row>
+<row><entry>h1</entry><entry>H1</entry></row>
+<row><entry>h2</entry><entry>H2</entry></row>
+<row><entry>h3</entry><entry>H3</entry></row>
+<row><entry>h4</entry><entry>H4</entry></row>
+<row><entry>h5</entry><entry>H5</entry></row>
+<row><entry>h6</entry><entry>H6</entry></row>
+<row><entry>p</entry><entry>P</entry></row>
+<row><entry>ul</entry><entry>L</entry></row>
+<row><entry>ol</entry><entry>L</entry></row>
+<row><entry>li</entry><entry>LI</entry></row>
+<row><entry>li::marker</entry><entry>Lbl</entry></row>
+<row><entry>dl</entry><entry>L</entry></row>
+<row><entry>dt</entry><entry>Lbl</entry></row>
+<row><entry>dd</entry><entry>LBody</entry></row>
+<row><entry>blockquote</entry><entry>BlockQuote</entry></row>
+<row><entry>caption</entry><entry>Caption</entry></row>
+<row><entry>table</entry><entry>Table</entry></row>
+<row><entry>tr</entry><entry>TR</entry></row>
+<row><entry>td</entry><entry>TD</entry></row>
+<row><entry>th</entry><entry>TH</entry></row>
+<row><entry>thead</entry><entry>THead</entry></row>
+<row><entry>tfoot</entry><entry>TFoot</entry></row>
+<row><entry>tbody</entry><entry>TBody</entry></row>
+
+<row><entry>ruby</entry><entry>Ruby</entry></row>
+<row><entry>rb</entry><entry>RB</entry></row>
+<row><entry>rt</entry><entry>RT</entry></row>
+
+
+<row><entry>span</entry><entry>Span</entry></row>
+<row><entry>img</entry><entry>Figure</entry></row>
+<row><entry>a[href]</entry><entry>Link</entry></row>
+<row><entry>other block elements</entry><entry>Div</entry></row>
+<row><entry>other inline elements</entry><entry>Span</entry></row>
+</tbody>
+</tgroup>
+</informaltable>
+
+
+<!--<section role="property">
+<title xml:id="pdftag">Custom PDF Tag name : <code role="property">-ah-pdftag</code> property</title>
+
+<para>String to use as the PDF Tag name for the current element when generating Tagged PDF.  If the provided name is not one of the standard PDF Tag names, the role map in the generated PDF will include a mapping from the name to the default PDF Tag name that AH Formatter would generate for the current element.  If the provided name is one of the standard PDF Tag names, the name will be used as-is.</para>
+
+<programlisting>
+div.TOC {
+  page-break-before: right;
+  page: TOC;
+  <emphasis role="bold">-ah-pdftag: 'Sect'</emphasis>;
+}
+</programlisting>
+
+<figure role="FigureBox">
+<title>&lt;div role="TOC"&gt; is tagged as 'Sect' in the PDF</title>
+<mediaobject role="Figure">
+<imageobject> <imagedata fileref="images/pac3-toc.png" /></imageobject>
+</mediaobject>
+</figure>
+
+</section>-->
+</section>
+
+<!--<section>
+<title xml:id="PDFX">PDF/X</title>
+
+<para>PDF/X, defined in ISO 15930, is a subset of PDF that is intended for prepress graphics exchange.<footnote><para>PDF/X output is not available with AH Formatter Lite.</para></footnote> The intention is that all of the information required for printing is included in the PDF file.<!-\- For example, all fonts must be embedded, and, to avoid ambiguity, only a single output intent may be specified.-\-></para>
+<para>AH Formatter supports multiple PDF/X variants:</para>
+<itemizedlist>
+<listitem><para>PDF/X-1a:2001 (ISO 15930-1:2001)</para>
+<para>Based on PDF 1.3.
+</para></listitem>
+<listitem><para>PDF/X-3:2002 (ISO 15930-3:2002)</para>
+<para>Based on PDF 1.3.
+
+</para></listitem>
+<listitem><para>PDF/X-1a:2003 (ISO 15930-4:2003)</para>
+<para>A subset of PDF/X-3:2003 that is based on PDF 1.4.
+</para></listitem>
+<listitem><para>PDF/X-2:2003 (ISO 15930-5:2003)</para>
+<para>A superset of PDF/X-3:2003 that is based on PDF 1.4.
+
+</para></listitem>
+<listitem><para>PDF/X-3:2003 (ISO 15930-6:2003)</para>
+<para>Based on PDF 1.4.
+</para></listitem>
+
+<listitem><para>PDF/X-4:2010 (ISO 15930-7:2008) </para>
+<para>Based on PDF 1.6.
+</para></listitem>
+
+
+</itemizedlist>
+<para>The following shows the main features for the PDF/X variants.</para>
+<informaltable role="StdTable">
+<tgroup cols="5">
+<thead>
+<row>
+<entry>Requirement</entry>
+<entry>PDF/X-1a</entry>
+<entry>PDF/X-2</entry>
+<entry>PDF/X-3</entry>
+<entry>PDF/X-4</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>All fonts must be embedded</entry>
+<entry align="center">yes</entry>
+<entry align="center">yes</entry>
+<entry align="center">yes</entry>
+<entry align="center">yes</entry>
+</row>
+<row>
+<entry>The output intent must be specified</entry>
+<entry align="center">yes</entry>
+<entry align="center">yes</entry>
+<entry align="center">yes</entry>
+<entry align="center">yes</entry>
+</row>
+
+<row>
+<entry>ICC profiles specified as the output intent must be embedded
+</entry>
+<entry align="center">no</entry>
+<entry align="center">no</entry>
+<entry align="center">no</entry>
+<entry align="center">yes</entry>
+</row>
+
+<row>
+<entry>Supports CMYK, Spot colour</entry>
+<entry align="center">yes</entry>
+<entry align="center">yes</entry>
+<entry align="center">yes</entry>
+<entry align="center">yes</entry>
+</row><row>
+<entry>Supports Grayscale</entry>
+<entry align="center">yes</entry>
+<entry align="center">yes</entry>
+<entry align="center">yes</entry>
+<entry align="center">yes</entry>
+</row>
+
+
+
+<row>
+<entry>Supports RGB</entry>
+<entry align="center">no</entry>
+<entry align="center">yes</entry>
+<entry align="center">yes</entry>
+<entry align="center">yes</entry>
+</row>
+
+
+
+<row>
+<entry>Supports transparency</entry>
+<entry align="center">no</entry>
+<entry align="center">no</entry>
+<entry align="center">no</entry>
+<entry align="center">yes</entry>
+</row>
+<row>
+<entry>Supports PDFs with encryption; a password must not be set, and the restriction against printing and the restriction against changing must not be enabled</entry>
+<entry align="center">no</entry>
+<entry align="center">no</entry>
+<entry align="center">no</entry>
+<entry align="center">no</entry>
+</row>
+<row>
+<entry>PDF can contain links or annotations, etc. in the print area</entry>
+<entry align="center">no</entry>
+<entry align="center">no</entry>
+<entry align="center">no</entry>
+<entry align="center">no</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+</section>
+
+
+<section>
+<title xml:id="PDFA">PDF/A</title>
+
+<para>PDF/A, defined in ISO 19005, is a subset of PDF that is intended for long-term preservation of electronic documents.<footnote><para>PDF/A output is not available with AH Formatter Lite.</para></footnote></para>
+
+<table role="StdTable">
+<caption>Features of supported PDF/A variants</caption>
+<thead>
+<tr>
+<th scope="col">Requirement</th>
+<th scope="col">PDF/A-1a</th>
+<th scope="col">PDF/A-1b</th>
+
+<th scope="col">PDF/A-2a</th>
+<th scope="col">PDF/A-2b</th>
+<th scope="col">PDF/A-2u</th>
+
+
+<th scope="col">PDF/A-3a</th>
+<th scope="col">PDF/A-3b</th>
+<th scope="col">PDF/A-3u</th>
+
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All fonts must be embedded</td>
+<td align="center">yes</td>
+<td align="center">yes</td>
+
+<td align="center">yes</td>
+<td align="center">yes</td>
+<td align="center">yes</td>
+
+
+<td align="center">yes</td>
+<td align="center">yes</td>
+<td align="center">yes</td>
+
+</tr>
+
+<tr>
+<td>ICC profiles must be embedded
+</td>
+<td align="center">yes</td>
+<td align="center">yes</td>
+
+<td align="center">yes</td>
+<td align="center">yes</td>
+<td align="center">yes</td>
+
+
+<td align="center">yes</td>
+<td align="center">yes</td>
+<td align="center">yes</td>
+
+</tr>
+
+<tr>
+<td>Files must be tagged</td>
+<td align="center">yes</td>
+<td align="center">no</td>
+
+<td align="center">yes</td>
+<td align="center">no</td>
+<td align="center">no</td>
+
+
+<td align="center">yes</td>
+<td align="center">no</td>
+<td align="center">no</td>
+
+</tr>
+<tr>
+<td>Files must  include <link xlink:href="https://www.adobe.com/devnet/xmp.html">XMP</link> metadata</td>
+<td align="center">yes</td>
+<td align="center">yes</td>
+
+<td align="center">yes</td>
+<td align="center">yes</td>
+<td align="center">yes</td>
+
+
+<td align="center">yes</td>
+<td align="center">yes</td>
+<td align="center">yes</td>
+
+</tr>
+<tr>
+<td>Files may include encryption</td>
+<td align="center">no</td>
+<td align="center">no</td>
+
+<td align="center">no</td>
+<td align="center">no</td>
+<td align="center">no</td>
+
+
+<td align="center">no</td>
+<td align="center">no</td>
+<td align="center">no</td>
+
+</tr>
+<tr>
+<td>Files may include  LZW Compression</td>
+<td align="center">no</td>
+<td align="center">no</td>
+
+<td align="center">no</td>
+<td align="center">no</td>
+<td align="center">no</td>
+
+
+<td align="center">no</td>
+<td align="center">no</td>
+<td align="center">no</td>
+
+</tr>
+<tr>
+<td>Files may include Transparent images</td>
+<td align="center">no</td>
+<td align="center">no</td>
+
+<td align="center">yes</td>
+<td align="center">yes</td>
+<td align="center">yes</td>
+
+
+<td align="center">yes</td>
+<td align="center">yes</td>
+<td align="center">yes</td>
+
+</tr>
+<tr>
+<td>Files may refer to external content</td>
+<td align="center">no</td>
+<td align="center">no</td>
+
+<td align="center">no</td>
+<td align="center">no</td>
+<td align="center">no</td>
+
+
+<td align="center">no</td>
+<td align="center">no</td>
+<td align="center">no</td>
+
+</tr>
+<tr>
+<td>Files may include JavaScript</td>
+<td align="center">no</td>
+<td align="center">no</td>
+
+<td align="center">no</td>
+<td align="center">no</td>
+<td align="center">no</td>
+
+
+<td align="center">no</td>
+<td align="center">no</td>
+<td align="center">no</td>
+
+</tr>
+
+<tr>
+<td>Unicode must be used for text
+
+</td>
+<td align="center">no</td>
+<td align="center">no</td>
+<td align="center">yes</td>
+<td align="center">no</td>
+<td align="center">yes</td>
+
+<td align="center">yes</td>
+<td align="center">no</td>
+<td align="center">yes</td>
+
+</tr>
+
+
+<tr>
+<td>Any files other than PDF/A can be embedded
+
+</td>
+<td align="center">no</td>
+<td align="center">no</td>
+<td align="center">no</td>
+<td align="center">no</td>
+<td align="center">no</td>
+<td align="center">yes</td>
+<td align="center">yes</td>
+<td align="center">yes</td>
+</tr>
+
+</tbody>
+</table>
+
+</section>-->
+
+
+<section>
+<title xml:id="PDFUA">PDF/UA</title>
+<para>PDF/UA, defined in ISO 14289-1, is the specification intended for improving the  accessibility of PDF based on the ISO 32000-1 (PDF 1.7) specification.<footnote><para>PDF/UA output is not available with AH Formatter Lite.</para></footnote>
+</para>
+<para>The main features of PDF/UA are:</para>
+
+<itemizedlist>
+<listitem><para>Contents must be tagged in logical reading order.
+</para></listitem>
+
+<listitem><para>Meaningful graphics, annotations and numerical formulas must include alternate text descriptions.</para>
+<para>Alternate text descriptions for graphics or numerical formulas can be specified by the <code role="property">-ah-alttext</code> property, links can be specified by  the <code role="property">-ah-annotation-contents</code> property.</para>
+</listitem>
+
+<listitem><para>Security settings must allow assistive technology to have access to the content.
+</para></listitem>
+<listitem><para>Including bookmarks in the PDF/UA is recommended.
+</para></listitem>
+<listitem><para>Annotations, links and multimedia may be included.
+</para></listitem>
+<listitem><para>The language of the document must be specified.
+</para></listitem>
+<listitem><para>All fonts must be embedded.
+</para></listitem>
+</itemizedlist>
+
+
+<section>
+<title xml:id="matterhorn">Matterhorn Protocol</title>
+<para>The Matterhorn Protocol, published by the PDF Association, is a checklist of all the ways that it is possible for a PDF to not conform to PDF/UA.  The Matterhorn Protocol document<footnote><para><link xlink:href="https://www.pdfa.org/publication/the-matterhorn-protocol-1-02/">https://www.pdfa.org/publication/the-matterhorn-protocol-1-02/</link></para></footnote> consists of 31 Checkpoints comprised of 136 Failure Conditions. Some failure conditions can be checked programmatically, but others require human review.
+</para>
+
+<figure role="FigureBox">
+<title>Matterhorn Protocol failure conditions for tables</title>
+<mediaobject role="Figure">
+ <imageobject><imagedata fileref="images/matterhorn-protocol.svg" /></imageobject>
+</mediaobject>
+</figure>
+</section>
+
+<section>
+<title xml:id="pac3">PAC 3 PDF/UA checker</title>
+<para>PDF Accessibility Checker 3 (PAC 3)<footnote><para><link xlink:href="http://www.access-for-all.ch/en/pdf-lab/536-pdf-accessibility-checker-pac-3.html">http://www.access-for-all.ch/en/pdf-lab/536-pdf-accessibility-checker-pac-3.html</link></para></footnote> by Access For All is a freeware utility for Windows that checks PDF files for PDF/UA conformance.  The program implements the Matterhorn Protocol checks.  When you open a PDF file in PAC 3, the program runs its checks and shows a summary of the results.  Since there is no interactive checking, the program can only warn about some of the failure conditions that require human checking.  Unfortunately, the program also has some bugs in its checking.
+</para>
+
+<figure role="FigureBox">
+<title>PAC 3 PDF/UA checker</title>
+<mediaobject role="Figure">
+ <imageobject><imagedata fileref="images/pac3.png"/></imageobject>
+</mediaobject>
+</figure>
+</section>
+</section>
+
+
+<section>
+<title xml:id="DocumentProperties">Document properties</title>
+<para>This extension uses custom &lt;meta&gt; elements, for example:</para>
+
+<programlisting>&lt;meta name="document-title" content="The document title"/&gt;
+&lt;meta name="subject" content="The document subject"/&gt;
+&lt;meta name="author" content="The author"/&gt;
+&lt;meta name="keywords" content="Comma, separated, keywords, list"/&gt;
+…</programlisting>
+
+<para>&lt;meta&gt; with the following <code role="property">name</code> values provide information that is stored in the document catalog in the PDF.<!--<footnote><para><code role="value">author-title</code>, <code role="value">description-writer</code>, <code role="value">copyright-status</code>, <code role="value">copyright-notice</code>, <code role="value">copyright-info-url</code>, and <code role="value">xmp</code> are not available with AH Formatter Lite.</para></footnote>--></para>
+
+<!--<itemizedlist role="property">
+<listitem><para>document-title : Title of the document.</para></listitem>
+<listitem><para>subject : Subject of the document.</para></listitem>
+<listitem><para>author : Name of the person who created the document.</para></listitem>
+<listitem><para>author-title : Title or some other information about the author.</para></listitem>
+<listitem><para>description-writer : Author of the document description.</para></listitem>
+<listitem><para>keywords : Comma-separated list of keywords.</para></listitem>
+<listitem><para>copyright-status : Copyright status. Must be <code role="value">Unknown</code>, <code role="value">Copyrighted</code>, or <code role="value">PublicDomain</code>.</para></listitem>
+<listitem><para>copyright-notice : Copyright information.</para></listitem>
+<listitem><para>copyright-info-url : URL of the copyright information.</para></listitem>
+<listitem><para>xmp : URL of an XMP containing property information.</para></listitem>
+</itemizedlist>-->
+
+<figure role="FigureBox">
+<title>Document properties shown by Acrobat Reader</title>
+<mediaobject role="Figure">
+
+      <imageobject><imagedata fileref="images/document-properties.png" /></imageobject>
+</mediaobject>
+</figure>
+
+
+<section>
+<title xml:id="XMP">Extensible Metadata Platform (XMP)</title>
+
+<para>XMP is a standard XML format for representing metadata about a file or image. It was originally developed by Adobe, and it is now also ISO 16684-1:2012. Because there is a standard, the XMP, for example, that is embedded in a photo taken by a digital camera can be altered or augmented by the photo-editing program that edits the image. Also, for example, the XMP from every image in a PDF file could be included in the XMP that is embedded in the PDF file.</para>
+<para>The XMP standard itself is based, in part, on other metadata standards such as Dublin Core and RDF.</para>
+<para> Any XMP file that passes the sanity check implemented in AH Formatter may be embedded in the PDF that AH Formatter generates.</para>
+
+<para>A portion of the XMP extracted from a PDF file is shown below, and the following figure shows the same XMP as presented by Acrobat.</para>
+
+<programlisting>&lt;?xpacket begin="﻿" xml:id="W5M0MpCehiHzreSzNTczkc9d"?&gt;
+&lt;x:xmpmeta xmlns:x="adobe:ns:meta/"&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"&gt;
+&lt;rdf:Description rdf:about=""
+   xmlns:xapMM="http://ns.adobe.com/xap/1.0/mm/"&gt;
+&lt;xapMM:DocumentID&gt;uuid:4841192B-77AD-0B4B-BD43-8DF3BDE3A5EA&lt;/xapMM:DocumentID&gt;
+&lt;xapMM:VersionID&gt;1&lt;/xapMM:VersionID&gt;
+&lt;xapMM:RenditionClass&gt;default&lt;/xapMM:RenditionClass&gt;
+&lt;/rdf:Description&gt;
+&lt;rdf:Description rdf:about=""
+   xmlns:pdf="http://ns.adobe.com/pdf/1.3/"&gt;
+   &lt;pdf:Producer&gt;Antenna House PDF Output Library 6.5.1216 (Windows
+   (x64))&lt;/pdf:Producer&gt;
+&lt;pdf:Keywords&gt;"CSS, formatting"&lt;/pdf:Keywords&gt;
+&lt;pdf:Trapped&gt;False&lt;/pdf:Trapped&gt;
+&lt;/rdf:Description&gt;
+&lt;rdf:Description rdf:about=""
+   xmlns:xap="http://ns.adobe.com/xap/1.0/"&gt;
+   &lt;xap:CreatorTool&gt;AH Formatter V6.5 MR3 for Windows (x64) : 6.5.6.31956
+   (2018/02/02 12:52JST)&lt;/xap:CreatorTool&gt;
+&lt;xap:ModifyDate&gt;2018-02-25T16:38:45Z&lt;/xap:ModifyDate&gt;
+&lt;xap:CreateDate&gt;2018-02-25T16:38:45Z&lt;/xap:CreateDate&gt;
+&lt;/rdf:Description&gt;<!--
+&lt;rdf:Description rdf:about=""
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+&lt;dc:format>application/pdf&lt;/dc:format>
+&lt;dc:description>
+   &lt;rdf:Alt>
+      &lt;rdf:li xml:lang="x-default">CSS formatting&lt;/rdf:li>
+      &lt;rdf:li xml:lang="en">CSS formatting&lt;/rdf:li>
+   &lt;/rdf:Alt>
+&lt;/dc:description>
+&lt;dc:title>
+   &lt;rdf:Alt>
+      &lt;rdf:li xml:lang="x-default">Introduction to CSS for Paged Media&lt;/rdf:li>
+      &lt;rdf:li xml:lang="en">Introduction to CSS for Paged Media&lt;/rdf:li>
+   &lt;/rdf:Alt>
+&lt;/dc:title>
+&lt;dc:creator>
+   &lt;rdf:Seq>
+      &lt;rdf:li>Antenna House&lt;/rdf:li>
+      &lt;rdf:li>Inc.&lt;/rdf:li>
+   &lt;/rdf:Seq>
+&lt;/dc:creator>
+&lt;dc:rights>
+   &lt;rdf:Alt>
+      &lt;rdf:li xml:lang="x-default">© 2018 Antenna House, Inc.&lt;/rdf:li>
+      &lt;rdf:li xml:lang="en">© 2018 Antenna House, Inc.&lt;/rdf:li>
+   &lt;/rdf:Alt>
+&lt;/dc:rights>
+&lt;dc:subject>
+   &lt;rdf:Bag>
+      &lt;rdf:li>CSS, formatting&lt;/rdf:li>
+   &lt;/rdf:Bag>
+&lt;/dc:subject>
+&lt;/rdf:Description>
+&lt;rdf:Description rdf:about=""
+   xmlns:xapRights="http://ns.adobe.com/xap/1.0/rights/">
+&lt;xapRights:Marked>True&lt;/xapRights:Marked>
+&lt;/rdf:Description>
+&lt;/rdf:RDF>
+&lt;/x:xmpmeta>--><!--&lt;?xpacket begin="ï»¿" xml:id="W5M0MpCehiHzreSzNTczkc9d"?&gt;
+&lt;x:xmpmeta xmlns:x="adobe:ns:meta/"&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"&gt;
+&lt;rdf:Description rdf:about=""
+   xmlns:pdfuaid="http://www.aiim.org/pdfua/ns/id/"&gt;
+&lt;pdfuaid:part&gt;1&lt;/pdfuaid:part&gt;
+&lt;/rdf:Description&gt;
+&lt;rdf:Description rdf:about=""
+   xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"&gt;
+&lt;xmpMM:DocumentID&gt;uuid:3927056E-B834-D04A-A255-AF8CBE218E59&lt;/xmpMM:DocumentID&gt;
+&lt;xmpMM:VersionID&gt;1&lt;/xmpMM:VersionID&gt;
+&lt;xmpMM:RenditionClass&gt;default&lt;/xmpMM:RenditionClass&gt;
+&lt;/rdf:Description&gt;
+&lt;rdf:Description rdf:about="" xmlns:pdf="http://ns.adobe.com/pdf/1.3/"&gt;
+&lt;pdf:Producer&gt;Antenna House PDF Output Library 6.5.1213
+(Windows (x64))&lt;/pdf:Producer&gt;
+&lt;pdf:Keywords&gt;CSS, formatting&lt;/pdf:Keywords&gt;-->
+…
+</programlisting>
+
+<figure role="FigureBox">
+<title>XMP properties viewed in Acrobat</title>
+<mediaobject role="Figure">
+
+<imageobject><imagedata fileref="images/xmp-properties.png" /></imageobject>
+</mediaobject>
+</figure>
+
+</section>
+</section>
+
+<!--<section>
+<title xml:id="PageDisplay">Page display</title>
+<para>&lt;meta&gt; with the following <code role="property">name</code> values control how the PDF is displayed when initially opened in a reader. Unless otherwise noted, the allowed content values are <code role="value">true</code> and <code role="value">false</code>, and the default, if no &lt;meta&gt; with that <code role="property">name</code> value is present, is <code role="value">false</code>.</para>
+
+<itemizedlist role="property">
+<listitem><para>pagemode : What is displayed when the document is opened. Must be UseNone, UseOutlines, UseThumbs, FullScreen or UseOC.  When the outline exists, the default is UseOutlines.</para></listitem>
+<listitem><para>pagelayout : Page layout when the document is opened. Must be SinglePage, OneColumn, TwoColumnLeft, TwoColumnRight, TwoPageLeft or TwoPageRight.  The default is SinglePage</para></listitem>
+<listitem><para>hidetoolbar : Whether to hide the toolbar when the document is opened.</para></listitem>
+<listitem><para>hidemenubar : Whether to hide the menu bar when the document is opened.</para></listitem>
+<listitem><para>hidewindowui : Whether to hide user interface (UI) elements such as a scroll bar when the document is opened.</para></listitem>
+<listitem><para>fitwindow : Whether, when the document is opened, to change the size of the document window to fit the page size.</para></listitem>
+<listitem><para>centerwindow : Whether to position the document’s window in the center of the screen when the document is opened.</para></listitem>
+<listitem><para>displaydoctitle : Whether the window’s title bar should display the document title.</para></listitem>
+<listitem><para>openaction : Either the destination within the document at which the document is to be opened or a JavaScript program to execute when the document is opened.</para></listitem>
+</itemizedlist>
+</section>-->
+
+</section>
+<!--******************************************************************-->
+<!--******************************************************************-->
+
+<!--<section role="Chapter">
+<title xml:id="ImageSetting">Image Positioning</title>
+
+<section>
+<title xml:id="InlineImage">Inline Image</title>
+
+<para>Use the inline &lt;img&gt; and &lt;object&gt; image elements to place an inline image in a sentence.</para>
+<!-\-<figure role="SampleBox">
+<title role="SampleTitle">Inline Image</title>
+<div role="TextSample0"><para style="text-indent: 0">Antenna House <imagedata fileref="images/logo-antenna.svg" alt="AH logo" style="height: 9pt;" /> Formatter is the most powerful XSL-FO software and CSS document formatting software on the market. To meet your needs, we have expanded AH Formatter to support more than 70 languages.</para>
+<para>AH Formatter <imagedata fileref="images/ico6-128.png" alt="V6 logo" style="height: 9pt;" /> features support for PDF/UA and improved CGM rendering. It also includes support for MathML V3.0, layered PDFs, enhanced support for embedding multimedia and numerous extensions.</para></div>
+</figure>-\->
+
+<programlisting role="LongText">
+&lt;p style="text-indent: 0"&gt;Antenna House &lt;img src="images/logo-antenna.svg" alt="AH logo" style="height: 9pt;" /&gt; Formatter is the most powerful XSL-FO software and CSS document formatting software on the market. To meet your needs, we have
+expanded AH Formatter to support more than 70 languages.
+…
+</programlisting>
+</section>
+
+<section>
+<title xml:id="block-image">Block image</title>
+<para>Use <code role="code">display: block;</code> to make an image display as a block rather than inline.</para>
+<!-\-<figure role="SampleBox">
+<title role="SampleTitle">An inline image set with display: block; </title>
+<div role="TextSample0"><para>Antenna House <imagedata fileref="images/logo-antenna.svg" alt="AH logo" style="display: block; height: 9pt;" /> Formatter is the most powerful XSL-FO software and CSS document formatting software on the market. To meet your needs, we have expanded AH Formatter to support more than 70 languages.</para>
+<para>AH Formatter <imagedata fileref="images/ico6-128.png" alt="V6 logo" style="display: block; height: 9pt;" /> features support for PDF/UA and improved CGM rendering. It also includes support for MathML V3.0, layered PDFs, enhanced support for embedding multimedia and numerous extensions.</para></div>
+</figure>-\->
+
+<programlisting role="LongText">
+&lt;p&gt;Antenna House &lt;img src="images/logo-antenna.svg" alt="AH logo" style="<emphasis role="bold">display: block;</emphasis> height: 9pt;" /&gt; Formatter is the most powerful XSL-FO software
+and CSS document formatting software on the market. To meet your needs, we have
+expanded AH Formatter to support more than 70 languages.&lt;/p&gt;
+…
+</programlisting>
+</section>
+
+<section role="property">
+<title xml:id="Float1">Positioning as a Float : <code role="property">float</code> property</title>
+
+<para>Use the <code role="property">float</code> property to float the image and set it to float either to the left, right, or not at all. The adjacent element wraps around the other side of the element with the <code role="property">float</code> property.</para>
+<!-\-<div role="SampleBox">
+<div role="SampleTitle">left-aligned image float: left;</div>
+<div role="TextSample0"><para style="text-indent: 0">
+<imagedata fileref="images/logo-antenna.svg" alt="AH logo" style="float:left; height: 3em; margin-right: 9pt" />Antenna House Formatter is the most powerful XSL-FO software and CSS document formatting software on the market. To meet your needs, we have expanded AH Formatter to support more than 70 languages.
+</para>
+<para><imagedata fileref="images/ico6-128.png" alt="V6 logo" style="float:left; height:3em; margin-right: 9pt" />
+AH Formatter features support for PDF/UA and improved CGM rendering. It also includes support for MathML V3.0, layered PDFs, enhanced support for embedding multimedia and numerous extensions.
+</para></div>
+</div>-\->
+
+<programlisting>
+&lt;p style="text-indent: 0"&gt;
+&lt;img src="images/logo-antenna.svg" style="<emphasis role="bold">float:left;</emphasis> height:3em;
+margin-left: 9pt" /&gt;Antenna House Formatter is the most powerful XSL-FO software
+and CSS document formatting software on the market. To meet your needs, we have
+expanded AH Formatter to support more than 70 languages.
+…
+</programlisting>
+
+<!-\-<div role="SampleBox" style="break-inside: avoid;">
+<div role="SampleTitle">Right-aligned image: <code role="code">float: right;</code></div>
+<div role="TextSample0"><para>
+<imagedata fileref="images/logo-antenna.svg" alt="AH logo" style="float:right; height: 3em; margin-left: 9pt" />
+  Antenna House Formatter is the most powerful XSL-FO software and CSS document formatting software on the market. To meet your needs, we have expanded AH Formatter to support more than 70 languages.
+</para><para>
+<imagedata fileref="images/ico6-128.png" alt="V6 logo" style="float:right; height:3em; margin-left: 9pt" />
+  AH Formatter features support for PDF/UA and improved CGM rendering. It also includes support for MathML V3.0, layered PDFs, enhanced support for embedding multimedia and numerous extensions.
+</para></div>
+</div>-\->
+
+<programlisting>
+&lt;p style="text-indent: 0"&gt;
+&lt;img src="images/logo-antenna.svg" style="<emphasis role="bold">float:right;</emphasis> height:3em;
+margin-right: 9pt" /&gt;Antenna House Formatter is the most powerful XSL-FO software
+and CSS document formatting software on the market. To meet your needs, we have
+expanded AH Formatter to support more than 70 languages.
+…
+</programlisting>
+
+<para>Text as well as images can be floated<footnote><para>It is not common to indent right after a display heading, but indentation is done here for comparison with the right-aligned float.</para></footnote>.</para>
+<!-\-<div role="SampleBox">
+<div role="SampleTitle">left-aligned text <code role="code">float: left;</code></div>
+<para role="TextSample">
+  <span role="TextSampleFloat LeftFloat">Antenna<br /> House</span> Formatter is the most powerful XSL-FO software and CSS document formatting software on the market. To meet your needs, we have expanded AH Formatter to support more than 70 languages.</para>
+</div>
+
+<div role="SampleBox">
+<div role="SampleTitle">Right-aligned text: <code role="code">float: right;</code></div>
+<para role="TextSample">
+  <span role="TextSampleFloat RightFloat">Antenna<br /> House</span> Formatter is the most powerful XSL-FO software and CSS document formatting software on the market. To meet your needs, we have expanded AH Formatter to support more than 70 languages.</para>
+</div>-\->
+</section>
+
+<section role="property">
+<title xml:id="Float2">Float Position: <code role="property">float</code> property</title>
+
+<section>
+<title xml:id="PageFloat">Page float : float: top page/float: bottom page</title>
+
+<para>In the existing HTML and CSS layouts, it is common to use <code role="code">float: left;</code> and <code role="code">float: right;</code> to align images and characters to the left and right of the body text. Page floats extend this to the vertical direction.</para>
+<para><code role="code">float: top page;</code> positions a block at the top of the page. <code role="code">float: bottom page;</code> places a block at the end of the page.</para>
+
+<!-\-<para>
+Two page float examples are shown at both the top and bottom of this page.
+<footnote><para>Or on the next page if there is not enough space available on this page.</para></footnote></para>
+
+<div style="float: top page; border: ridge maroon; padding: 3pt; margin-bottom:1em">
+<para>This is at the top of the page. Specified by <emphasis role="bold">float: top page</emphasis>.</para>
+</div>
+<div style="float: top page; border: ridge maroon; padding: 3pt; margin-bottom:1em">
+<para>This is the second top float for the page. Specified by <emphasis role="bold">float: top page</emphasis>.</para>
+</div>
+<div style="float: bottom page; border: ridge green; padding: 3pt; margin-top:1em">
+<para>This is the second bottom float for the page. Specified by <emphasis role="bold">float: bottom page</emphasis>.</para>
+</div>
+<div style="float: bottom page; border: ridge green; padding: 3pt; margin-top:1em">
+<para>This is the end of the page. Specified by <emphasis role="bold">float: bottom page</emphasis>.</para>
+</div>-\-><!-\-p role="TextSample">CSSは、すでにWebの世界では確実に普及しており、CSS2（Cascading Style Sheets Level2）の標準を実装するブラウザも増えています。しかし、ブラウザのページレイアウト、文字配置機能はレベルが低く高品質なページ媒体には向きません。</p-\->
+
+<programlisting>
+&lt;div style="<emphasis role="bold">float: top page;</emphasis> border: ridge maroon; padding: 3pt;
+margin-bottom: 1em;"&gt;
+&lt;p&gt;This is the top page. Specified by &lt;b&gt;float: top page&lt;/b&gt;. &lt;/p&gt;
+&lt;/div&gt;
+&lt;div style="<emphasis role="bold">float: bottom page;</emphasis> border: ridge green; padding: 3pt;
+margin-top: 1em;"&gt;
+&lt;p&gt;This is the bottom page. Specified by &lt;b&gt;float: bottom page&lt;/b&gt;. &lt;/p&gt;
+&lt;/div&gt;<!-\-
+&lt;p&gt;CSSは、すでにWebの世界では確実に普及しており、CSS2（Cascading Style Sheets Level2）
+の標準を実装するブラウザも増えています。しかし、ブラウザのページレイアウト、文字配置機能は…-\->
+</programlisting>
+</section>
+
+<section>
+<title xml:id="ColumunFloat">Column float : float: top/float: bottom</title>
+
+<para>float: top; positions the block at the top of the column. float: bottom; positions the block at the bottom of the column.</para>
+
+<!-\-<div role="MultiCol SampleBox Hyphenated">
+  <para xml:lang="la" role="unimportant">Whereas recognition of the inherent dignity and of the equal and inalienable rights of all members of the human family is the foundation of freedom, justice and peace in the world,</para>
+<div style="float: top; border: ridge orange; padding: 3pt;">
+<para>This is the top of the column.</para><para>Specified by  <emphasis role="bold">float: top</emphasis>.</para>
+</div>
+  <para xml:lang="la" role="unimportant">Whereas disregard and contempt for human rights have resulted in barbarous acts which have outraged the conscience of mankind, and the advent of a world in which human beings shall enjoy freedom of speech and belief and freedom from fear and want has been proclaimed as the highest aspiration of the common people,</para>
+<div style="float: bottom; border: ridge lime; padding: 3pt">
+<para>This is the bottom of the column.</para><para>Specified by <emphasis role="bold">float: bottom</emphasis>.</para>
+</div>
+  <para xml:lang="la" role="unimportant">Whereas it is essential, if man is not to be compelled to have recourse, as a last resort, to rebellion against tyranny and oppression, that human rights should be protected by the rule of law,</para>
+</div>-\->
+
+<programlisting>
+&lt;p&gt;Whereas recognition of the inherent dignity and…&lt;/p&gt;
+&lt;div style="<emphasis role="bold">float: top;</emphasis> border: ridge orange; padding: 3pt;"&gt;
+&lt;p&gt;This is the top of the column. Specified by &lt;/p&gt;&lt;p&gt;&lt;b&gt;float: top&lt;/b&gt;. &lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;Whereas disregard and contempt for human rights have…&lt;/p&gt;
+&lt;div style="<emphasis role="bold">float: bottom;</emphasis> border: ridge lime; padding: 3pt"&gt;
+&lt;p&gt;This is the bottom of the column. Specified by &lt;/p&gt;&lt;p&gt;&lt;b&gt;float: bottom&lt;/b&gt;.
+ &lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;Whereas it is essential, if man is not to be compelled…&lt;/p&gt;
+</programlisting>
+</section>
+
+<section>
+<title xml:id="InsideOutsideFloat">Inside, outside and alternate float : float: inside/float: outside/float: alternate</title>
+
+<para>float: inside; positions the block at the left side on a right-hand page or on the right side on a left-hand page.</para>
+
+<!-\-<div role="MultiCol SampleBox Hyphenated">
+<para xml:lang="la" role="unimportant">Whereas recognition of the inherent dignity and of the equal and inalienable rights of all members of the human family is the foundation of freedom, justice and peace in the world,</para>
+<div style="float: inside; border: ridge orange; padding: 3pt;">
+<para style="text-indent: 0;"><emphasis role="bold">float: inside</emphasis></para>
+</div>
+<para xml:lang="la" role="unimportant">Whereas disregard and contempt for human rights have resulted in barbarous acts which have outraged the conscience of mankind, and the advent of a world in which human beings shall enjoy freedom of speech and belief and freedom from fear and want has been proclaimed as the highest aspiration of the common people,</para>
+<div style="float: inside; border: ridge lime; padding: 3pt">
+  <para style="text-indent: 0;"><emphasis role="bold">float: inside</emphasis></para>
+</div>
+<para xml:lang="la" role="unimportant">Whereas it is essential, if man is not to be compelled to have recourse, as a last resort, to rebellion against tyranny and oppression, that human rights should be protected by the rule of law,</para>
+</div>-\->
+
+<para>float: outside; positions the block at the right side on a right-hand page or on the left side on a left-hand page.</para>
+
+<!-\-<div role="MultiCol SampleBox Hyphenated">
+<para xml:lang="la" role="unimportant">Whereas recognition of the inherent dignity and of the equal and inalienable rights of all members of the human family is the foundation of freedom, justice and peace in the world,</para>
+<div style="float: outside; border: ridge orange; padding: 3pt;">
+  <para style="text-indent: 0;"><emphasis role="bold">float: outside</emphasis></para>
+</div>
+<para xml:lang="la" role="unimportant">Whereas disregard and contempt for human rights have resulted in barbarous acts which have outraged the conscience of mankind, and the advent of a world in which human beings shall enjoy freedom of speech and belief and freedom from fear and want has been proclaimed as the highest aspiration of the common people,</para>
+<div style="float: outside; border: ridge lime; padding: 3pt">
+  <para style="text-indent: 0;"><emphasis role="bold">float: outside</emphasis></para>
+</div>
+<para xml:lang="la" role="unimportant">Whereas it is essential, if man is not to be compelled to have recourse, as a last resort, to rebellion against tyranny and oppression, that human rights should be protected by the rule of law,</para>
+</div>-\->
+
+<para><code role="code">float: center;</code> positions the block at the center of the column.</para>
+
+<!-\-<div role="MultiCol SampleBox Hyphenated">
+<para xml:lang="la" role="unimportant">Whereas recognition of the inherent dignity and of the equal and inalienable rights of all members of the human family is the foundation of freedom, justice and peace in the world,</para>
+<div style="float: center; border: ridge orange; padding: 3pt;">
+  <para style="text-indent: 0;"><emphasis role="bold">float: center</emphasis></para>
+</div>
+<para xml:lang="la" role="unimportant">Whereas disregard and contempt for human rights have resulted in barbarous acts which have outraged the conscience of mankind, and the advent of a world in which human beings shall enjoy freedom of speech and belief and freedom from fear and want has been proclaimed as the highest aspiration of the common people,</para>
+<div style="float: center; border: ridge lime; padding: 3pt">
+  <para style="text-indent: 0;"><emphasis role="bold">float: center</emphasis></para>
+</div>
+<para xml:lang="la" role="unimportant">Whereas it is essential, if man is not to be compelled to have recourse, as a last resort, to rebellion against tyranny and oppression, that human rights should be protected by the rule of law,</para>
+</div>-\->
+
+<para><code role="code">float: start;</code> positions the block on the start side.  This is the same as left in horizontal left-to-right writing mode.</para>
+
+<!-\-<div role="MultiCol SampleBox Hyphenated">
+<para xml:lang="la" role="unimportant">Whereas recognition of the inherent dignity and of the equal and inalienable rights of all members of the human family is the foundation of freedom, justice and peace in the world,</para>
+<div style="float: start; border: ridge orange; padding: 3pt;">
+  <para style="text-indent: 0;"><emphasis role="bold">float: start</emphasis></para>
+</div>
+<para xml:lang="la" role="unimportant">Whereas disregard and contempt for human rights have resulted in barbarous acts which have outraged the conscience of mankind, and the advent of a world in which human beings shall enjoy freedom of speech and belief and freedom from fear and want has been proclaimed as the highest aspiration of the common people,</para>
+<div style="float: start; border: ridge lime; padding: 3pt">
+<para style="text-indent: 0;"><emphasis role="bold">float: start</emphasis></para>
+</div>
+<para xml:lang="la" role="unimportant">Whereas it is essential, if man is not to be compelled to have recourse, as a last resort, to rebellion against tyranny and oppression, that human rights should be protected by the rule of law,</para>
+</div>-\->
+
+<para>It is the same as right in horizontal right-to-left writing mode.</para>
+
+<!-\-<div role="MultiCol SampleBox Hyphenated" xml:lang="he" dir="rtl">
+<para xml:lang="he" role="unimportant">ואיל והכרה בכבוד הטבעי אשר לכל בני משפהת האדם ובזכויותיהם השוות והבלתי נפקעות הוא יסוד החופש, הצדק והשלום בעולם.</para>
+<div style="float: start; border: ridge orange; padding: 3pt;">
+  <para dir="ltr" style="text-indent: 0;"><emphasis role="bold">float: start</emphasis></para>
+</div>
+<para xml:lang="he" role="unimportant">הואיל והזלזול בזכויות האדם וביזוין הבשילו מעשים פראיים שפגעו קשה במצפונה של האנושות; ובנין עולם, שבו ייהנו כל יצורי אנוש מחירות הדיבור והאמונה ומן החירות מפחד וממחסור, הוכרז כראש שאיפותיו של כל אדם.</para>
+<div style="float: start; border: ridge lime; padding: 3pt">
+  <para lang="en" dir="ltr" style="text-indent: 0;"><emphasis role="bold">float: start</emphasis></para>
+</div>
+<para xml:lang="he" role="unimportant">הואיל והכרח חיוני הוא שזכויות האדם תהיינה מוגנות בכוח שלטונו של החוק, שלא יהא האדם אנוס, כמפלט אחרון, להשליך את יהבו על מרידה בעריצות ובדיכזי.</para>
+</div>-\->
+
+<para><code role="code">float: end;</code> positions the block on the end side.  This is the same as <code role="value">right</code> in horizontal left-to-right writing mode.</para>
+
+<!-\-<div role="MultiCol SampleBox Hyphenated">
+<para role="unimportant">Whereas recognition of the inherent dignity and of the equal and inalienable rights of all members of the human family is the foundation of freedom, justice and peace in the world,</para>
+<div style="float: end; border: ridge orange; padding: 3pt;">
+  <para style="text-indent: 0;"><emphasis role="bold">float: end</emphasis></para>
+</div>
+<para role="unimportant">Whereas disregard and contempt for human rights have resulted in barbarous acts which have outraged the conscience of mankind, and the advent of a world in which human beings shall enjoy freedom of speech and belief and freedom from fear and want has been proclaimed as the highest aspiration of the common people,</para>
+<div style="float: end; border: ridge lime; padding: 3pt">
+  <para style="text-indent: 0;"><emphasis role="bold">float: end</emphasis></para>
+</div>
+<para role="unimportant">Whereas it is essential, if man is not to be compelled to have recourse, as a last resort, to rebellion against tyranny and oppression, that human rights should be protected by the rule of law,</para>
+</div>-\->
+
+<para>It is the same as left in horizontal right-to-left writing mode.</para>
+
+<!-\-<div role="MultiCol SampleBox Hyphenated" xml:lang="he" dir="rtl">
+<para xml:lang="he" role="unimportant">ואיל והכרה בכבוד הטבעי אשר לכל בני משפהת האדם ובזכויותיהם השוות והבלתי נפקעות הוא יסוד החופש, הצדק והשלום בעולם.</para>
+<div style="float: end; border: ridge orange; padding: 3pt;">
+  <para dir="ltr" style="text-indent: 0;"><emphasis role="bold">float: end</emphasis></para>
+</div>
+<para xml:lang="he" role="unimportant">הואיל והזלזול בזכויות האדם וביזוין הבשילו מעשים פראיים שפגעו קשה במצפונה של האנושות; ובנין עולם, שבו ייהנו כל יצורי אנוש מחירות הדיבור והאמונה ומן החירות מפחד וממחסור, הוכרז כראש שאיפותיו של כל אדם.</para>
+<div style="float: end; border: ridge lime; padding: 3pt">
+  <para lang="en" dir="ltr" style="text-indent: 0;"><emphasis role="bold">float: end</emphasis></para>
+</div>
+<para xml:lang="he" role="unimportant">הואיל והכרח חיוני הוא שזכויות האדם תהיינה מוגנות בכוח שלטונו של החוק, שלא יהא האדם אנוס, כמפלט אחרון, להשליך את יהבו על מרידה בעריצות ובדיכזי.</para>
+</div>-\->
+
+<para><code role="code">float: alternate;</code> positions a block in the first column as if end is specified, a block in the last column as if start is specified, and a block in any other column as if center is specified.</para>
+
+<!-\-<div role="MultiCol SampleBox Hyphenated">
+  <para role="unimportant">Whereas recognition of the inherent dignity and of the equal and inalienable rights of all members of the human family is the foundation of freedom, justice and peace in the world,</para>
+<div style="float: alternate; border: ridge orange; padding: 3pt;">
+  <para style="text-indent: 0;"><emphasis role="bold">float: alternate</emphasis></para>
+</div>
+  <para role="unimportant">Whereas disregard and contempt for human rights have resulted in barbarous acts which have outraged the conscience of mankind, and the advent of a world in which human beings shall enjoy freedom of speech and belief and freedom from fear and want has been proclaimed as the highest aspiration of the common people,</para>
+<div style="float: alternate; border: ridge lime; padding: 3pt">
+  <para style="text-indent: 0;"><emphasis role="bold">float: alternate</emphasis></para>
+</div>
+  <para role="unimportant">Whereas it is essential, if man is not to be compelled to have recourse, as a last resort, to rebellion against tyranny and oppression, that human rights should be protected by the rule of law,</para>
+</div>-\->
+
+</section>
+
+  <!-\-<section>
+    <title xml:id="VerticalFloat">Float in vertical writing : float: top/float: bottom/float: alternate</title>
+    <div role="VerticalTextBlock"><!-\\-div role="SampleTitle">日本語組版例</div-\\->
+
+    <para>夏目 漱石 (なつめ そうせき、慶応三年一月五日 (一八六七年二月九日) ―大正五年 (一九一六年) 一二月九日) は、日本の小説家、評論家、英文学者。 本名、金之助。 『吾輩は猫である』『こゝろ』などの作品で広く知られる、森鷗外と並ぶ明治・大正時代の文豪である。 江戸の牛込馬場下横町 (現在の東京都新宿区喜久井町) 出身。 俳号は愚陀仏。</para>
+      <div style="float: top; border: ridge orange; padding: 3pt;">
+        <para style="text-indent: 0;"><emphasis role="bold">float: top</emphasis></para>
+      </div>
+      <para>大学時代に正岡子規と出会い、俳句を学ぶ。 … (中略) …当初は余裕派と呼ばれた。</para>
+      <div style="float: bottom; border: ridge orange; padding: 3pt;">
+        <para style="text-indent: 0;"><emphasis role="bold">float: bottom</emphasis></para>
+      </div>
+      <para>「修善寺の大患」後は、『行人』『こゝろ』『硝子戸の中』などを執筆。 「則天去私」 (そくてんきょし) の境地に達したといわれる。 晩年は胃潰瘍に悩まされ、『明暗』が絶筆となった。</para>
+      <div style="float: center; border: ridge orange; padding: 3pt;">
+        <para style="text-indent: 0;"><emphasis role="bold">float: center</emphasis></para>
+      </div>
+      <para>フリー百科事典『ウィキペディア』より引用&gt;</para>
+  </div>
+    <div role="VerticalTextBlock"><!-\\-div role="SampleTitle">日本語組版例</div-\\->
+
+      <para>夏目 漱石 (なつめ そうせき、慶応三年一月五日 (一八六七年二月九日) ―大正五年 (一九一六年) 一二月九日) は、日本の小説家、評論家、英文学者。 本名、金之助。 『吾輩は猫である』『こゝろ』などの作品で広く知られる、森鷗外と並ぶ明治・大正時代の文豪である。 江戸の牛込馬場下横町 (現在の東京都新宿区喜久井町) 出身。 俳号は愚陀仏。</para>
+      <para>大学時代に正岡子規と出会い、俳句を学ぶ。 … (中略) …当初は余裕派と呼ばれた。</para>
+      <para>「修善寺の大患」後は、『行人』『こゝろ』『硝子戸の中』などを執筆。 「則天去私」 (そくてんきょし) の境地に達したといわれる。 晩年は胃潰瘍に悩まされ、『明暗』が絶筆となった。</para>
+      <div style="float: before; border: ridge orange; padding: 3pt;">
+        <para style="text-indent: 0;"><emphasis role="bold">float: before</emphasis></para>
+      </div>
+      <div style="float: after; border: ridge orange; padding: 3pt;">
+        <para style="text-indent: 0;"><emphasis role="bold">float: after</emphasis></para>
+      </div>
+      <div style="float: inside; border: ridge orange; padding: 3pt;">
+        <para style="text-indent: 0;"><emphasis role="bold">float: inside</emphasis></para>
+      </div>
+      <div style="float: outside; border: ridge orange; padding: 3pt;">
+        <para style="text-indent: 0;"><emphasis role="bold">float: outside</emphasis></para>
+      </div>
+      <div style="float-y: left; border: ridge orange; padding: 3pt;">
+        <para style="text-indent: 0;"><emphasis role="bold">float: left</emphasis></para>
+      </div>
+      <div style="float-y: right; border: ridge orange; padding: 3pt;">
+        <para style="text-indent: 0;"><emphasis role="bold">float: right</emphasis></para>
+      </div>
+      <para>フリー百科事典『ウィキペディア』より引用&gt;</para>
+    </div>
+  </section>-\->
+
+
+  <!-\-<section>
+    <title xml:id="MultiColumnFloat">Multi-column float : float: multicol</title>
+
+    <para><code role="code">float: multicol;</code> allows the float to span multiple columns plus the gaps between the columns. The ‘gr’ length unit denotes the width of either a column or column gap.  <emphasis>n</emphasis> columns has a width of (2<emphasis>n</emphasis> - 1)gr.  ‘gr’ lengths may be non-integer.</para>
+
+    <div role="MultiCol3 SampleBox Hyphenated">
+      <para role="unimportant">Whereas recognition of the inherent dignity and of the equal and inalienable rights of all members of the human family is the foundation of freedom, justice and peace in the world,</para>
+      <div style="float: multicol top; width: 1gr; border: ridge orange; padding: 3pt; box-sizing: border-box; clear: none;">
+        <para style="text-indent: 0;"><emphasis role="bold">float: multicol</emphasis></para>
+      </div>
+      <para role="unimportant">Whereas disregard and contempt for human rights have resulted in barbarous acts which have outraged the conscience of mankind, and the advent of a world in which human beings shall enjoy freedom of speech and belief and freedom from fear and want has been proclaimed as the highest aspiration of the common people,</para>
+      <!-\\-<para role="unimportant">Whereas it is essential, if man is not to be compelled to have recourse, as a last resort, to rebellion against tyranny and oppression, that human rights should be protected by the rule of law,</para>-\\->
+    </div>
+  </section>-\->
+</section>
+
+<section>
+<title xml:id="FloatClear">Controlling Flow Next to floats : <code role="property">clear</code> property</title>
+
+<para>Use the <code role="property">clear</code> property to control the flow of floats to the right or left sides of a specified block.</para>
+<itemizedlist role="property">
+  <listitem><para>none: Floats are not positioned and computes a 'clearance' of an element.</para></listitem>
+  <listitem><para>left : Requires the top border edge of a box be below the bottom outer edge of any left-floating boxes.</para></listitem>
+  <listitem><para>right : Requires the top border edge of a box be below the bottom outer edge of any right-floating boxes.</para></listitem>
+  <listitem><para>both : Requires the top border edge of a box be below the bottom outer edge of any left-floating and right-floating boxes.</para></listitem>
+</itemizedlist>
+</section>
+</section>-->
+
+<!--******************************************************************-->
+
+<section role="Chapter">
+<title xml:id="Colors">Colour Specification</title>
+
+<section>
+<title xml:id="printing-color">Printing colour</title>
+<para>When you use CSS with your browser, the colours that you see are from the display emitting light.  When the red, green, and blue primary colours combine to make a colour, they are additive: the more of each component there is, the lighter the colour. Which is why #FFF is white (or why white is #FFF, depending on your perspective).</para>
+<para>Conversely, when you print, the colours that you see are from the light that is reflected from the printed surface. When the cyan, magenta, and yellow primaries combine to make a colour, they are subtractive: the more of each component there is, the darker the colour. <code role="code">cmyk(1, 1, 1, 0)</code> should give black, but in practice, it’s closer to a muddy brown. That’s one reason why black is added as the fourth colour.<footnote><para>The ‘K’ in ‘CMYK’ is from the black printing plate being the ‘key’ plate against which the other plates are aligned.</para></footnote> Using black ink is also less expensive than using a triple quantity of coloured inks. Text is typically printed solely in black to avoid problems if the other three inks are not perfectly aligned. A ‘richer’ black, which might be used for example in a graphic, can be made by applying solid black over one or more other colours.</para>
+
+<figure role="FigureBox">
+<title>RGB and CMY</title>
+
+<mediaobject role="Figure">
+
+<imageobject>
+<imagedata fileref="images/rgb-cmyk.svg" /></imageobject>
+</mediaobject>
+</figure>
+
+<para>The relationship between RGB and CMY was first demonstrated by James Clerk Maxwell around 1860. Put simply, the printing primaries are the secondary colours of the transmitted light primaries, and vice-versa: cyan is blue plus green, or white minus red, and similarly for magenta and yellow. However, as the following figure shows, CMYK printing inks do not have the same gamut (i.e., colour range) as the sRGB colour space that is used for RGB colours on the web, and neither covers the full gamut of visible light.</para>
+
+
+<figure role="FigureBox">
+<title>sRGB and CMYK gamuts</title>
+<mediaobject role="Figure">
+
+<imageobject><imagedata fileref="images/srgb-cmyk-gamuts.svg" /></imageobject>
+</mediaobject>
+</figure>
+
+<para>These differences between sRGB and CMYK might affect your use of colour. Every device or process for printing that you encounter will have a way of representing RGB colours using CMYK, but that is usually by shifting colours so that out-of-gamut colours can be printed (and shifting nearly out-of-gamut colours so they do not look the same as the shifted colours). If your paged media will mostly be viewed on screen, possibly with some local printing by end users, then RGB colours may be best. However, if your paged media will be commercially printed, discuss with your printer whether to use RGB or CMYK for images, etc., and who will do the final conversion to CMYK.  Preparing images for commercial printing is a complex subject that is beyond the scope of this tutorial.</para>
+</section>
+
+<section role="property">
+<title xml:id="Color">Text Colour : <code role="property">color</code> property</title>
+
+<para>Use  the <code role="property">color</code> property to specify the foreground colour of text and border colours. RGB is most commonly used for specifying colours and has three components: red, yellow, and blue. CMYK are used for print only and has four components: cyan, magenta, yellow, and black. International Color Consortium (ICC) colour profiles map between a device-independent colour space and the capabilities of a device.  RGB and ICC colours are converted to CMYK when printing, although they may be retained as RGB or ICC colours in the PDF or other files produced by AH Formatter.</para>
+<para>Colour can have the following values:</para>
+<itemizedlist role="property">
+<listitem><para>#RGB : Specifies R, G, and B with  a one-digit hexadecimal number each.  (#5F0 ＝ #55FF00) </para></listitem>
+<listitem><para>#RRGGBB : Specifies R, G, and B with a two-digit hexadecimal number each.</para></listitem>
+<listitem><para>rgb(255,0,0) : From the left, specifies R, G, and B with integer values ranging from 0 to 255.</para></listitem>
+<listitem><para>rgb(100%,0%,0%) : From the left, specifies R, G, and B with values ranging from 0% to 100%.</para></listitem>
+<listitem><para>black (and other colours) : Specifies a colour keyword. AH Formatter supports the extended colour keywords defined in CSS Color Module Level 3.</para></listitem>
+<listitem><para>cmyk() : Specifies a CMYK colour for four-colour process printing.</para></listitem>
+<listitem><para>device-cmyk() : Same as cmyk().</para></listitem>
+<listitem><para>rgb-icc() : Specifies a colour in a defined colour space.<footnote><para><code role="function">rgb-icc()</code> is defined in XSL 1.1 and implemented for CSS by AH Formatter.</para></footnote> Takes a variable number of arguments<!-- (see below)-->.</para></listitem>
+</itemizedlist>
+
+<!--<programlisting>
+em { color: #F00; }              /* #RGB */
+em { color: #FF0000; }           /* #RRGGBB */
+em { color: rgb(255, 0, 0); }    /* integer range 0-255 */
+em { color: rgb(100%, 0%, 0%); } /* 0%-100% */
+em { color: red; }               /* colour keyword */
+em { color: cmyk(0, 0.9922, 1, 0);      /* 0.0-1.0 */
+em { color: cmyk(0%, 99.22%, 100%, 0%); /* 0%-100% */
+em { color: rgb-icc(#CMYK, 0, 0.9922, 1, 0); /* Profile dependent */
+</programlisting>-->
+<!--<figure role="SampleBox">
+<title role="SampleTitle">Basic Colour Keywords</title>
+<informaltable role="ColorTable">
+<tbody>
+<tr>
+<td>aqua</td>
+<td style="color: aqua;">aqua</td>
+<td>#00FFFF</td>
+<td>black</td>
+<td style="color: black;">black</td>
+<td>#000000</td>
+<td>blue</td>
+<td style="color: blue;">blue</td>
+<td>#0000FF</td>
+</tr>
+<tr>
+<td>fuchsia</td>
+<td style="color: fuchsia;">fuchsia</td>
+<td>#FF00FF</td>
+<td>gray</td>
+<td style="color: gray;">gray</td>
+<td>#808080</td>
+<td>green</td>
+<td style="color: green;">green</td>
+<td>#008000</td>
+</tr>
+<tr>
+<td>lime</td>
+<td style="color: lime;">lime</td>
+<td>#00FF00</td>
+<td>maroon</td>
+<td style="color: maroon;">maroon</td>
+<td>#800000</td>
+<td>navy</td>
+<td style="color: navy;">navy</td>
+<td>#000080</td>
+</tr>
+<tr>
+<td>olive</td>
+<td style="color: olive;">olive</td>
+<td>#808000</td>
+<td>purple</td>
+<td style="color: purple;">purple</td>
+<td>#800080</td>
+<td>red</td>
+<td style="color: red;">red</td>
+<td>#FF0000</td>
+</tr>
+<tr>
+<td>silver</td>
+<td style="color: silver;">silver</td>
+<td>#C0C0C0</td>
+<td>teal</td>
+<td style="color: teal;">teal</td>
+<td>#008080</td>
+<td>orange</td>
+<td style="color: orange;">orange</td>
+<td>#FFA500</td>
+</tr>
+<tr>
+<td>white</td>
+<td style="color: white; background-color: gray;">white</td>
+<td>#FFFFFF</td>
+<td>yellow</td>
+<td style="color: yellow; background-color: gray;">yellow</td>
+<td>#FFFF00</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</informaltable>
+
+</figure>-->
+
+<section>
+<title xml:id="cmyk">CMYK colours</title>
+
+<para>CMYK colours may be specified with or without a fallback RGB colour for use with media that do not support CMYK.  When the fallback RGB colour is not provided, it is calculated from the CMYK colour.</para>
+<itemizedlist role="property">
+<listitem><para>cmyk(&lt;C&gt;, &lt;M&gt;, &lt;Y&gt;, &lt;K&gt;) : CMYK colour with Cyan, Magenta, Yellow, and Black components.</para></listitem>
+<listitem><para>device-cmyk(&lt;C&gt;, &lt;M&gt;, &lt;Y&gt;, &lt;K&gt;) : Equivalent defined by GCPM.</para></listitem>
+<listitem><para>rgb-icc(#CMYK, &lt;C&gt;, &lt;M&gt;, &lt;Y&gt;, &lt;K&gt;) : Equivalent.</para></listitem>
+<listitem><para>rgb-icc(&lt;R&gt;, &lt;G&gt;, &lt;B&gt;, #CMYK, &lt;C&gt;, &lt;M&gt;, &lt;Y&gt;, &lt;K&gt;) : CMYK colour with fallback RGB colour.</para></listitem>
+</itemizedlist>
+
+<!--<programlisting>
+em { color: cmyk(0, 0.9922, 1, 0)          /* 0.0-1.0 */
+em { color: cmyk(0%, 99.22%, 100%, 0%)     /* 0%-100% */
+em { color: device-cmyk(0, 0.9922, 1, 0)   /* 0.0-1.0 only */
+em { color: rgb-icc(#CMYK, 0, 0.9922, 1, 0)      /* 0.0-1.0 */
+em { color: rgb-icc(#CMYK, 0%, 99.22%, 100%, 0%) /* 0%-100% */
+em { color: rgb-icc(255, 0, 0, #CMYK, 0, 0.9922, 1, 0)      /* RGB 0-255 */
+em { color: rgb-icc(1.0, 0, 0, #CMYK, 0%, 99.22%, 100%, 0%) /* RGB 0.0-1.0 */
+</programlisting>-->
+</section>
+
+<section>
+<title xml:id="opacity">Opacity</title>
+<para>RGB and CMYK colours can also be specified with an ‘alpha’ component specifying the opacity of the colour.  It is not possible to use an ‘alpha’ component with a named colour.</para>
+
+<!--<programlisting>
+em { color: #F008; }             /* #RGBA */
+em { color: #FF000088; }         /* #RRGGBBAA */
+em { color: rgba(255, 0, 0, 0.5); }    /* Opacity 0.0-1.0 */
+em { color: rgba(255, 0, 0, 50%); }    /* Opacity 0%-100% */
+em { color: rgba(100%, 0%, 0%, 0.5); } /* Opacity 0.0-1.0 */
+em { color: rgba(100%, 0%, 0%, 50%); } /* Opacity 0%-100% */
+em { color: cmyka(0, 0.9922, 1, 0, 0.5) /* Opacity 0.0-1.0 */
+em { color: cmyka(0, 0.9922, 1, 0, 50%) /* Opacity 0%-100% */
+em { color: cmyka(0%, 99.22%, 100%, 0%, 0.5) /* Opacity 0.0-1.0 */
+em { color: cmyka(0%, 99.22%, 100%, 0%, 50%) /* Opacity 0%-100% */
+</programlisting>-->
+
+<!--<div role="SampleTitle">Opacity</div>
+<div role="SampleBox">
+<table role="TableSample OpacityTable" style="caption-side: top">
+<tr>
+<td style="background-color: #F00F">#F00F</td>
+<td style="background-color: #F00E">#F00E</td>
+<td style="background-color: #F00D">#F00D</td>
+<td style="background-color: #F00C">#F00C</td>
+<td style="background-color: #F00B">#F00B</td>
+<td style="background-color: #F00A">#F00A</td>
+<td style="background-color: #F009">#F009</td>
+<td style="background-color: #F008">#F008</td>
+</tr>
+<tr>
+<td style="background-color: #F007">#F007</td>
+<td style="background-color: #F006">#F006</td>
+<td style="background-color: #F005">#F005</td>
+<td style="background-color: #F004">#F004</td>
+<td style="background-color: #F003">#F003</td>
+<td style="background-color: #F002">#F002</td>
+<td style="background-color: #F001">#F001</td>
+<td style="background-color: #F000">#F000</td>
+</tr>
+</table>
+</div>-->
+</section>
+
+<section>
+<title xml:id="rgb-icc"><code role="function">rgb-icc()</code></title>
+
+<para>The <code role="function">rgb-icc()</code> colour function provides additional ways to specify colours, including:</para>
+<itemizedlist role="property">
+<listitem><para>rgb-icc(#CMYK, 0.5, 0.5, 0.5, 0) : CMYK colour.</para></listitem>
+<listitem><para>rgb-icc(#Grayscale, 0.5) : Grayscale </para></listitem>
+<listitem><para>rgb-icc(#Separation, 'Name') : Spot colour.</para></listitem>
+<listitem><para>rgb-icc(#Registration) : Print with the same intensity on all separations.</para></listitem>
+<listitem><para>rgb-icc(#Separation, 'All') : Same as rgb-icc(#Registration).</para></listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title xml:id="grayscale">Grayscale</title>
+
+<para>Grayscale (monochrome) colours can be specified with rgb-icc(#Grayscale, &lt;Scale&gt;), optionally with extra parameters specifying a fallback RGB colour for use with devices that cannot display the grayscale colour.</para>
+<!--<programlisting>
+em { color: rgb-icc(#Grayscale, 0.5); }  /* 0.0 (black) to 1.0 (white) */
+em { color: rgb-icc(#Grayscale, 50%); }  /* 0% (black) to 100% (white) */
+em { color: rgb-icc(128, 128, 128, #Grayscale, 0.5); }  /* RGB fallback colour */
+em { color: rgb-icc(50%, 50%, 50%, #Grayscale, 0.5); }  /* RGB fallback colour */
+</programlisting>-->
+
+<!--<div role="SampleTitle">Grayscale scale values</div>
+<div role="SampleBox">
+<table role="TableSample GrayscaleTable" style="caption-side: top">
+<tr>
+<td style="background-color: rgb-icc(#Grayscale, 0.0); color: white; padding: 0.5em;">0.0</td>
+<td style="background-color: rgb-icc(#Grayscale, 0.1); color: white; padding: 0.5em;">0.1</td>
+<td style="background-color: rgb-icc(#Grayscale, 0.2); color: white; padding: 0.5em;">0.2</td>
+<td style="background-color: rgb-icc(#Grayscale, 0.3); color: white; padding: 0.5em;">0.3</td>
+<td style="background-color: rgb-icc(#Grayscale, 0.4); color: white; padding: 0.5em;">0.4</td>
+<td style="background-color: rgb-icc(#Grayscale, 0.5); color: white; padding: 0.5em;">0.5</td>
+<td style="background-color: rgb-icc(#Grayscale, 0.6); padding: 0.5em;">0.6</td>
+<td style="background-color: rgb-icc(#Grayscale, 0.7); padding: 0.5em;">0.7</td>
+<td style="background-color: rgb-icc(#Grayscale, 0.8); padding: 0.5em;">0.8</td>
+<td style="background-color: rgb-icc(#Grayscale, 0.9); padding: 0.5em;">0.9</td>
+<td style="background-color: rgb-icc(#Grayscale, 1.0); padding: 0.5em;">1.0</td>
+</tr>
+
+</table>
+</div>-->
+</section>
+
+<section>
+<title xml:id="pantone">PANTONE<superscript>®</superscript> spot colours</title>
+
+<para>When you have the AH Formatter PANTONE<superscript>®</superscript> Option<footnote><para>The ‘AH Formatter PANTONE<superscript>®</superscript> Option’ must be purchased separately.</para></footnote> you can specify more than 1,000 PANTONE<superscript>®</superscript> colours by name and have them print as a spot colour or be converted into the correct RGB or CMYK for rendering or printing.</para>
+<!--<programlisting>
+em { color: rgb-icc(#Separation, 'PANTONE 627 PC', 1.0); } /* Name and tint */
+em { color: rgb-icc(#Separation, 'PANTONE 627 PC', 0.5); } /* Tint 0.0 to 1.0 */
+em { color: rgb-icc(#Separation, 'PANTONE 627 PC', 50%); } /* Tint 0% to 100% */
+em { color: rgb-icc(#Separation, 'PANTONE 627 PC'); }      /* Assume 1.0 tint */
+em { color: rgb-icc(#Separation, 'PANTONE 627 PC', 1, 90%, 0%, 75%, 83%); }
+                                                          /* CMYK equivalent. */
+em { color: rgb-icc(0, 91, 25, #Separation, 'PANTONE 627 PC'); }
+                                                           /* RGB equivalent. */
+em { color: rgb-icc(0, 91, 25, #Separation, 'PANTONE 627 PC', 1,
+                    90%, 0%, 75%, 83%); }   /* Both RGB and CMYK equivalents. */
+</programlisting>-->
+
+<!--<div role="SampleTitle">Tint levels</div>
+<div role="SampleBox">
+<table role="TableSample GrayscaleTable" style="caption-side: top">
+<tr>
+<td style="background-color: rgb-icc(#Separation, 'PANTONE 627 PC', 0.0); padding: 0.5em;">0.0</td>
+<td style="background-color: rgb-icc(#Separation, 'PANTONE 627 PC', 0.1); padding: 0.5em;">0.1</td>
+<td style="background-color: rgb-icc(#Separation, 'PANTONE 627 PC', 0.2); padding: 0.5em;">0.2</td>
+<td style="background-color: rgb-icc(#Separation, 'PANTONE 627 PC', 0.3); padding: 0.5em;">0.3</td>
+<td style="background-color: rgb-icc(#Separation, 'PANTONE 627 PC', 0.4); padding: 0.5em;">0.4</td>
+<td style="background-color: rgb-icc(#Separation, 'PANTONE 627 PC', 0.5); color: white; padding: 0.5em;">0.5</td>
+<td style="background-color: rgb-icc(#Separation, 'PANTONE 627 PC', 0.6); color: white; padding: 0.5em;">0.6</td>
+<td style="background-color: rgb-icc(#Separation, 'PANTONE 627 PC', 0.7); color: white; padding: 0.5em;">0.7</td>
+<td style="background-color: rgb-icc(#Separation, 'PANTONE 627 PC', 0.8); color: white; padding: 0.5em;">0.8</td>
+<td style="background-color: rgb-icc(#Separation, 'PANTONE 627 PC', 0.9); color: white; padding: 0.5em;">0.9</td>
+<td style="background-color: rgb-icc(#Separation, 'PANTONE 627 PC', 1.0); color: white; padding: 0.5em;">1.0</td>
+</tr>
+</table>
+</div>-->
+
+<para>When the formatted document is commercially printed, each PANTONE<superscript>®</superscript> colour can have a separate printing with the specific ink for that PANTONE<superscript>®</superscript> colour. The grayscale levels on the separation for each PANTONE<superscript>®</superscript> colour correspond to the level of tint to apply.</para>
+
+
+<figure role="FigureBox">
+<title>Greyscale levels on the separation correspond to the level of tint to apply</title>
+<mediaobject role="Figure">
+
+<imageobject><imagedata fileref="images/separation.png" /></imageobject>
+</mediaobject>
+</figure>
+</section>
+
+<section>
+<title xml:id="other-spot">Other spot colours</title>
+
+<para>Spot colours can be used without the AH Formatter PANTONE<superscript>®</superscript> Option. However, it is necessary to provide one or both of the equivalent RGB and CMYK colours for use with media that does not support separations for spot colours.  If either of the RGB or CMYK equivalent is omitted, it is calculated from the components of the other equivalent colour.</para>
+<itemizedlist role="property">
+<listitem><para>rgb-icc(&lt;R&gt;, &lt;G&gt;, &lt;B&gt;, #Separation, &lt;Name&gt;, &lt;Tint, &lt;C&gt;, &lt;M&gt;, &lt;Y&gt;, &lt;K&gt;) : Spot colour with name, tint, and both CMYK and RGB fallback colours.</para></listitem>
+<listitem><para>rgb-icc(&lt;R&gt;, &lt;G&gt;, &lt;B&gt;, #Separation, &lt;Name&gt;, &lt;Tint) : Spot colour with name, tint, and RGB fallback colour.</para></listitem>
+<listitem><para>rgb-icc(&lt;R&gt;, &lt;G&gt;, &lt;B&gt;, #Separation, &lt;Name&gt;, &lt;Tint) : Spot colour with name and RGB fallback colour.</para></listitem>
+<listitem><para>rgb-icc(#Separation, &lt;Name&gt;, &lt;Tint, &lt;C&gt;, &lt;M&gt;, &lt;Y&gt;, &lt;K&gt;) : Spot colour with name, tint, and CMYK fallback colour.</para></listitem>
+</itemizedlist>
+
+<para>Similarly to PANTONE<superscript>®</superscript> colours, when the formatted document is commercially printed, each CMYK spot colour can have a separate printing with the specific ink for that colour. The grayscale levels in the separation for each colour correspond to the level of tint to apply.</para>
+</section>
+</section>
+
+</section>
+<!--******************************************************************-->
+
+
+<section role="Chapter">
+<title xml:id="Counters">Counters</title>
+
+<section>
+<title xml:id="Numbering">Numbering Chapters and Sections</title>
+
+<para>Use the <code role="property">counter-increment</code>, <code role="property">counter-reset</code>, and <code role="property">content</code> properties to automatically assign a series of numbers to chapter and section elements.</para>
+<para>Use the counter name as the value of the <code role="property">counter-increment</code> and <code role="property">counter-reset</code> properties.  Specifying a counter name for the <code role="property">content</code> property allows the value of the counter to be inserted in the <code role="pseudo">::before</code> or <code role="pseudo">::after</code> pseudo-elements. The counter’s value increases each time an element applies <code role="property">counter-increment</code> and resets when <code role="property">counter-reset</code> is applied.</para>
+
+<programlisting>
+body {
+  <emphasis role="bold">counter-reset: ChapterNo</emphasis>;          /* reset chapter number counter */
+}
+h1:before {
+  <emphasis role="bold">counter-increment: ChapterNo</emphasis>;      /* add 1 to chapter number counter */
+  /* Insert 'Chapter n' before chapter header  (h1)  */
+  content: "Chapter" <emphasis role="bold">counter(ChapterNo)</emphasis> ":　";
+}
+h1 { /* set h1:before and Chapter of h1 */
+  string-set: Chapter content(before) content();
+  <emphasis role="bold">counter-reset: SectionNo</emphasis>;          /* reset section number counter */
+}
+h2:before {
+  <emphasis role="bold">counter-increment: SectionNo</emphasis>;      /* add 1 to section counter */
+  content: <emphasis role="bold">counter(ChapterNo)</emphasis> "." <emphasis role="bold">counter(SectionNo)</emphasis> " ";
+}
+h2 { /* set h2:before and Section of h2 */
+  string-set: Section content(before) content();
+}
+@page :left {
+  @top-left { /* insert section title in the running head on the left page */
+    content: string(Chapter);
+  }
+}
+@page :right {
+  @top-right { /* insert section title in the running head on the right page */
+    content: string(Section);
+  }
+}</programlisting>
+</section>
+
+<section role="property">
+<title xml:id="Content">Inserting Characters : <code role="property">content</code> property</title>
+
+<para>Use <code role="property">content</code> property to insert a string just before or after an element. With CSS 3, you can also use it to specify a string as the content of the element.</para>
+<itemizedlist role="property">
+<listitem><para>normal : Does not insert characters.</para></listitem>
+<listitem><para>none : Does not insert characters.  (Behaves the same as <code role="value">normal</code>).</para></listitem>
+<listitem><para>string : String to be inserted is written with double or single quotes. </para></listitem>
+<listitem><para>url() : Specifies the URL of an image file. The content of an element can be made into an image if <code role="code">content: url(image.png);</code> is specified. </para></listitem>
+<listitem><para>attr() : The specified attribute value becomes the <code role="property">content</code> property value.</para></listitem>
+<listitem><para>counter() : Inserts a counter value.</para></listitem>
+
+<listitem><para>open-quote : Inserts the first pair of quotes from the <code role="property">quotes</code> property before the element.</para></listitem>
+<listitem><para>close-quote : Inserts the second pair of quotes from the <code role="property">quotes</code> property after the element.</para></listitem>
+<listitem><para>no-open-quote : Does not display a quotation mark but increases the level of nesting of the <code role="property">quotes</code> property by one.</para></listitem>
+<listitem><para>no-close-quote : Does not display a quotation mark but decreases the level of the nesting of the <code role="property">quotes</code> property by one.</para></listitem>
+</itemizedlist>
+
+<programlisting>
+.Chapter h2:<emphasis role="bold">before</emphasis> {
+  <emphasis role="bold">content</emphasis>: "Chapter " counter(ChapterNo) ". ";
+}
+</programlisting>
+  
+<para>For the <code role="function">content()</code> function that is used with the <code role="property">string-set</code> property, see <xref role="SectionRef PageRef" linkend="StringSet" /></para>
+</section>
+
+<section role="property">
+<title xml:id="ContenterIncrement">Incrementing Counters : <code role="property">counter-increment</code> property</title>
+
+<para>Use the <code role="property">counter-increment</code> property to increase the specified counter value.</para>
+<itemizedlist role="property">
+<listitem><para>none : Does not do count.</para></listitem>
+<listitem><para>Counter Name : Increases the specified counter value by one.</para></listitem>
+<listitem><para>Counter name, space, and integers : Increases the counter value with a specified number.</para></listitem>
+</itemizedlist>
+
+<programlisting>
+.Chapter h2 {
+  …
+  <emphasis role="bold">counter-increment: ChapterNo</emphasis>;
+  …
+}
+</programlisting>
+</section>
+
+<section role="property">
+<title xml:id="ContenterReset">Counter Reset : <code role="property">counter-reset</code> property</title>
+
+<para>Use <code role="property">counter-reset</code> property to reset the specified counter value.</para>
+<itemizedlist role="property">
+<listitem><para>none : Does not reset count.</para></listitem>
+<listitem><para>Counter name : Sets the specified counter value to zero.</para></listitem>
+<listitem><para>Counter name, integer : Sets the counter value to the specified number.</para></listitem>
+</itemizedlist>
+
+<programlisting>
+.Chapter h2 {
+  …
+  <emphasis role="bold">counter-reset: SectionNo</emphasis>;
+  …
+}
+</programlisting>
+</section>
+
+<section>
+<title xml:id="PageCounter">Page counter </title>
+
+<para>Use the <code role="function">counter()</code> function to find the current page and the total number of pages.</para>
+<!--<para>Current page : <emphasis role="bold">counter(page)</emphasis></para>
+<para>Total number of pages : <emphasis role="bold">counter(pages)</emphasis></para>
+<div role="SampleBox TextSample">
+<para>Number of this page = <span style="content: counter(page)"></span></para>
+<para>Total number of pages in this document = <span style="content: counter(pages)"></span></para>
+</div>-->
+
+<programlisting>
+&lt;p&gt;Number of this page = <emphasis role="bold">&lt;span style="content: counter(page)"&gt;&lt;/span&gt;</emphasis>&lt;/p&gt;
+&lt;p&gt;Total number of pages in this document=<emphasis role="bold">&lt;span style="content: counter(pages)"&gt;
+&lt;/span&gt;</emphasis>&lt;/p&gt;
+</programlisting>
+
+<para><code role="function">counter()</code> has an optional second argument specifying the counter style.  If that is omitted, it defaults to ‘decimal’.</para>
+<!--<div role="SampleBox TextSample">
+<para>Number of this page = <span style="content: counter(page, lower-roman)"></span></para>
+<para>Total number of pages in this document = <span style="content: counter(pages, upper-roman)"></span></para>
+</div>-->
+
+<programlisting>
+&lt;p&gt;Number of this page = 
+  <emphasis role="bold">&lt;span style="content: counter(page, lower-roman)"&gt;&lt;/span&gt;</emphasis>&lt;/p&gt;
+&lt;p&gt;Total number of pages in this document=
+  <emphasis role="bold">&lt;span style="content: counter(pages, upper-roman)"&gt;&lt;/span&gt;</emphasis>&lt;/p&gt;
+</programlisting>
+</section>
+
+</section>
+<!--******************************************************************-->
+
+<section role="Chapter">
+<title xml:id="Lists">Lists</title>
+
+<para>The <code role="property">display</code> property does not have a value that will cause an element to display as a list. However, <code role="code">display: list-item;</code> does cause an element to generate a list item. Every list item has a marker, which is the bullet, number, or other mark that identifies the list item. In CSS 2, the formatting of the marker is specified using the the <code role="property">list-style-type</code>, <code role="property">list-style-image</code>, <code role="property">list-style-position</code>, and <code role="property">list-style</code> properties.  CSS 3 adds the <code role="pseudo">::marker</code> pseudo-element so that the list item marker can be styled with the full range of CSS properties and values. The <code role="property">list-style-type</code> and <code role="property">list-style-image</code> properties set the default contents of the <code role="pseudo">::marker</code> pseudo-element.</para>
+
+<!--<section role="property">
+<title xml:id="ListStyleImage">List item marker image : <code xml:id="list-style-image" role="property">list-style-image</code> property</title>
+
+<para>Specifies an image to use as the default contents of the list item marker. If <code role="property">list-style-image</code> is <code role="value">none</code> or the image is invalid, the default contents are given by <code role="property">list-style-type</code> instead.</para>
+<itemizedlist role="property">
+<listitem><para>none : No image.</para></listitem>
+<listitem><para>&lt;image&gt; : Image to use as the default contents.</para></listitem>
+</itemizedlist>
+</section>
+
+<section role="property">
+<title xml:id="ListStyleType">List item marker type : <code xml:id="list-style-type" role="property">list-style-type</code> property</title>
+
+<para>Specifies the default contents of the list item marker when <code role="property">list-style-image</code> is <code role="value">none</code> or the image is invalid. Otherwise, it is ignored.</para>
+<itemizedlist role="property">
+<listitem><para>none : The default contents are <code role="value">none</code>.</para></listitem>
+<listitem><para>&lt;counter-style&gt; : The default contents are that counter style.<!-\- See <xref role="SectionRef" linkend="CounterStyles" />.-\-></para></listitem>
+<listitem><para>&lt;string&gt; : The string is used as the default contents.</para></listitem>
+</itemizedlist>
+</section>
+
+<section role="property">
+<title xml:id="ListStylePosition">List item marker position : <code xml:id="list-style-position" role="property">list-style-position</code> property</title>
+
+<para><code role="property">list-item-position</code> helps to control the position of the list item marker.</para>
+<itemizedlist role="property">
+<listitem><para>inside : The <code role="pseudo">marker</code> pseudo-element is placed inline immediately before where the <code role="pseudo">::before</code> pseudo-element would be placed.</para></listitem>
+<listitem><para>outside : As <code role="value">inside</code>, plus the <code role="property">position</code> property on the marker computes to <code role="value">marker</code>.</para></listitem>
+</itemizedlist>
+</section>
+
+<section role="property">
+<title xml:id="ListStyle">List item marker shorthand : <code xml:id="list-style" role="property">list-style</code> property</title>
+
+<para><code role="property">list-item</code> is a shorthand for setting <code role="property">list-style-type</code>, <code role="property">list-style-image</code>, and <code role="property">list-style-position</code>.</para>
+
+<programlisting>
+ul.References li {
+  <emphasis role="bold">list-style: check;</emphasis>
+  line-height: 1.1;
+}
+</programlisting>
+</section>
+
+<section>
+<title xml:id="Marker">List item marker : <code xml:id="marker" role="pseudo">::marker</code> pseudo-element</title>
+
+<para><code role="pseudo">::marker</code> can be styled with the full range of CSS properties and values. The default contents are defined by the <code role="property">list-style-image</code> and <code role="property">list-style-type</code> properties, but that can be overridden by setting the <code role="property">content</code> property of the <code role="pseudo">::marker</code>.</para>
+</section>-->
+
+<section>
+<title xml:id="CounterStyles">Counter styles</title>
+<para>A “counter style” is the definition and/or implementation of the sequence of numbers, letters, and/or symbols to use to represent a numbering sequence.  CSS 1 defined a handful of counter styles based on what HTML traditionally allowed on lists.  CSS Counter Styles Level 3 defines the <code role="rule">@counter-style;</code> rule, which provides a mechanism for defining custom counter styles, plus it defines a number of counter styles that should all (eventually) be expected to be built into browsers.</para>
+<para>The core of a CSS 3 counter style is that it attaches a name to an algorithm for generating string representations of integer counter values.  A counter style may also include properties indicating a prefix and/or suffix to add to the generated values, additional strings to indicate negative numbers, etc.  The counter style can be used in the <code role="property">list-style-type</code> and in the <code role="function">counter()</code> and <code role="function">counters()</code> functions.</para>
+<para>The following example shows a ‘my-filled-circled-decimal’ counter style that is a based on the ‘filled-circled-decimal’ counter style from CSS Counter Styles Level 3.  As the name suggests, the counter style uses decimal numbers inside filled circles to represent decimal numbers.  The numbers are followed by a space.  The counter style is used when numbering the items in an &lt;ol&gt;.</para>
+<programlisting><emphasis role="bold">@counter-style my-filled-circled-decimal</emphasis> {
+system: fixed;
+symbols: '\2776' '\2777' '\2778' '\2779' '\277a' '\277b' '\277c' '\277d' '\277e';
+/* symbols: '❶' '❷' '❸' '❹' '❺' '❻' '❼' '❽' '❾'; */
+suffix: ' ';
+} 
+ol.my-filled-circled-decimal li { <emphasis role="bold">list-style-type: my-filled-circled-decimal;</emphasis>  }
+…
+&lt;ol role="my-filled-circled-decimal"&gt;
+  &lt;li title="1"&gt;1&lt;/li&gt;
+  &lt;li title="2"&gt;2&lt;/li&gt;
+&lt;/ol&gt;</programlisting>
+
+<!--<div role="SampleBox">
+<div role="SampleTitle">List with ‘my-filled-circled-decimal’ counter style</div>
+<div role="TextSample">
+  <ol role="my-filled-circled-decimal">
+  <listitem><para>1</para></listitem>
+  <listitem><para>2</para></listitem>
+</ol>
+</div>
+</div>-->
+</section>
+
+<section role="property">
+<title xml:id="CounterStyle">Defining Custom Counter Styles : @counter-style rule</title>
+
+<para>Allows definition of a custom counter style. The general form of an <code role="rule">@counter-style</code> rule is:</para>
+<programlisting>@counter-style &lt;counter-style-name&gt; { &lt;declaration-list&gt; }</programlisting>
+
+<para>Counter style names are case-sensitive, However, the names of counter styles that are predefined in CSS Counter Styles Level 3 are matched case insensitively. A counter style name cannot match “none”, and “decimal” and “disc” cannot be defined as counter style names.</para>
+<para>The following descriptors are allowed in the declaration list:</para>
+<itemizedlist role="property">
+<listitem><para>system : Specifies which algorithm to use to construct the counter’s representation.</para></listitem>
+<listitem><para>negative : Defines how to alter the representation when the value is negative.</para></listitem>
+<listitem><para>prefix : Specifies a symbol that is prepended to the marker representation.</para></listitem>
+<listitem><para>suffix : Specifies a suffix that is appended to the marker representation.</para></listitem>
+<listitem><para>range : Defines the ranges over which the counter style is defined.</para></listitem>
+<listitem><para>pad : Specifies a symbol with which to pad counter representations that are not a minimum number of grapheme clusters.</para></listitem>
+<listitem><para>fallback : Fallback counter style to be used when the current counter style cannot create a representation.</para></listitem>
+<listitem><para>symbols : Symbols to be used by the marker-construction algorithm.</para></listitem>
+<listitem><para>additive-symbols : Symbols to be used by an additive marker-construction algorithm.</para></listitem>
+<listitem><para>speak-as : Describes how to synthesize the spoken form of a counter.<footnote><para>Not implemented by AH Formatter.</para></footnote></para></listitem>
+</itemizedlist>
+
+</section>
+
+<section>
+<title xml:id="PredefinedCounterStyles">Predefined Counter Styles</title>
+
+<para>CSS Counter Styles Level 3 predefines some counter styles, including some that are noted as commonplace but complicated to represent with <code role="rule">@counter-style</code>. Ready-made Counter Styles, published by the W3C Internationalization Working Group, provides code snippets for user-defined counter styles for numbering systems used by various cultures around the world.  For ease of reference, the Ready-made Counter Styles counter styles also duplicates the predefined styles from CSS Counter Styles Level 3.</para>
+
+</section>
+
+</section>
+<bibliography>
+<title>Bibliography</title>
+<para>So far, this tutorial has briefly introduced the practical uses of CSS page composition.  AH Formatter currently implements the following related specifications:</para>
+<bibliomixed><abbrev>1</abbrev> CSS 2.1 (CSS Level 2 Revision 1), W3C Candidate Recommendation, <citebiblioid class="uri" role="URL" xlink:href="https://www.w3.org/TR/CSS21/">https://www.w3.org/TR/CSS21/</citebiblioid></bibliomixed>
+  <bibliomixed><abbrev>2</abbrev> CSS 3 Backgrounds and Borders, Working Draft, <citebiblioid class="uri" role="URL" xlink:href="https://www.w3.org/TR/css3-background/">https://www.w3.org/TR/css3-background/</citebiblioid>
+  </bibliomixed>
+  <bibliomixed><abbrev>3</abbrev> CSS 3 GCPM (Generated Content for Paged Media), Working Draft, <citebiblioid class="uri" role="URL" xlink:href="https://www.w3.org/TR/css3-gcpm/">https://www.w3.org/TR/css3-gcpm/</citebiblioid>; Editor’s Draft, <citebiblioid class="uri" role="URL" xlink:href="http://dev.w3.org/csswg/css3-gcpm/">http://dev.w3.org/csswg/css3-gcpm/</citebiblioid>
+</bibliomixed>
+  <bibliomixed><abbrev>4</abbrev> CSS 3 Multi-column layout, Working Draft, <citebiblioid class="uri" role="URL" xlink:href="https://www.w3.org/TR/css3-multicol/">https://www.w3.org/TR/css3-multicol/</citebiblioid>
+  </bibliomixed>
+  <bibliomixed><abbrev>5</abbrev> CSS 3 Paged Media, Final Draft, <citebiblioid class="uri" role="URL" xlink:href="https://www.w3.org/TR/css3-page/">https://www.w3.org/TR/css3-page/</citebiblioid>
+  </bibliomixed>
+  <bibliomixed><abbrev>6</abbrev> CSS 3 Lists, Working Draft, <citebiblioid class="uri" role="URL" xlink:href="https://www.w3.org/TR/css3-lists/">https://www.w3.org/TR/css3-lists/</citebiblioid>
+  </bibliomixed>
+  <bibliomixed><abbrev>7</abbrev> CSS 3 Text, Working Draft, <citebiblioid class="uri" role="URL" xlink:href="https://www.w3.org/TR/css3-text/">https://www.w3.org/TR/css3-text/</citebiblioid>; Editor’s Draft, <citebiblioid class="uri" role="URL" xlink:href="http://dev.w3.org/csswg/css3-text/">http://dev.w3.org/csswg/css3-text/</citebiblioid></bibliomixed>
+  <bibliomixed><abbrev>8</abbrev> CSS 3 Text Layout, Editor’s Draft, <citebiblioid class="uri" role="URL" xlink:href="http://dev.w3.org/csswg/css3-text-layout/">http://dev.w3.org/csswg/css3-text-layout/</citebiblioid>
+  </bibliomixed>
+  <bibliomixed><abbrev>9</abbrev> CSS 3 Namespaces, W3C Candidate Recommendation, <citebiblioid class="uri" role="URL" xlink:href="https://www.w3.org/TR/css3-namespace/">https://www.w3.org/TR/css3-namespace/</citebiblioid>
+  </bibliomixed>
+  <bibliomixed><abbrev>10</abbrev> CSS Color Module Level 3, W3C Recommendation, <citebiblioid class="uri" role="URL" xlink:href="https://www.w3.org/TR/css3-color/">https://www.w3.org/TR/css3-color/</citebiblioid>
+  </bibliomixed>
+  <bibliomixed><abbrev>11</abbrev> CSS Counter Styles Level 3, W3C Working Draft, <citebiblioid class="uri" role="URL" xlink:href="https://www.w3.org/TR/css-counter-styles-3/">https://www.w3.org/TR/css-counter-styles-3/</citebiblioid>
+  </bibliomixed>
+  <bibliomixed><abbrev>12</abbrev> CSS Fonts Module Level 3, W3C Candidate Recommendation, <citebiblioid class="uri" role="URL" xlink:href="https://www.w3.org/TR/css-fonts-3/">https://www.w3.org/TR/css-fonts-3/</citebiblioid>
+  </bibliomixed>
+  <bibliomixed><abbrev>13</abbrev> HTML 5 — A Vocabulary and Associated APIs for HTML and XHTML, W3C Recommendation, <citebiblioid class="uri" role="URL" xlink:href="https://www.w3.org/TR/html5/">https://www.w3.org/TR/html5/</citebiblioid></bibliomixed>
+  <bibliomixed><abbrev>14</abbrev> ISO 16684-1:2012, Graphic technology — Extensible metadata platform (XMP) specification — Part 1: Data model, serialization and core properties, ISO Standard, <citebiblioid class="uri" role="URL" xlink:href="https://www.iso.org/standard/57421.html">https://www.iso.org/standard/57421.html</citebiblioid></bibliomixed>
+  <bibliomixed><abbrev>15</abbrev> Ready-made Counter Styles, W3C Working Group Note, <citebiblioid class="uri" role="URL" xlink:href="http://www.w3.org/TR/predefined-counter-styles/">http://www.w3.org/TR/predefined-counter-styles/</citebiblioid></bibliomixed>
+  <bibliomixed><abbrev>16</abbrev> Requirements for Japanese Text Layout, W3C Working Group Note, <citebiblioid class="uri" role="URL" xlink:href="http://www.w3.org/TR/jlreq/">http://www.w3.org/TR/jlreq/</citebiblioid>
+  </bibliomixed>
+  <bibliomixed><abbrev>17</abbrev> Requirements for Latin Text Layout and Pagination, W3C Working Draft, <citebiblioid class="uri" role="URL" xlink:href="https://www.w3.org/TR/dpub-latinreq/">https://www.w3.org/TR/dpub-latinreq/</citebiblioid></bibliomixed>
+  <bibliomixed><abbrev>18</abbrev> Selectors Level 3, W3C Recommendation, <citebiblioid class="uri" role="URL" xlink:href="https://www.w3.org/TR/css3-selectors/">https://www.w3.org/TR/css3-selectors/</citebiblioid>
+  </bibliomixed>
+
+<bibliomixed><abbrev>19</abbrev> Extensible Stylesheet Language (XSL) Version 1.1, W3C Recommendation, <citebiblioid class="uri" role="URL" xlink:href="https://www.w3.org/TR/xsl/">https://www.w3.org/TR/xsl/</citebiblioid></bibliomixed>
+<bibliomixed xml:id="tutorial"><abbrev>20</abbrev> Introduction to CSS for Paged Media, Antenna House, <citebiblioid class="uri" role="URL" xlink:href="https://www.antennahouse.com/antenna1/css/">https://www.antennahouse.com/antenna1/css/</citebiblioid></bibliomixed>
+</bibliography>
+
+
+</article>

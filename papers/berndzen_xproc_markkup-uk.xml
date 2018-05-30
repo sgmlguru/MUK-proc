@@ -1,0 +1,1059 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<article xmlns="http://docbook.org/ns/docbook"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <info>
+        <title>Non-XML workflows with XProc 3.0</title>
+        <subtitle>Current status and perspectives</subtitle>
+        <author>
+            <personname><firstname>Achim</firstname>
+                <surname>Berndzen</surname></personname>
+            <affiliation>
+                <orgname>&lt;xml-project /&gt;</orgname>
+            </affiliation>
+            <email>achim.berndzen@xml-project.com</email>
+        </author>
+        <abstract>
+            <para>While XProc&#160;1.0 is an XML-centric workflow language, XProc&#160;3.0 attempts
+                to overcome this restriction and to allow non-XML documents to flow between the
+                steps of a pipeline. The intention for this change is not to make XProc a general
+                purpose workflow language, but to enable pipeline authors to cover problems
+                typically connected to XML processing. Although XProc&#160;3.0 is still
+                    <emphasis>work in progress</emphasis>, this paper will present and comment its
+                current concepts for processing non-XML documents. The main focus of this paper is
+                to evaluate in a practical example, how an non-XML workflow which fits every day
+                needs of pipeline authors can be developed in XProc&#160;3.0 . The discussed use
+                case deals with non-XML documents, that often appear in XML-related workflows such
+                as zipped archives, ePUBs, images and JSON.</para>
+        </abstract>
+    </info>
+    <section>
+        <title>Introduction</title>
+        <para>XProc&#160;1.0 <xref linkend="XProc-Spec"/> is clearly an XML-centric language to design workflows, actually it is
+            mostly an XML-only workflow language. To quote the  XProc&#160;1.0 specification:</para>
+        <blockquote>
+            <para>Although some steps can read and write non-XML resources, what flows between steps through 
+                input ports and output ports are <emphasis>exclusively</emphasis> XML documents or sequences of XML documents.
+            </para>
+        </blockquote>
+        <para>This XML-only approach proved to be fine for a lot of tasks, but as it turns out, even
+            workflows dealing mostly with XML documents also have the need to deal with non-XML
+            data. Just think of an ePUB mostly containing XHTML documents, but also having some
+            JPEGs with illustrations, a manifest file which is pure text and finally being
+            essentially a special kind of ZIP-document. </para>
+        <para>As such workflows show up quite often in real day life, the ability to deal with
+            non-XML documents was a high priority requirement when developing the next version of
+            XProc, which is called "XProc&#160;3.0".<footnote><para>XProc&#160;3.0 is currently developed
+                by the <orgname>XProc Next Community Group</orgname> (<link xmlns:xlink="http://www.w3.org/1999/xlink" 
+                    xlink:href="https://www.w3.org/community/xproc-next/"
+                    >https://www.w3.org/community/xproc-next/</link>). The most recent version of
+                the editor's draft is published on <link xmlns:xlink="http://www.w3.org/1999/xlink" 
+                    xlink:href="https://spec.xproc.org"
+                    >https://spec.xproc.org</link>.</para></footnote></para>
+        <para>In this paper I would like to give an introduction to workflows for non-XML documents
+            in XProc&#160;3.0. To do this as practical as possible I decided to layout a typical
+            workflow involving the necessity to deal with non-XML documents and to show, how this
+            could be done in XProc&#160;3.0. Of course the workflow is a little bit of a made-up
+            story because it was chosen for the purpose of demonstration. But it will show some
+            basic structures of dealing with non-XML documents in XProc&#160;3.0 and can serve as a
+            blue print for real life projects. </para>
+        <para>The workflow discussed here is this: We have a bunch of ePUBs in a folder somewhere
+            and we have been asked to design a workflow which analyses the content of the ePUB and
+            creates an RDF metadata description and an inventory in JSON which has to be sent to one
+            of our inventory-servers which –for what reason ever– happens to understand only JSON.
+            I will explain the details of this workflow later, but please keep in mind that it
+            involves dealing with a lot of non-XML documents such as ZIP (the ePUB itself), plain
+            text, graphics in JPEG, RDF and last but not least JSON.</para>
+        <para>This paper is divided into four parts,  the third part being the central one:<itemizedlist>
+                <listitem>
+                    <para>We will start with a short reminder on how one could deal with non-XML
+                        documents in XProc&#160;1.0. As I said before, XProc&#160;1.0 clearly is an
+                        XML-centric language, but there are some possibilities to deal with non-XML
+                        documents. To give a short reprise will hopefully help to understand the new
+                        features of XProc&#160;3.0.</para>
+                </listitem>
+                <listitem>
+                    <para>In order to cope with non-XML documents, some fundamental changes had to
+                        be made in the transition from XProc&#160;1.0 to the new XProc&#160;3.0. The
+                        most important point here was to change the concept of a document that flows
+                        from one step to another. While in XProc&#160;1.0 a document is a
+                        well-formed XML document only, for XProc&#160;3.0 we needed a new document
+                        model which is able to cover XML and non-XML documents as well. In the
+                        second section of this paper we will take a short look at this new concept
+                        of a document as a foundation to understand how non-XML workflows can be
+                        created in XProc&#160;3.0.</para>
+                </listitem>
+                <listitem>
+                    <para>The core of this paper is the third section where we will discuss in some
+                        detail how to design the sketched workflow for ePUBs. Here you will see the
+                        new document model in action and get to know some of the new XProc steps,
+                        which take advantage of this model and enable you to write workflows for
+                        non-XML documents.</para>
+                </listitem>
+                <listitem>
+                    <para>In the last section you will find a short summary and some conclusion
+                        concerning the suitability of XProc&#160;3.0 for non-XML workflows.</para>
+                </listitem>
+            </itemizedlist>
+        </para>
+            <para>A short caveat before we start: By the time of writing this article (May 2018),
+            XProc&#160;3.0 is still work in progress. While the document model can surely be seen as
+            stable, the steps mentioned later are probably not. Though their basic outline is very
+            unlikely to change, details may change as the discussion goes along. Especially the
+            signature of the newly introduced steps and the dynamic errors raised by these steps
+            might be subject to change in the process of standardising XProc&#160;3.0. As a result
+            of this situation, this paper is clearly not suitable as a tutorial on XProc&#160;3.0,
+            but is intended as a first look at the new possibilities in this language. Before you
+            start to develop your own pipelines, please see <link xlink:href="http://xproc.org"/>
+            for the latest version of XProc&#160;3.0.</para>
+    </section>
+    <section>
+        <title>Reprise: Non-XML documents in XProc&#160;1.0</title>
+        <para>First a short reminder of what XProc&#160;1.0 is, or I should say, was, because I
+            believe pipeline authors will appreciate the new possibilities of XProc&#160;3.0 so
+            much, that they will switch to the new language version as soon as possible. One way to
+            describe XProc&#160;1.0 is to say that it is a pipeline language to design workflows
+                <emphasis>for</emphasis> XML <emphasis>in</emphasis> XML. This definition is based
+            on the fact, that only XML documents are allowed to flow between the steps that make up
+            the pipeline. This feature of XProc&#160;1.0 is most visible in an error message one
+            gets to see from time to time when working with XProc&#160;1.0:</para>
+        <blockquote>
+            <para>It is a dynamic error (XD0001) if a non-XML resource is produced on a step output
+                or arrives on a step input.</para>
+        </blockquote>
+        <para>Please note that this is dynamic error number&#160;1. Although this error message is
+            sometimes annoying, it clearly states the nature of XProc. XProc was invented and
+            developed with the goal to be able to specify <quote>a sequence of operations to be
+                performed on a collection of XML input documents.</quote> Of course the creators of
+            XProc knew that there are not only XML-documents, so there was a section on "Non-XML
+            documents" in the original specs. This section is about thirteen lines and makes a
+            distinction between almost-XML documents (HTML) and non-XML documents. For the first
+            there is the ability to turn it into XML, and for the seconds a mechanism is presented,
+            to let them <quote>flow quietly through the pipeline</quote>: The non-XML document is
+            either converted into text or base64-encoded and wrapped in an element node with a
+            document-node, which means it now <quote>can be processed like any other XML
+                document</quote>.</para>
+        <para>This was of course an elegant way to deal with non-XML documents in XProc, but it also
+            meant that these documents can only "go with the flow". XProc itself defines no steps
+            for these documents, the only interesting things you could do with them is to send them
+            to a web service or store them on your disk, provided they are not base64-encoded or
+            your XProc processor implements the optional feature of decoding base64-encoded
+            documents before it stores them. Of course you could store them anyway, but storing a
+            base64-encoded JPEG wrapped in an XML element does not count as interesting, does
+            it?</para>
+        <para>And as this situation became unpleasant, different mechanisms were invented to go
+            around it. Steps were invented to deal with ZIP archives because we all know, that
+            sometimes XML documents are packed into ZIP or should be packed into ZIP. But as ZIP
+            documents could not flow through a pipeline themselves and although they may contain
+            flowable XML-documents, they typically encapsulate a lot of stuff that could not flow
+            with a pipeline. This is particularly problematic if you going to pack a ZIP, have a lot
+            of XML-documents to put in, but also need some images and/or a text document.</para>
+        <para>To invent a workaround they probably looked at ANT and did what ANT does: Read and/or
+            write to the file system. So unpacking a ZIP reads a file from the file system and
+            creates a lot of files with the unpacked content on another place in the file system.
+            Some steps just read from the file system but produce an XML-document that flows in the
+            pipeline, e.g. XMLCalabash's extension step <literal>cx:metadata-extractor</literal>
+            which reads an image and produces an XML-document containing the image's metadata. Other
+            steps take XML-documents as input but write their non-XML result to the file system,
+            like XProc's extension step <literal>p:xsl-formatter</literal> which typically produces
+            PDF.</para>
+        <para>Some of these steps are really handy, some are mere workarounds. But from a purist
+            perspective they are all workarounds because XProc is designed to be a language where
+            documents flow between ports, and reading and/or writing to file systems is clashing
+            with the style. But even it you do not share a puristic approach to language design,
+            there are some problems with this approach:<itemizedlist>
+                <listitem>
+                    <para>As your intermediate results are written to the file system, you have to
+                        remember to delete them, once they are no longer needed.</para>
+                </listitem>
+                <listitem>
+                    <para>Writing to the file system might sometimes also be dangerous because an
+                        incautiously designed pipeline could overwrite some (or even all) vital
+                        documents on your file system with its intermediate results.</para>
+                </listitem>
+                <listitem>
+                    <para>Sometimes its not even handy, e.g. when you have to write a ZIP-archive to
+                        the file system and then read it again because you want to send it to some
+                        web service from the pipeline.</para>
+                </listitem>
+                <listitem>
+                    <para>From an implementer's perspective the read-/write-approach of steps has
+                        the disadvantage, that the connection between input- and output-ports is not
+                        the only thing to take into account, when the execution plan for a pipeline
+                        is to be determined. Since a step might need to read from the file system
+                        the results another wrote there, this establishes a connection between the
+                        steps too. I think this is one of the reasons why no implementation ever
+                        fulfilled XProc's promise yet, that a pipeline could be split up in parallel
+                        processes running side by side on our multi-core computers.</para>
+                </listitem>
+                <listitem>
+                    <para>Finally: Did I mention JSON yet?</para>
+                </listitem>
+            </itemizedlist></para>
+    </section>
+    <section>
+       <title>XProc&#160;3.0's new concept of a document</title>
+        <para>Before I we look at the new document model introduced with XProc&#160;3.0 in detail,
+            let us first look at the challenges the XProc Working Group had to face in order to
+            allow processing of non-XML documents. In XProc&#160;1.0 everything that could possibly
+            flow from the output port of one step to the input port of another step, was a
+            well-formed XML document. And every step defined in the step library, if it has an input
+            port at all, it has an XML input port. This situation changes dramatically, once it was
+            decided, that not only XML-documents could flow, but a wide variety of documents of
+            different flavors. Then we have to differentiate between steps which could handle a
+            certain kind of document, and steps, that have to raise an error because they could not
+            possible do something useful with the document kind in question: Adding an attribute
+            with a certain name and a certain value clearly only makes sense, when the document in
+            question is an XML document. We do not even know what it could possibly mean to add an
+            attribute to a text document or an image. Of course getting the image dimensions only
+            makes sense of an image, but not for a text document or an XML document.</para>
+        <para>The other side of the same coin is a situation, when a pipeline author by accident
+            exposes an image document to a step, that expects an XML document. Parsing an image
+            document with an XML parse will most certainly lead into an error and the pipeline
+            breaks. To be able to debug this kind of situation it is most useful not to get the
+            information, that something is wrong with the XML document, as the parser will tell us,
+            but to state, that a non-XML document appeared somewhere, where only an XML document is
+            allowed. Thirdly, from the perspective of an XProc processor, it is important to know
+            the kind of document it is dealing with, so it can choose an internal data model, that
+            is suitable for the document type in question and for the operations defined for
+            documents of this type.</para>
+        <para>The practical upshot of this reasoning is, that we need two things: We need to know
+            what type a specific document has and we need a label for XProc steps, to say what
+            kind(s) of documents they can deal with or allow on their specific input ports. </para>
+        <para>In order to cope with these two requirements, the XProc Working Group had to develop a
+            completely new understanding of what flows on an XProc pipeline from step to step. What
+            flows is still called "a document", but a document is now <emphasis>a pair</emphasis>
+            consisting of <emphasis>a representation</emphasis> and the <emphasis>document
+                properties</emphasis>. The representation is a processor specific data structure
+            which is used to refer to the actual document content. The document properties are pairs
+            of keys and values containing metadata of the content. The type or kind of the document
+            flowing between the steps is the most important metadata and it is associated with the
+            key <literal>content-type</literal>. XProc&#160;3.0 uses the well known media type
+            notation like <literal>application/xml</literal>, <literal>text/plain</literal>,
+                <literal>image/jpeg</literal> and so on, to distinguish different types of
+            documents.</para>
+        <para>Steps in XProc&#160;3.0 now also use the media type notation to declare, which kind of
+            documents are expected on a specific port. If a document that matches the steps
+            specification arrives, everything is fine: The step can perform the expected operation
+            and new documents (pairs of representation and document-properties) are produced on the
+            step's output ports. But if an incoming document does not match the content-types
+            expected by a step on a specific port, an specific error is raised by the processor,
+            telling e.g. that step <literal>add-attribute</literal> expects a document with one of
+            the media types <literal>application/xml</literal>, <literal>text/xml</literal> or 
+            <literal>application/*+xml</literal> but a
+            document with content-type <literal>text/plain</literal> was found. Which content-types
+            are expected on which ports is of course determined by the inner logic of the step:
+            Steps like <literal>p:identity</literal> can obviously deal with any kind of document
+            because it only passes through the documents appearing on this input port. The same is
+            true for <literal>p:count</literal> which counts the number of documents on an input
+            port and does not have to know, what kind of documents they are. But most steps known
+            from the XProc&#160;1.0 step library typically require a document with an XML media type
+            to appear on its input ports, because adding an attribute, replacing an element,
+            renaming a namespace etc. only makes sense for XML documents.</para>
+        <para>The new concept of a “document” in XProc&#160;3.0 consisting of a representation of a
+            content of a certain type and the document properties as its metadata as we will see
+            nicely solves the problem of opening up the well known XProc conception to non-XML
+            documents. Regardless of the type of the documents, they are produced by a step and
+            exposed on one of its output ports. The XProc processor then sends them to another
+            step's input ports and will raise an error, if the document's type does not belong to
+            the types of documents the step in question is able to deal with. The processor is able
+            to do this, because the document properties flow with the documents between the ports
+            and so a step <emphasis>knows</emphasis> what type of document is coming in.</para>
+        <para>But what about the pipeline author, how is she able to access the document properties?
+            You can easily imagine situations where a pipeline author might want to make a decision
+            based on the type of the document, for example because the output of a certain step
+            should be sent to step <literal>A</literal> if it is an image, but to step
+                <literal>B</literal> if it is of some other type. To make this kind of processing
+            possible, the document properties of a document are exposed to the pipeline author via a
+            bunch of XPath functions making mostly use of the <literal>map</literal> type introduced
+            with XPath&#160;3.1 <xref linkend="XPath_31_functions"/>. More precisely the document properties are represented as
+                <literal>map(xs:QName, item())</literal> and you can access them as a map by using
+            the XProc extension function <literal>p:document-properties($doc)</literal>. Most of the
+            time pipeline authors will not be interested in the full map, but want to retrieve a
+            specific value. This can be done using <literal>p:document-property($doc,
+                $key)</literal>. And finally there is a function called
+                <literal>p:document-properties-document($doc)</literal> which returns an XML
+            document for the document properties of the document in question. In this document each
+            key of the map becomes an element and the value of the key becomes the element's values.
+            In this way pipeline authors can retrieve and evaluate the document properties of a
+            document using just familiar XPath expressions and do not need to use the new
+            expressions introduced for maps and arrays.</para>
+        <para>Now that we have seen how the document properties of a document in XProc&#160;3.0 are
+            accessed the question may come up, how to control or set the document properties in a
+            pipeline. Typically in most cases you do not have to do this, because the XProc
+            processor is responsible for this: If a step declares the documents on an output port to
+            be, say of type <literal>text/plain</literal>, the document properties of the resulting
+            documents are set by the processor accordingly. But sometimes obviously pipeline author
+            need to control the document properties themselves, e.g. when you are loading a document
+            and do not trust your file system to get the mime type of the document right. Another
+            use case for setting document properties in a pipeline is when you create a document
+            inline and want to tell the processor explicitly which document type the document has to
+            have. For those cases XProc&#160;3.0 provides an additional option named
+                <literal>document-properties</literal> which takes a map with document's metadata as
+            its values. Finally, if you need to add additional metadata to a document created by one
+            step before it goes into another step, there is a new step called
+                <literal>p:p:set-properties</literal>, which can be used to overwrite existing
+            metadata or add additional data to the document properties.</para>
+  		<para>Having talked about the new concept of a document being a pair of a representation and its
+            document properties and having discussed the document properties to some extent, the
+            next thing we have to cover is the representation part of the document pair. As said
+            above, the representation is a data structure used by the processor to refer to the
+            document's content. Which representation a processor has to use in order to deal with
+            the content of the document is defined based on the document's media type. The current
+            version of the specs (May-2018) calls out four different types of representations:
+            Obviously there are <emphasis>XML documents</emphasis> identified by an XML media type,
+            which is “<literal>application/xml text/xml application/*+xml</literal>”. Secondly the
+            specs mention <emphasis>text documents</emphasis> which are identified by media type
+                “<literal>text/*</literal>”. Thirdly there are <emphasis>JSON documents</emphasis>
+            which have media type “<literal>application/json</literal>” and forth there are the so
+            called <emphasis>binary documents</emphasis> which are identified by any media type not
+            mentioned yet. Implementers are obviously free to implement additional document types
+            identified by media types, as long as they do not conflict with the ones mentioned
+            before.</para>
+  		<para>As we learned before, the XProc&#160;3.0 specification defines a
+                <emphasis>representation</emphasis> for documents of a specific media type, where
+            "representation" means <quote>a data structure used by an XProc processor to refer to
+                the actual document content</quote>. And this brings us to another important change,
+            the XProc working group decided to make for XProc&#160;3.0, because they say in the
+            specs:</para>
+  		<blockquote>
+  			<para>Representations of XML documents are instances of the XQuery 1.0 and XPath 2.0 
+  			Data Model (XDM).</para>
+  		</blockquote>
+		<para>Therefore XProc&#160;3.0 uses the same data model as other XML related technologies like
+            XQuery or XSLT. And this is a strong change in the concept of what an XML document is.
+            In XProc&#160;1.0 the concept of a well-formed XML document was used, i.e. every
+            document had exactly one element node, optionally preceded and/or followed by comment
+            nodes, processing instructions and all whitespace text nodes. Well-formed XML documents
+            are fine, but the stipulation, that every XML document has to be well-formed all the
+            times is very burdensome when you try to make even very slight modifications. One thing
+            I ran in a lot of times for one specific project, was the problem to add a
+            processing-instruction as first node of the preamble, so the browser could recognize the
+            XForms in the produced documents. This might sound like an easy task for someone
+            familiar with XQuery or XLST, but in XProc&#160;1.0 it was tricky. The natural choice is
+            of course <literal>p:insert</literal> where one matches the root element of the
+            document, and tell the processor to insert the processing instruction before the root
+            element. But you can not do this, because <literal>p:insert</literal> inserts
+                <emphasis>documents</emphasis> into other documents, <emphasis>not nodes</emphasis>.
+            So you can not insert a processing instruction, but have to insert either a processing
+            instruction followed by a dummy element node or wrap the processing instruction into an
+            element node in order to fulfill the “well-formed documents only” rule. But obviously
+            you can not insert this document before the current element node of the document,
+            because a well-formed document can not have two top level elements. So here is one way
+            of doing this:</para>
+ <programlisting language="xml">&lt;p:wrap-sequence wrapper="dummy" /&gt;
+&lt;p:insert match="/dummy" position="first-child"&gt;
+  &lt;p:input port="insertion"&gt;
+    &lt;p:inline&gt;
+      &lt;dummy2&gt;&lt;?pi target?&gt;&lt;/dummy2&gt;
+    &lt;/p:inline&gt;
+  &lt;/p:input&gt;
+&lt;/p:insert&gt;
+&lt;p:unwrap match="/dummy | /dummy/dummy2"/&gt;</programlisting>
+        <para>But in XProc&#160;3.0 where an XML document is to be implemented according the XDM <xref linkend="XDM_31"/> concept,
+            one can do it in the most natural way:</para>
+		<programlisting language="xml">&lt;p:insert match="/" position="first-child"&gt;
+  &lt;p:with-input port="insertion"&gt;
+    &lt;?pi target?&gt;
+  &lt;/with-input&gt;
+&lt;p:insertion&gt;</programlisting>
+        <para>The second document type, which is newly introduced with XProc&#160;3.0, is a
+                <emphasis>text document</emphasis>. Text documents are characterized by a media type
+            that matches the scheme <literal>text/*</literal>, with the exception of
+                <literal>text/xml</literal>, which is an XML document. Constructing a new text
+            document is as easy as constructing an XML document:</para>
+<programlisting language="xml">&lt;p:identity&gt;
+  &lt;p:with-input&gt;
+    &lt;p:inline content-type="text/plain"
+      &gt;This is a new text document&lt;/inline&gt;
+  &lt;/p:with-input&gt;
+&lt;/p:identity&gt;</programlisting>
+        <para>The XProc processor will produce a new text document on the output port of
+                <literal>p:identity</literal>. This document will consist of a document node with
+            just one text node child which holds the text. Doing the representation of text
+            documents in this way has the obvious advantage that it fits perfectly with the use of
+            XPath as an expression language in XProc. Suppose you have a sequence of text documents
+            and for some reason you want to treat text document differently whose second word is
+                “<literal>is</literal>”. Since the text documents in XProc are a special kind of a
+            document as defined in XDM, you can do it as easy as this:</para>
+<programlisting language="xml">&lt;p:choose&gt;
+  &lt;p:when test="tokenize(.,'/s')[2]='is'"&gt;
+    &lt;!-- ... --&gt;
+  &lt;/p:when&gt;
+  &lt;!-- ... --&gt;
+ &lt;/p:choose&gt;</programlisting>
+        <para>To represent text documents as a text node wrapped into a document node also allows us
+            to use them in <literal>p:wrap-sequence</literal> to wrap an element node around the
+            text and thereby produce an XML document. Of course you can also use
+                <literal>p:insert</literal> to insert the text node of a text document as a child of
+            an already existing element node. And finally, if you select from an XML document and
+            the resulting nodes are all text nodes, the XProc processor will create a new text
+            document for you. We will see more applications for text documents when we come to
+            discuss our example workflow in more detail, but for now we can record, that text
+            documents in XProc&#160;3.0 are pretty well integrated into the XML universe.</para>
+        <para>Next up is <emphasis>JSON</emphasis>. Integrating JSON into the XML world was a high
+            priority during the last years and great work has been done to archieve this goal with
+            the new standards of XDM&#160;3.1 and XPath&#160;3.1. If you take a look at
+            XSLT&#160;3.0 you will find that working with JSON feels almost as natural as working
+            with XML. Based on the cited works, JSON is now also integrated into XProc&#160;3.0. As
+            you might expect from the preceding discussion, it is called a “<literal>JSON
+                document</literal>”. The document properties of a JSON document have a content-type
+            entry that contains a JSON media type like “<literal>application/json</literal>”. As
+            JSON is a text based format, you can easily construct JSON documents within XProc
+            pipelines:</para>
+ <programlisting language="xml">&lt;p:identity&gt;
+   &lt;p:with-input&gt;
+     &lt;p:inline content-type="application/json"
+       &gt;{"topic":["XProc", "3.0"]}&lt;p:inline>
+   &lt;/p:with-input&gt;
+ &lt;/p:identity&gt;</programlisting>
+        <para>As you might expect, if you are familiar with the treatment of JSON in XPath, the
+            XProc processor will use the function <literal>fn:parse-json()</literal> on the string
+            supplied and produce an XDM representation of this JSON document. In the given case it
+            will obviously be a map item with one entry mapping a string to an array item containing
+            two strings.</para>
+        <para>Now this representation is perfectly in accordance with what you might expect if you
+            come from an XPath, XQuery or XSLT background, however it does not quite fit with the
+            XProc concept of documents flowing between input and output ports. And this is because
+            the representation of the JSON document is <emphasis>not</emphasis> an instance of an
+            XDM node, but a map item (or an array item or an atomic value in other cases). And
+            neither a map item nor an array or an atomic value can be the child of a document node
+            per XDM. If you recall the definition of an XProc document you can now understand, why
+            it is <emphasis>not</emphasis> defined as a pair of document properties and a node
+            (which is true for XML and text documents), but as a pair of document properties and a
+                <emphasis>representation</emphasis>. The representation for some document types
+                <emphasis>might be</emphasis> an XDM node, but as for JSON documents it is
+            not.</para>
+        <para>Let us take a closer look how this concept of a document fits into XProc and XPath.
+            First of all, our JSON document produced on <literal>p:identity</literal> flows out of
+            the step on an output port which is typically connected to the input port of some other
+            step. As said above, what happens then depends on whether the receiving step accepts a
+            JSON document on the respective input port. For example if it is a
+                <literal>p:store</literal> the document will be written to some destination as you
+            might expect. But if the receiving step is e.g. a <literal>p:add-attribute</literal> a
+            dynamic error will occur, because a JSON document is not allowed on the input port of
+            this step. But this is nothing special for JSON documents but applies to all documents
+            in XProc. If, for example, an XML document appears on an input port that only allows
+            JSON documents to flow in, a dynamic error is raised too.</para>
+        <para>As you can see, JSON documents are first class citizens in XProc&#160;3.0 when it
+            comes to the question of what can flow between steps. But if you are familiar with
+            XProc, you might recall, that documents do not only flow between steps, but can also
+            appear as context items when it comes to evaluating XPath expressions. Here JSON
+            documents do not fit quite as well, because their content is not represented as
+            something which is an XDM node and therefore an XPath expression like
+                <literal>"/"</literal> can not expose the content to XPath. For
+                <literal>"/"</literal> the XProc processor is required to construct an empty
+            document node, so <literal>p:document-properties('/')</literal> will return the document
+            properties of JSON documents as well. To overcome this problem is obviously very easy if
+            you imagine an XProc defined XPath function, which takes the document node associated
+            with the JSON document as a parameter and returns the same representation of the JSON
+            document as XPath's <literal>fn:json-doc()</literal> would. As of May 2018 you will not
+            find such a function in the specifications for XProc&#160;3.0, but I am pretty sure the
+            community group now taking care of XProc's development will find some way to bridge the
+            gap between JSON documents and XPath expressions.</para>
+        <para>Finally XProc&#160;3.0 defines a fourth document type called “<emphasis>binary
+                document</emphasis>”. A binary document is actually <emphasis>anything</emphasis>
+            which is not either an XML document, or a text document or a JSON document, or, more
+            precisely which has a media type not associated with these three document types. This
+            document type sums up such different kinds of data as ZIP-archives, all kinds of images,
+            PDF-documents and every thing else we have on our file systems or receive from web
+            services. As for JSON documents the XProc processor is required to construct an empty
+            document node, so <literal>p:document-properties('/')</literal> will return the document
+            properties associated with this document. How a binary document is represented
+            internally by an XProc processor is <emphasis>implementation defined</emphasis>. And it
+            is obvious that not all binary documents will be internally represented in the same way
+            by an advanced XProc processor: Smaller documents will probably be held in memory for
+            fast access, but if you think about very large documents (as a video or an audio file),
+            some optimization will be necessary. One strategy is to store those files away in a
+            temporary folder and let just references to these files flow between the steps. Only if
+            a step actually needs to access the document's content, the file or parts of it are
+            loaded by the XProc processor.</para>
+        <para>Because the representation of binary documents has to be implementation defined,
+            XProc&#160;3.0 currently defines no way to access the document's content within an XPath
+            expression. One can easily imagine an XProc defined XPath function returning the
+            document's content as <literal>xs:base64Binary</literal> or as
+                <literal>xs:hexBinary</literal>. But the main problem here is, that in most cases
+            you do not want the whole document content, but are only interested in a smart portion
+            of it. For this reason an implementation returning the whole content, which may be very
+            large, and then use XPath expressions to identify the small range the pipeline author is
+            really interested in, would be very inefficient. This problem is not impossible to
+            solve, but the XProc community has not agreed on a solution yet. One way to solve it
+            would to determine the content's size, either as part of the metadata in the
+            document-properties or as a function taking the binary document as argument. This might
+            be complemented by an XProc defined XPath function which allows to select a part of the
+            document's content. The specification of the EXPath binary module could certainly be a
+            role model for solving this
+            problem.<citation>Kosek:Lumley:Binary:Module:1.0</citation></para>
+        <para>Together with the new document model, XProc&#160;3.0 introduces a new step to convert
+            or cast the different document types into each other:
+                <literal>p:cast-content-type</literal>. This step takes an arbitrary document on its
+            input port and the content-type this document should be casted to and returns a casted
+            document on the output port (or throws an error if the XProc processor is not able to
+            perform the requested casting). This abstract characterization is necessary, because
+            this step is a kind of “Jack of all trades” of document processing in XProc. The easiest
+            task this step can perform, is to cast from one XML media type to another, say from
+                “<literal>application/xslt+xml</literal>” to “<literal>application/xml</literal>” or
+            vice versa. Here the actual document representation does not need to be changed in any
+            way, just the value of key <literal>content-type</literal> in the document properties
+            needs to be changed. Casting from a non-XML document type to an XML document type will
+            produce an XML document by wrapping the representation of the non-XML document into a
+                <literal>c:data</literal>-element. This type of casting is well known from
+            XProc&#160;1.0, where the element <literal>p:data</literal> on an input port was
+            responsible for converting non-XML to XML.</para>
+        <para>The step <literal>p:cast-content-type</literal> can also perform the opposite casting
+            from an XML document with a <literal>c:data</literal>-element with encoded data as a
+            child to the respective document type. All other conversions between media types are
+            currently implementation defined. In this area some more work needs to be done, for
+            example when it comes to cast a JSON document to an XML document. The current version
+            (May-2018) of the XProc&#160;3.0 specification defines that is has to result in a
+                <literal>c:data</literal>-document with a base64-encoded representation of the JSON
+            content.  In <citetitle>XPath and XQuery Functions and Operators 3.1</citetitle><xref linkend="XPath_31_functions"/> we find a
+            mapping from JSON to XML which is used in the two functions
+                <literal>fn:json-to-xml()</literal> and <literal>fn:xml-to-json()</literal>. Making
+            use of this mapping when it comes to casting a JSON document to an XML document and vice
+            versa in XProc&#160;3.0 is certainly an idea that should be discussed. In this line of
+            thought we might also have a mapping from text document with media type
+                “<literal>text/csv</literal>” to an XML document and vice versa. But some of the
+            possible casting tasks to be performed by <literal>p:cast-content-type</literal> could
+            definitively be scary. Let me just mention the case when an XML document with media type
+                “<literal>image/svg+xml</literal>” should be casted to
+                “<literal>image/jpeg</literal>”.</para>
+        <para>This much on the new concepts (and steps) introduced by XProc&#160;3.0 to escape the
+            XML-only limitation and to allow the design of XProc workflows for non-XML documents.
+            Let us now come back to the use case shortly introduced at the beginning of this paper
+            and discover the practical aspects of non-XML workflows in XProc&#160;3.0.</para>
+    </section>
+    <section>
+        <title>Applying the model</title>
+        <para>The non-XML workflow to be developed here was shortly introduced above, but now let us
+            look into details and see how we could realize it in XProc&#160;3.0. As you might
+            recall, the workflow deals with ePUBs stored somewhere on our file system. And our
+            workflow should create some RDF metadata about the ePUB's content and create an
+            inventory which has to be sent to a JSON-only web service. As said above this workflow
+            is a made-up story to explore the new possibilities of XProc&#160;3.0. It is not a real
+            life project, but could serve as a blueprint for those.</para>
+        <para>First let us sum up, what kinds of non-XML documents are involved in our workflow:
+            First of course we have ePUBs which are essentially ZIP documents with a defined
+            structure. Then we have to produce some metadata according to the RDF model, which might
+            be represented as XML (like in RDF/XML or RDFa). But as we deal with non-XML document
+            types, we will of course use one of the text based serializations of RDF, namely Turtle.
+            The source for our metadata generation will be the Dublin core metadata information
+            expressed in the ePUB's root file. Our ePUB will typically also contain a lot of image
+            files and someone wants to know, which images are used in which ePUB. So we will have to
+            create an inventory of all the images (JPEG, PNG and GIF) in the ePUBs together with
+            their width and height. This inventory has to be in JSON because we need to send it to
+            an inventory server which only understands JSON. So we have a pretty zoo of different
+            non-XML document formats to deal with in our pipeline.</para>
+        <para>Let us start with the outermost step which has just the task of finding all ePUBs in a
+            given folder:<footnote><para>To keep the following code readable, I will omit all namespace declarations.</para></footnote></para>
+        <programlisting language="xml" linenumbering="numbered">&lt;p:declare-step version="3.0"&gt;
+  &lt;p:option name="epub-folder" as="xs:anyURI" required="true" />
+
+  &lt;p:directory-list path="{$epub-folder}" 
+      include-filter=".*\.epub" 
+      recursive="true" />
+
+  &lt;p:for-each>
+    &lt;p:with-input select="//c:file" />
+    &lt;epp:analyze-epub>
+      &lt;p:with-option name="href"
+          select="concat($epub-folder,/c:file/@name)" />
+    &lt;/epp:analyze-epub>
+  &lt;/p:for-each>
+&lt;/p:declare-step&gt;</programlisting>
+        <para>For those readers with little or no experience in XProc, let me just say that the step
+                <literal>p:directory-list</literal> will produce a list of content for the directory
+            specified by <literal>path</literal>, in our case containing only directory entries
+            which match the regular expression given with <literal>include-filter</literal>. The
+            step produces an XML document with a <literal>c:directory</literal> root element
+            containing <literal>c:file</literal> or <literal>c:directory</literal> elements. Since
+            we are only interested in (ePUB-)files, the <literal>p:for-each</literal> will select
+            all the respective elements. The treatment of the ePUB is actually done in the user
+            defined step <literal>epp:analyze-epub</literal>, which is called with the ePUB's
+            absolute URI as option value.</para>
+        <para>Readers familiar with XProc will discover some of the new features of XProc&#160;3.0
+            in this example: We now have typed values for options and variables (expressed by
+            attribute <literal>as</literal> on the <literal>p:option</literal>-declaration). While
+            in XProc&#160;1.0 all values of options or variables were either strings or
+                <literal>untyped atomic</literal>, they can now have any value (including documents,
+            nodes, maps and arrays) and the XProc processor has to make sure they only have a value
+            of the declared type. The second point you might have discovered are the curly braces
+            and if you are familiar with XSLT just might have guessed that they are attribute value
+            templates. If so, you are right. XProc&#160;3.0 introduces attribute value templates and
+            text value templates (as known from XSLT&#160;3.0). AVTs prove to be very handy to write
+            shorter pipelines, because now you can use the attribute shortcut for options even if
+            they contain XPath expressions. The long form with <literal>p:with-option</literal> will
+            only be necessary if your XPath expression refers to the context item because the
+            context item for AVTs is undefined. This is why we have to use the explicit form in
+            supplying the value for <literal>href</literal> on <literal>epp:analyze-epub</literal>.
+            And finally you may have discovered that <literal>p:directory-list</literal> has a new
+            attribute, so you can decide whether you only want a listing for the top level directory
+            or also for any directory contained.<footnote>
+                <para>As of May 2018 you will not find this option in the specification, as we have
+                    not done much work on the standard step library yet. There was a request for
+                    this feature which I think is very handy, but the name of the option and its
+                    exact behaviour can not be taken for granted yet.</para>
+            </footnote> So this pipeline might have some interesting new stuff, but when it comes to
+            non-XML documents it is quite boring. So let us go on and see how we can deal with
+            non-XML documents.</para>
+        <para>The first non-XML format we have to deal with is of course ePUB which is a special
+            kind of ZIP archive. Uncompressing and compressing this kind of archive format is
+            already essential to many traditional XProc workflows, because it is not only needed for
+            ePUBs but is also the underlying format for “docx”. Using the framework of
+            XProc&#160;1.0 two different approaches have been developed to deal with archives: The
+            step <literal>pxp:unzip</literal>, proposed by the EXProc-community allows you to
+            extract one document which will appear on the step's output port: If the document has an
+            XML context-type, the document itself appears, but for every other document a
+                <literal>c:data</literal> document is returned which contains the base64-encoded
+            representation of the selected zip's content. This approach is totally in line with
+            XProc's basic concept, but obviously has a lot of limitations. The second approach to
+            deal with ZIP archives is represented by the step <literal>tr:unzip</literal> which is
+            part of the <literal>transpect</literal>-framework developed by le-tex publishing services.<footnote>
+                <para>See http://transpect.github.io/modules-unzip-extension.html.</para>
+            </footnote> This step extracts a complete ZIP archive (or a single entry) to a specified
+            destination folder in the file system. Here the XML-only limitation is circumvent by
+            writing to the file system instead of exposing the base64-encoded content on a result
+            port. But it obviously breaks away from the concept of documents following between steps
+            on ports.</para>
+        <para>In XProc&#160;3.0 we can now have the best of the two approaches: Thanks to the
+            extension of the document model now XML and non-XML documents can flow on the output
+            ports of a new <literal>uncompress</literal> step, which might have the following
+            signature:<footnote><para>Again, this exact specification of this step is not formalized in the specification yet. It is
+                    pretty sure that such a step will be part of XProc&#160;3.0's standard step
+                    library, but the exact signature (e.g. names and types of the options) and the
+                    step's exact behaviour is still under discussion.</para></footnote></para>
+        <programlisting language="xml">&lt;p:declare-step type="xpc:uncompress"&gt;
+  &lt;p:input port="source" content-types="*/*" />
+  &lt;p:output port="manifest" sequence="true"/>
+  &lt;p:output port="result" content-types="*/*" 
+      sequence="true" primary="true"/>
+  &lt;p:option name="include-filter" as="xs:string+" />
+  &lt;p:option name="exclude-filter" as="xs:string+" />
+  &lt;p:option name="method" as="xs:token" select="'zip'" />
+&lt;/p:declare-step&gt;</programlisting>
+        <para>The ZIP-archive flows into this step on the port <literal>source</literal> which
+            intentionally accepts all content types. The first reason is that ZIP archives can
+            appear with many different media types where some do not even have the suffix “zip”. The
+            second reason is, that this step is designed as a kind of Swiss knife for different
+            kinds of archive formats. The documents contained in the archive flow out on the port
+                <literal>result</literal>, which is the primary output port. For a typical archive
+            this will be a sequence of different document types, where each document is a pair of a
+            representation and its document properties. The options
+                <literal>include-filter</literal> and <literal>exclude-filter</literal> can be used
+            to control, which entries from the archive should appear on the output port. Like the
+            options with the same names used on XProc's standard step
+                <literal>p:directory-list</literal> they are interpreted as regular expressions used
+            to match the names of the archives entries. Unlike its predecessor the step now make use
+            of XProc's new alignment to the XDM type universe. So we can now supply a sequence of
+            regular expressions and say, that an archive's entry is returned on the output port, if
+            its name is matched by at least one of the regular expressions on
+                <literal>include-filter</literal> and by none of the regular expressions of
+                <literal>exclude-filter</literal>. Obviously this gives you a very powerful
+            mechanism to control, which entries are extracted from the archive and which are
+            not.</para>
+        <para>Now let us put this step into action in the workflow we have to design. We are not
+            interested in all archive entries, but only in the image files (since we have to create
+            an inventory of them) and the root file, since it contains the metadata we are after.
+            For brevity I will skip the problem of identifying the ePUB's root file by inspecting
+            entry “META-INF/container.xml”. We will guess, that the root file is found in a document
+            named “package.opf". Also for brevity the following pipeline will read the ePUB twice,
+            once to extract the root file and another time to extract the graphic files. In a real
+            life project one would probably only open the ePUB once for efficiency reasons and then
+            split the resulting sequence into the root file and the graphic files. Here is what our
+            step <literal>epp:analyze-epub</literal> might look like:</para>
+        <programlisting language="xml">&lt;p:declare-step type="epp:analyze-epub"&gt;
+  &lt;p:option name="href" as="xs:anyURI" required="true" />
+
+  &lt;xpc:uncompress include-filter=".*/package\.opf">
+    &lt;p:with-input href="{$href}" />
+  &lt;/xpc:uncompress>
+  &lt;epp:extract-metadata />
+
+  &lt;xpc:uncompress>
+    &lt;p:with-input href="{$href}" />
+    &lt;p:with-option name="include-filter"
+      select="('.*\.jpg', '.*\.png', '.*\.gif')" />
+  &lt;/xpc:uncompress>
+  &lt;epp:create-inventory />
+&lt;/p:declare-step></programlisting>
+        <para>If you look at this short pipeline, I think you will recognize how natural it is now
+            to work with non-XML documents in XProc&#160;3.0. We extract an XML document named
+            “package.opf” from the ePUB and let it flow into step
+                <literal>epp:extract-metadata</literal> and we extract the relevant graphic files
+            from the ePUB and let a sequence of non-XML document flow into step
+                <literal>epp:create-inventory</literal>.</para>
+        <para>Now let us turn to the conversion of the Dublin core metadata contained in
+                <literal>opf:metadata</literal> of the ePUB's root file into the Turtle
+            serialization of an RDF graph. By looking at the ePUB's root file, we will find the
+            metadata as the following example
+            shows:</para><programlisting language="xml">&lt;opf:metadata
+    xmlns:opf="http://www.idpf.org/2007/opf"
+    xmlns:dc="http://purl.org/dc/elements/1.1/">
+  &lt;dc:identifier>urn:isbn:978-80-906259-2-1&lt;/dc:identifier>
+  &lt;dc:title>XML Prague 2017&lt;/dc:title>
+  &lt;dc:language>en&lt;/dc:language>
+  &lt;dc:creator>Jiří Kosek&lt;/dc:creator>
+  &lt;dc:date>2017&lt;/dc:date>
+&lt;/opf:metadata></programlisting>
+        <para>From this format we need to generate a Turtle serialization which should look like
+            this:</para>
+        <programlisting>&lt;urn:isbn:978-80-906259-2-1>
+  dc:title "XML Prague 2017" ;
+  dc:language "en" ;
+  dc:creator "Jiří Kosek" ;
+  dc:date "2017" .</programlisting>
+        <para>I think the first intuition of many readers will be to use XSLT for this conversion.
+            As an XProc author I would definitely agree with this intuition and write an XSLT
+            stylesheet called by XProc's <literal>p:xslt</literal> to invoke the transformation.
+            With XProc&#160;3.0 this is possible because the text document created by XSLT is now a
+            first class citizen of a pipeline and there is no need anymore to wrap it in an element
+            node to make it an XML document.</para>
+        <para>But as this paper deals with non-XML documents in XProc&#160;3.0, let us see, how this
+            could be done without invoking an XSLT transformation. The following fragment shows how
+            one might do it:</para>
+        <programlisting language="xml">&lt;p:variable name="id" select="/opf:metadata/dc:identifier" />
+&lt;p:for-each>
+  &lt;p:with-input select="/opf:metadata/dc:*[not(name(.) = 
+      'dc:identifier')]" />
+  &lt;p:variable name="entry" as="document-node()" select="." />
+  &lt;p:identity>
+    &lt;p:with-input>
+      &lt;p:inline content-type="text/turtle"
+        >{$entry/*/name()} "{$entry/*/text()}"&lt;/p:inline>
+    &lt;/p:with-input>
+  &lt;/p:identity>
+&lt;/p:for-each>
+&lt;xpc:aggregate-text separator=" ; &amp;#xD;" />
+&lt;xpc:add-text text="&amp;lt;{$id}&amp;gt; &amp;#xD;" position="before" />
+&lt;xpc:add-text text="." position="after" /></programlisting>
+        <para>Here a text value template (known from XSLT) is used to create a text document for
+            every element entry in the Dublic core namespace. We have to use the variable
+                <literal>entry</literal> (which is a document node), because as for AVTs the context
+            item is undefined for TVTs. What appears on the output port of
+                <literal>p:for-each</literal> is a sequence of text documents, each containing the
+            predicate and the object of a statement. The step <literal>xpc:aggregate-text</literal>
+            then takes this sequence of text documents to create one single text document. Between
+            two adjacent text documents a semicolon and a carriage return is inserted. And finally
+            the two appearances of <literal>xpc:add-text</literal> put the ePUB's identifier in
+            front of text and a colon behind it so we have a valid Turtle statement.</para>
+        <para>As you can see, text based format like Turtle can be very easily created using the new
+            features introduced with XProc&#160;3.0. Currently the standard step library does not
+            contain any steps dealing especially with text documents. The two steps used in the
+            previous example are pretty good candidates for this, but I am not sure they will make
+            it into the final library. The reason here is, that both steps can be written in XProc
+            itself using the string functions provided by XPath. So it might be a question of
+            principle whether to include such steps in the standard library which would make
+            pipeline authoring more convenient or ask the authors to import their XProc
+            implementation into their pipeline every time they need this functionality.</para>
+        <para>When it comes to RDF itself as a theoretical concept, there is currently no support in
+            XProc&#160;3.0. Of course RDF/XML and RDFa are supported as they are XML documents and
+            text based serialization formats of a graph can be handled as we have just seen. But an
+            RDF graph as a theoretical concept in opposition to its various representations is
+            currently not one of XProc's document types. The XProc Next Community Group has
+            mentioned RDF several times in their discussions at the various meetings, but not really
+            tackled the topic yet.<footnote>
+                <para>For XProc&#160;1.0 there are some attempts to deal with RDF documents. The
+                    most prominent are, of course, the RDF extension steps for XMLCalabash.<xref
+                        linkend="Walsh_XMLCalabash"/></para>
+            </footnote> There might be good reasons to extend the current document model by RDF
+            graphs. The RDF document type would be independent of any serialization form and there
+            could be steps to parse a serialization form to an abstract graph and to serialize the
+            graph. Additionally we could have steps, that add triples to a graph or remove a
+            specific triple etc. Going further one could wish for a step to validate the graph with
+            SHACL or another step to query the graph with SPARQL. In his paper for XML Prague 2018
+            Hans-Jürgen Rennau <xref linkend="Rennau_2018"/> argues that XML and RDF are
+            complementary concepts and that <quote>an integration of RDF and XML technologies is a
+                very promising goal.</quote> Given our previous discussion one might think of XProc
+            as one of the places where this integration might take place. But as I said before,
+            there is no decision on whether RDF graphs will become part of XProc's document model.
+            And there might be doubts they will make it, because sometimes its better to get things
+            done, than to get things perfect.</para>
+        <para>Let us go back to our workflow example. Having dealt with ZIP archives and ePUBs, text
+            documents and Turtle we now have to turn to the last open point of our workflow which is
+            to create a JSON inventory of the image files contained in the ePUB. Given the fact one
+            of XProc's mayor use cases today is in publishing, the lack of support for images and
+            image processing is surely striking. Pipeline authors had to step in here and write
+            their own extension steps to do at least some rudimentary image processing.<footnote>
+                <para>See for example the steps <literal>image-identify</literal> and
+                        <literal>image-transform</literal> from le-tex's transpect framework.</para>
+            </footnote> But this is typically only an in house solution because you have to write
+            these steps in the programming language the XProc processor used is written in and you
+            have to make known these steps to the processor in some vendor specific way. Pipelines
+            using these steps are not interoperable with other XProc processors or other
+            configurations of the same processor.<footnote>
+                <para>See <xref linkend="Berndzen_Imsieke_2016"/>, especially section&#160;5.</para>
+            </footnote></para>
+        <para> As we saw above, XProc&#160;3.0 changes this with the introduction of the new
+            document model which allows images to be loaded in a pipeline and to flow between steps.
+            Currently there are no special steps dealing with images, but you can easily imagine
+            steps that extract data from an image document or do some image processing e.g. scaling.
+            And finally it is now very easy to create an ePUB containing XML documents and images
+            alike. The old workaround was to create an intermediate folder on the file system,
+            storing all XML documents into this folder and copying all the images there too, and
+            then call a step to create an archive from the respective folder. With the new document
+            model you will not need this workaround anymore but can simply have a zipping step,
+            taking all the (XML and non-XML) documents on its input port sequence and creating an
+            archive from it to appear on the output port.</para>
+        <para>As you might recall, the workflow we are designing, involves some image processing
+            because we are requested to create an inventory of all the image files contained in an
+            ePUB and this inventory has to contain the dimensions of the images as well. For this we
+            need a step that takes an image document on its input port and produces an XML document
+            containing the required information on its output port. The signature of such a step
+            might look like this:</para>
+        <programlisting language="xml">&lt;p:declare-step type="xpc:image-profile">
+  &lt;p:input port="source" 
+    content-types="image/jpeg image/png image/gif" />
+  &lt;p:output port="result" />
+&lt;/p:declare-step></programlisting>
+        <para>On the step's output port an XML document appears containing information about the
+            image, which might look like this:</para>
+        <programlisting language="xml">&lt;c:image-profile>
+  &lt;c:image-property name="name" value="pic1.jpg" />
+  &lt;c:image-property name="mimetype" value="image/jpeg" />
+  &lt;c:image-property name="width" value="300" unit="px" />
+  &lt;c:image-property name="height" value="500" unit="px" />
+  &lt;!-- more properties to come here -->
+&lt;/c:image-profile></programlisting>
+        <para>The XProc Next Community Group has not decided yet about the format of the resulting
+            XML document. As for some applications the use of attributes seems to be convenient,
+            other applications may prefer to have the properties as element names and the values as
+            text children of these elements. There is no reason why such a step should not have an
+            option allowing the pipeline author to select between these and other possible formats.
+            Actually for the workflow discussed in this paper it would be very handy, if the output
+            is not restricted to different varieties of XML documents, but could also be a JSON
+            document, as we have to send the graphics inventory to a JSON only web service.</para>
+        <para>So it comes to JSON as the last data format or document type we have to consider in
+            our workflow. From what we have done so far, we could have an XML document containing
+            all the <literal>c:image-profile</literal> documents for the image files of an ePUB.<footnote>
+                <para>For brevity  the XProc snippet is left out here: It is just a
+                        <literal>p:for-each</literal> iteration over the image documents delivered
+                    from <literal>uncompress</literal>, calling <literal>xpc:image-profile</literal>
+                    on each and do a <literal>p:wrap-sequence</literal> on the sequence flowing out
+                    of the <literal>p:for-each</literal>.</para>
+            </footnote> And there are different ways to produce the lexical JSON we would like to
+            send to a web service:</para>
+        <para>The first way to produce a JSON representation of this document has little to do with
+            the newly introduced JSON document type in XProc, but uses text documents as a vehicle
+            for lexical JSON. And of course it makes use of the XPath function
+                <literal>fn:xml-to-json()</literal> which takes an XML document in a special
+            designed vocabulary as an argument and returns a string conforming to the JSON grammar.
+            Since we need a textual representation of the JSON document if we want to send it to a
+            web service, the string result here is fine for us. If we would need actual JSON,
+            calling the function <literal>fn:parse-json()</literal> with the previous function
+            call's result as a parameter would do the job. All we need to do to generate the JSON
+            document therefore is (1) call an XSLT stylesheet that takes our source document and
+            transforms it into the XML format expected for <literal>fn:xml-to-json()</literal> and
+            (2) create the request document for <literal>p:http-request</literal>.</para>
+        <para>The second possible strategy to create a lexical JSON representation of our image
+            inventory document is to create the text document directly with XSLT without the
+            intermediate step of creating an XML-document in a format suitable for calling
+                <literal>fn:xml-to-json()</literal>. This might be a plausible strategy too, but as
+            XML to XML transformation with XSLT is an everyday job, one might be better off doing
+            this and leaving the problem of transformation to JSON to the processor's built-in
+            function.</para>
+        <para>Thirdly we could create the lexical JSON document directly in XProc as we have done
+            with Turtle in the example above. Lexical JSON and Turtle are both text based formats so
+            using XProc&#160;3.0's new text documents seems to be a practicable way.</para>
+        <para>Taking all these possibilities together, one might come up with the question if the
+            JSON document type introduced with XProc&#160;3.0 has a meaningful purpose at all.<footnote>
+                <para>To avoid misunderstanding: We are talking about JSON documents as an XProc
+                    document type not about maps and arrays as part of XDM. Having variables and
+                    options that can contain maps and arrays is useful without doubt. Replacing
+                    parameter ports with maps should count as a prove.</para>
+            </footnote> The underlying impression is boosted by the fact, that the only step
+            currently defined for JSON documents is <literal>p:load</literal>. One might expect,
+            that one processor or the other additionally may support JSON documents in
+                <literal>p:store</literal> (as non-XML serialization is an optional feature). As no
+            other step is currently defined in XProc's standard library one has either to rely on
+            the processor or site specific extension steps or (as I would expect) convert JSON to
+            XML (<literal>fn:json-to-xml()</literal>) and back (<literal>fn:xml-to-json()</literal>).<footnote>
+                <para>See the above discussion on implementation defined aspects of
+                        <literal>p:cast-content-type</literal>.</para>
+            </footnote> This shortcoming may in part be due to the pending update of the step
+            library. For example: XSLT&#160;3.0 widened the concept of the “initial context node” to
+            the new concept of the “initial match selection”, which includes not only a sequence of
+            documents, but also a sequence of parentless items like (XDM) values and maps. This
+            change in the underlying technology will most certainly be reflected in an updated
+            signature of <literal>p:xslt</literal>.<footnote>
+                <para>To ensure compatibility with legacy pipelines or to allow the use of
+                    XSLT&#160;2.0-only processors, one might also think of adding a new step for
+                    XSLT&#160;3.0 transformation.</para>
+            </footnote> And this updated signature might also allow JSON documents to flow into the
+            input port of <literal>p:xslt</literal>. Along this line of thinking
+                <literal>p:xquery</literal> might be another step where JSON documents flow in (and
+            out).</para>
+        <para>Another way to make JSON documents more useful to pipeline authors may be the
+            introduction of JSON specific steps into XProc&#160;3.0's standard step library.
+            Concerning our task to create a JSON document from the sequence of XML documents with
+            image information, a step that creates a JSON document containing a map and a step that
+            joins a sequence of JSON documents with maps to one single JSON document would be
+            helpful. Omitting the exact specification of such steps, a possible pipeline might look
+            like this:</para>
+        <programlisting language="xml">&lt;p:for-each>
+  &lt;p:output port="json-info" content-type="application/json" />
+    &lt;p:variable name="props" select="[
+      xs:string(//*[@name='mimetype']/@value),
+      xs:string(//*[@name='width']/@value),
+      xs:string(//*[@name='height']/@value
+    ]" />
+  &lt;xpc:json-document>
+    &lt;p:with-option name="value" select="
+      map{xs:string(//*[@name='name']/@value) : $props}
+    "/>
+  &lt;/xpc:json-document>
+&lt;/p:for-each>
+&lt;xpc:aggreate-json-map /></programlisting>
+<para>The result here should be a JSON document containing a map, where in each map entry the key
+            corresponds to the name of the image file and the value of each entry is an array
+            containing the mime type, the width and the height as strings in that order. Obviously
+            this might be done in a more elegant way, but as we are concerned only with the basic
+            concepts here, this example might be sufficient.</para>
+        <para>Thinking along these lines we might invent other JSON specific steps which might be
+            useful in pipelines. If we restrict our selves to JSON documents that are maps, one
+            might think about a step, that adds one entry to the map:</para>
+        <programlisting language="xml">&lt;p:declare-step type="xpc:add-to-json-map">
+  &lt;p:input port="source" content-types="application/json" />
+  &lt;p:option name="key" as="xs:string" required="true" />
+  &lt;p:option name="value" required="true" />
+&lt;/p:declare-step></programlisting>
+        <para>And then of course we would also need a step to remove a key/value entry from a map
+            e.g. by giving a key.</para>
+        <para>But the key problem to me with JSON documents still is their connection to XPath and
+            XDM which is, as I said above, currently missing in XProc&#160;3.0: While we are able to
+            express something like “remove the third child element of this node in this XML
+            document” for XML documents, we are not able to say “remove the third key/value pair
+            from the map in this JSON document”. We might invent some steps for JSON documents, but
+            currently we are limited to mutations of the top level map (or array) since we are not
+            able to say something like “select entry four of the array that is associated with key
+                <literal>a</literal>”.</para>
+        <para>The other problem of course is, that JSON and JSON documents can not be mapped to XDM
+            instances on a 1:1 basis: This is because a JSON document (at its “root”) may either be
+            a map or an array or an atomic value. Therefore the above proposed step
+                <literal>xpc:add-to-json-map</literal> is quite naive because it presupposes, that
+            the JSON document on the source port contains a map. But if the top level object of this
+            document is not a map, an error would be raised most probably. And this error could not
+            be avoided by a prior checking, because currently there is no way to ask, whether the
+            top level object of a JSON document is a map or something else.</para>
+        <para>To sum up our discussion of JSON documents I think it is fair to say, that some more
+            work has to be done, to make them really useful to pipeline authors. This (preliminary)
+            assessment is surely contrasted by the fact, that we can do a lot of useful things with
+            JSON in XProc&#160;3.0, because we now have maps and arrays for variables and options,
+            and we have text documents for lexical JSON. Finally with the XML representation of JSON
+            invented for XPath&#160;3.1 we have a lossless way of representing JSON in XML, can make
+            use of all the XProc steps to manipulate the document and then put it back to lexical
+            JSON in order to store it or send it to the web.</para>
+    </section>
+    <section>
+        <title>Conclusions</title>
+        <para>Opening up XProc to enable processing of non-XML documents is one of the primary goals
+            in the currently ongoing development of XProc&#160;3.0. In this paper we took a first
+            look at the new document model and investigated its application in non-XML workflows.
+            While XProc still models workflows using the idea of documents flowing between steps
+            from output to input ports, the concept of a document changes in the new version of the
+            language. We found, that the new understanding of a document as a pair of a
+            representation and document properties fits in perfectly into the well known world of
+            XML, XPath and XDM.</para>
+        <para>With regard to the different instances of the new document model already defined in
+            the language's specification it was argued, that using the XDM concept for XML documents
+            makes pipeline authoring much easier. The same holds for text documents, which very
+            smoothly opens up XProc to the processing of character based documents using a (not yet
+            complete) set of XProc steps and XPath functions as well. The introduction of the binary
+            document type allows processing of many document formats typically occurring in XML
+            workflows, namely ZIP based formats as ePUBs and documents from various office
+            productivity software suites on one side and image files on the other side.</para>
+        <para>Our discussion also showed some open questions which should be discussed in the
+            further development of XProc&#160;3.0: While XML based and text based serializations of
+            RDF graphs are supported, there is currently no support for RDF graph as document type.
+            Whether this would improve the work of pipeline authors in such a way that its
+            introduction could be justified, has to be taken under investigation. Our coverage also
+            showed some open questions about the usefulness of the JSON document type, which should
+            be settled in further discussions.</para>
+    </section>
+    <bibliography>
+        <title>Bibliography</title>
+        <biblioentry xml:id="XProc-Spec" xreflabel="[1]">
+            <title>XProc. An XML Pipeline Language</title>
+            <pubdate>11th May 2010</pubdate>
+            <authorgroup>
+              <editor><personname><firstname>Norman</firstname><surname>Walsh</surname></personname></editor>
+              <editor><personname><firstname>Alex</firstname><surname>Milowski</surname></personname></editor>
+              <editor><personname><firstname>Henry S.</firstname><surname>Thompson</surname></personname></editor>
+            </authorgroup>
+            <publishername>World Wide Web Consortium (W3C)</publishername>
+            <biblioid class="uri">http://www.w3.org/TR/xproc/</biblioid>
+        </biblioentry>
+        
+        <biblioentry xml:id="XPath_31_functions" xreflabel="[2]">
+            <title>XPath and XQuery Functions and Operators 3.1</title>
+            <pubdate>21 March 2017</pubdate>
+            <editor>
+                <personname><firstname>Michael</firstname><surname>Kay</surname></personname>
+            </editor>
+            <publishername>World Wide Web Consortium (W3C)</publishername>     
+            <biblioid class="uri">https://www.w3.org/TR/xpath-functions-31/</biblioid>
+        </biblioentry>
+        
+        <biblioentry xml:id="XDM_31" xreflabel="[3]">
+            <title>XQuery and XPath Data Model 3.1</title>
+            <pubdate>21 March 2017</pubdate>
+            <authorgroup>
+                <editor><personname><firstname>Norman</firstname><surname>Walsh</surname></personname></editor>
+                <editor><personname><firstname>John</firstname><surname>Snelson</surname></personname></editor>
+                <editor><personname><firstname>Andrew</firstname><surname>Andrew</surname></personname></editor>
+            </authorgroup>
+            <publishername>World Wide Web Consortium (W3C)</publishername>     
+            <biblioid class="uri">https://www.w3.org/TR/xpath-datamodel-31/</biblioid>
+        </biblioentry>
+        
+        <biblioentry xml:id="Walsh_XMLCalabash" xreflabel="[4]" >
+            <author>
+                <personname>
+                    <firstname>Norman</firstname>
+                    <surname>Walsh</surname>
+                </personname>
+            </author>
+            <title>XML Calabash Reference</title>
+            <pubdate>06 March 2018</pubdate>
+            <biblioid class="uri">http://xmlcalabash.com/docs/reference/</biblioid>
+        </biblioentry>
+        
+        <biblioentry xml:id="Rennau_2018" xreflabel="[5]">
+            <author>
+                <personname><firstname>Hans-Juergen</firstname><surname>Rennau</surname></personname>
+            </author>
+            <title>Combining graph and tree: writing SHAX, obtaining SHACL, XSD and more</title>
+            <editor>
+                <personname><firstname>Jiří</firstname><surname>Kosek</surname></personname>
+            </editor>
+            <confgroup>
+                <conftitle>XML Prague 2018</conftitle>
+                <confdates>February 8–10, 2018</confdates>
+                <address>Prague, Czech Republic</address>
+            </confgroup>
+            <pubdate>2018</pubdate>
+            <pagenums>107-135</pagenums>
+            <biblioid class="uri">http://archive.xmlprague.cz/2018/files/xmlprague-2018-proceedings.pdf</biblioid>
+        </biblioentry>
+        
+        <biblioentry xml:id="Berndzen_Imsieke_2016" xreflabel="[6]">
+            <authorgroup>
+                <author><personname><firstname>Achim</firstname><surname>Berndzen</surname></personname></author>
+                <author><personname><firstname>Gerrit</firstname><surname>Imsieke</surname></personname></author>    
+            </authorgroup>
+            <title>Interoperability of XProc pipelines</title>
+            <subtitle>A real world publishing scenario</subtitle>
+            <editor>
+                <personname><firstname>Charles</firstname><surname>Foster</surname></personname>
+            </editor>
+            <confgroup>
+                <conftitle>XML London 2016</conftitle>
+                <confdates>June 4–5, 2016</confdates>
+                <address>London, United Kingdom</address>
+            </confgroup>
+            <pubdate>2016</pubdate>
+            <pagenums>82-98</pagenums>
+            <biblioid class="doi">doi:10.14337/XMLLondon16.Berndzen01</biblioid>
+        </biblioentry>
+    </bibliography>
+</article>
