@@ -77,7 +77,7 @@
         </authorgroup>
         
     </info>
-    <acknowledgements>
+    <!--<acknowledgements>
         <para>The organisers wish to thank the following organisations and individuals:</para>
         <itemizedlist>
             <listitem>
@@ -93,7 +93,7 @@
                 <para>Norm Walsh</para>
             </listitem>
         </itemizedlist>
-    </acknowledgements>
+    </acknowledgements>-->
     
     <xi:include href="papers/BTU-MarkupUK.xml"/>
     <xi:include href="papers/Markup2018RobWalpole.xml"/>

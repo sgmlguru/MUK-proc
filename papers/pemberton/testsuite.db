@@ -527,21 +527,26 @@ locations they should be in if the events come in in the right order:</para>
    &lt;setvalue ref="test[1]/@res"&gt;insert&lt;/setvalue&gt;
 &lt;/action&gt;
 &lt;action ev:event="xforms-rebuild"&gt;
-   &lt;setvalue ref="test[@res='insert']/following-sibling::test[1]/@res[.='']"&gt;rebuild&lt;/setvalue&gt;
+   &lt;setvalue
+   ref="test[@res='insert']/following-sibling::test[1]/@res[.='']"&gt;rebuild&lt;/setvalue&gt;
 &lt;/action&gt;
 &lt;action ev:event="xforms-recalculate"&gt;
-   &lt;setvalue ref="test[@res='rebuild']/following-sibling::test[1]/@res[.='']"&gt;recalculate&lt;/setvalue&gt;
+   &lt;setvalue 
+   ref="test[@res='rebuild']/following-sibling::test[1]/@res[.='']"&gt;recalculate&lt;/setvalue&gt;
 &lt;/action&gt;
 &lt;action ev:event="xforms-revalidate"&gt;
-   &lt;setvalue ref="test[@res='recalculate']/following-sibling::test[1]/@res[.='']"&gt;revalidate&lt;/setvalue&gt;
+   &lt;setvalue
+   ref="test[@res='recalculate']/following-sibling::test[1]/@res[.='']"&gt;revalidate&lt;/setvalue&gt;
 &lt;/action&gt;
 &lt;action ev:event="xforms-refresh"&gt;
-   &lt;setvalue ref="test[@res='revalidate']/following-sibling::test[1]/@res[.='']"&gt;refresh&lt;/setvalue&gt;
+   &lt;setvalue
+   ref="test[@res='revalidate']/following-sibling::test[1]/@res[.='']"&gt;refresh&lt;/setvalue&gt;
    &lt;recalculate/&gt;
 &lt;/action&gt;</programlisting>
 
 <para>A <literal>setvalue</literal> such as</para>
-<programlisting>&lt;setvalue ref="test[@res='rebuild']/following-sibling::test[1]/@res[.='']"&gt;recalculate&lt;/setvalue&gt;</programlisting>
+<programlisting>&lt;setvalue
+  ref="test[@res='rebuild']/following-sibling::test[1]/@res[.='']"&gt;recalculate&lt;/setvalue&gt;</programlisting>
 
 <para>selects the <literal>test</literal> element after the one whose <literal>res</literal>
 attribute is <literal>rebuild</literal>, and sets the value of its <literal>res</literal>

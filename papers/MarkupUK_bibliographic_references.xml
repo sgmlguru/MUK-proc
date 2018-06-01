@@ -428,11 +428,14 @@
             <para>Original content:</para>
             <programlisting>Deborah Furet How Illusions Pass, 176-196, 234-247. London: Gerald Duckworth, 1987</programlisting>
             <para>After first pass:</para>
-            <programlisting>Deborah Furet &lt;title>How Illusions Pass&lt;/title>, 176-196, 234-247. London: Gerald Duckworth, 1987</programlisting>
+            <programlisting>Deborah Furet &lt;title>How Illusions Pass&lt;/title>, 176-196, 234-247. 
+London: Gerald Duckworth, 1987</programlisting>
             <para>After second pass:</para>
-            <programlisting>Deborah &lt;surname>Furet&lt;/surname> &lt;title>How Illusions Pass&lt;/title>, 176-196, 234-247. London: Gerald Duckworth, 1987</programlisting>
+            <programlisting>Deborah &lt;surname>Furet&lt;/surname> &lt;title>How Illusions Pass&lt;/title>, 
+176-196, 234-247. London: Gerald Duckworth, 1987</programlisting>
             <para>After third pass:</para>
-            <programlisting>Deborah &lt;surname>Furet&lt;/surname> &lt;title>How Illusions Pass&lt;/title>, 176-196, 234-247. London: Gerald Duckworth, &lt;year>1987&lt;/year></programlisting>
+            <programlisting>Deborah &lt;surname>Furet&lt;/surname> &lt;title>How Illusions Pass&lt;/title>, 
+176-196, 234-247. London: Gerald Duckworth, &lt;year>1987&lt;/year></programlisting>
         </example>
         <para>The template for the original &lt;bibItem> element is:</para>
         <programlisting>  
@@ -491,16 +494,20 @@
     &lt;xsl:param name="nodesToCheck" as="node()+"/>
     
     &lt;xsl:variable name="thisNode" as="node()" select="$nodesToCheck[1]"/>
-    &lt;xsl:variable name="remainingNodes" as="node()*" select="$nodesToCheck except $thisNode"/>
+    &lt;xsl:variable name="remainingNodes" as="node()*" 
+    select="$nodesToCheck except $thisNode"/>
     
     &lt;xsl:variable name="nodeAsString" as="xs:string" select="string($thisNode)"/> 
         
-    &lt;xsl:variable name="matches" as="xs:boolean" select="oupdtg:hasMatch($nodeAsString,$stringToMatch)"/>
+    &lt;xsl:variable name="matches" as="xs:boolean" 
+    select="oupdtg:hasMatch($nodeAsString,$stringToMatch)"/>
 
     &lt;!-- 
         Code to look at $thisNode (the first node)
-        Either copy it (if $stringToMatch is not found, or if it has been matched already)
-        or wrap part of the text node matching $stringToMatch in an element appropriate to the $attributeName
+        Either copy it (if $stringToMatch is not found, 
+        or if it has been matched already)
+        or wrap part of the text node matching $stringToMatch 
+        in an element appropriate to the $attributeName
     -->
 
     &lt;xsl:if test="count($remainingNodes) != 0">

@@ -683,15 +683,32 @@
     &lt;sequential&gt;
 
         &lt;!-- fail if required attributes not set --&gt;
-        &lt;check-attr-set macro=&quot;xspec-file&quot; name=&quot;file&quot; value=&quot;@{file}&quot;/&gt;
+        &lt;check-attr-set
+          macro=&quot;xspec-file&quot; 
+          name=&quot;file&quot; 
+          value=&quot;@{file}&quot;/&gt;
 
-        &lt;check-attr-list macro=&quot;xspec-file&quot; name=&quot;test&quot; value=&quot;@{test}&quot; list=&quot;xslt,xquery,schematron&quot;/&gt;
+        &lt;check-attr-list 
+          macro=&quot;xspec-file&quot; 
+          name=&quot;test&quot; 
+          value=&quot;@{test}&quot; 
+          list=&quot;xslt,xquery,schematron&quot;/&gt;
 
-        &lt;check-attr-bool macro=&quot;xspec-file&quot; name=&quot;coverage&quot; value=&quot;@{coverage}&quot;/&gt;
-        &lt;check-attr-bool macro=&quot;xspec-file&quot; name=&quot;junit&quot; value=&quot;@{junit}&quot;/&gt;
+        &lt;check-attr-bool 
+          macro=&quot;xspec-file&quot; 
+          name=&quot;coverage&quot; 
+          value=&quot;@{coverage}&quot;/&gt;
+        &lt;check-attr-bool 
+          macro=&quot;xspec-file&quot; 
+          name=&quot;junit&quot; 
+          value=&quot;@{junit}&quot;/&gt;
 
         &lt;!-- find XSpec command --&gt;
-        &lt;check-exe-path property=&quot;xspec.exe&quot; unix=&quot;xspec.sh&quot; windows=&quot;xspec.bat&quot; unless:set=&quot;xspec.exe&quot;/&gt;
+        &lt;check-exe-path 
+          property=&quot;xspec.exe&quot; 
+          unix=&quot;xspec.sh&quot; 
+          windows=&quot;xspec.bat&quot; 
+          unless:set=&quot;xspec.exe&quot;/&gt;
 
         &lt;!-- get test type --&gt;
         &lt;local name=&quot;test.@{test}&quot;/&gt;

@@ -121,7 +121,7 @@
 
       <figure>
         <title>Emblem E018850 encoded in TEI</title>
-        <programlisting language="xml"><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tei-struct.xml" parse="text"/></programlisting>
+        <programlisting language="xml"><?db-font-size 85% ?><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="tei-struct.xml" parse="text"/></programlisting>
       </figure>
 
       <para>
@@ -150,7 +150,7 @@
       </para>
       <figure>
         <title>The same emblem E018850 encoded as Emblem Schema</title>
-        <programlisting language="xml"><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="emblem.xml" parse="text"/></programlisting>
+        <programlisting language="xml"><?db-font-size 85% ?><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="emblem.xml" parse="text"/></programlisting>
       </figure>
     </section>
     <section>

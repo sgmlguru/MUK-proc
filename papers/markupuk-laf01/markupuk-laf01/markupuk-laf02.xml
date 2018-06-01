@@ -284,7 +284,7 @@
             are still split so these would need to be merged in order to get back to the original A
             document, although the basic original structure of A is apparent.<inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="lafo061201.jpg" width="7.5in" format="jpg"/>
+                    <imagedata fileref="lafo061201.jpg" width="6in" format="jpg"/>
                 </imageobject>
             </inlinemediaobject></para>
         <para>This visualization illustrates the very simple nature of this approach. The attributes
@@ -402,8 +402,10 @@
         &lt;/seg>
         &lt;l deltaxml:deltaV2="A!=B" deltaxml:deltaTagMiddle="B"> &lt;/l>
         &lt;seg deltaxml:deltaV2="A!=B" deltaxml:deltaTag="A">
-            &lt;l deltaxml:deltaV2="A!=B" deltaxml:deltaTagEnd="B">critic, you have frowned,&lt;/l>
-            &lt;l deltaxml:deltaV2="A!=B" deltaxml:deltaTagStart="B">Mindless of its just honours;&lt;/l>
+            &lt;l deltaxml:deltaV2="A!=B" deltaxml:deltaTagEnd="B">critic,
+            you have frowned,&lt;/l>
+            &lt;l deltaxml:deltaV2="A!=B" deltaxml:deltaTagStart="B">Mindless
+            of its just honours;&lt;/l>
         &lt;/seg>
         &lt;l deltaxml:deltaV2="A!=B" deltaxml:deltaTagMiddle="B"> &lt;/l>
         &lt;seg deltaxml:deltaV2="A!=B" deltaxml:deltaTag="A">
@@ -428,7 +430,8 @@
         <para>In addition there are several elements that contain only white space, e.g. the second
             &lt;l> element. This is because the A document contained a space between the two
             &lt;seg>
-            elements:<programlisting>&lt;seg>Scorn not the sonnet;&lt;/seg> &lt;seg>critic, you have frowned, Mindless of its just honours;&lt;/seg></programlisting>The
+            elements:<programlisting>&lt;seg>Scorn not the sonnet;&lt;/seg> &lt;seg>critic, you have frowned,
+Mindless of its just honours;&lt;/seg></programlisting>The
             B document had this space within the &lt;l>
             element:<programlisting>&lt;l>Scorn not the sonnet; critic, you have frowned,&lt;/l></programlisting></para>
         <para>As mentioned earlier, correct handling of white space is often very complicated
