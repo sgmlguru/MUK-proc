@@ -18,63 +18,7 @@
             </mediaobject>
         </cover>
         <title>Markup UK 2018 Proceedings</title>
-        <authorgroup>
-            <author>
-                <personname><firstname>B. Tommie</firstname><surname>Usdin</surname></personname>
-            </author>
-            <author>
-                <personname><firstname>Rob</firstname><surname>Walpole</surname></personname>
-            </author>
-            <author>
-                <personname><firstname>Mark</firstname><surname>Dunn</surname></personname>
-            </author>
-            <author>
-                <personname><firstname>Bert</firstname><surname>Willems</surname></personname>
-            </author>
-            <author>
-                <personname>
-                    <firstname>Tony</firstname>
-                    <surname>Graham</surname>
-                </personname>
-            </author>
-            <author>
-                <personname><firstname>David</firstname><surname>Maus</surname></personname>
-            </author>
-            <author>
-                <personname>
-                    <firstname>Makoto</firstname>
-                    <surname>Murata</surname>
-                </personname>
-            </author>
-            <author>
-                <personname>
-                    <firstname>Hans-Jürgen</firstname>
-                    <surname>Rennau</surname>
-                </personname>
-            </author>
-            <author>
-                <personname>
-                    <firstname>Hauke</firstname>
-                    <surname>Brandes</surname>
-                </personname>
-            </author>
-            <author>
-                <personname><firstname>Achim</firstname>
-                    <surname>Berndzen</surname></personname>
-            </author>
-            <author>
-                <personname><firstname>Philip</firstname><surname>Hodder</surname></personname>
-            </author>
-            <author>
-                <personname>
-                    <firstname>Robin</firstname>
-                    <surname>La Fontaine</surname>
-                </personname>
-            </author>
-            <author>
-                <personname><firstname>Steven</firstname><surname>Pemberton</surname></personname>
-            </author>
-        </authorgroup>
+        <!--<authorgroup><author><personname><firstname>B. Tommie</firstname><surname>Usdin</surname></personname></author><author><personname><firstname>Rob</firstname><surname>Walpole</surname></personname></author><author><personname><firstname>Mark</firstname><surname>Dunn</surname></personname></author><author><personname><firstname>Bert</firstname><surname>Willems</surname></personname></author><author><personname> <firstname>Tony</firstname> <surname>Graham</surname> </personname></author><author><personname><firstname>David</firstname><surname>Maus</surname></personname></author><author><personname> <firstname>Makoto</firstname> <surname>Murata</surname> </personname></author><author><personname> <firstname>Hans-Jürgen</firstname> <surname>Rennau</surname> </personname></author><author><personname> <firstname>Hauke</firstname> <surname>Brandes</surname> </personname></author><author><personname><firstname>Achim</firstname> <surname>Berndzen</surname></personname></author><author><personname><firstname>Philip</firstname><surname>Hodder</surname></personname></author><author><personname> <firstname>Robin</firstname> <surname>La Fontaine</surname> </personname></author><author><personname><firstname>Steven</firstname><surname>Pemberton</surname></personname></author></authorgroup>-->
         
     </info>
     <!--<acknowledgements>
