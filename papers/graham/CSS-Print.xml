@@ -719,7 +719,7 @@ p.Title {
 <figure role="FigureBox">
 <title>Three pages with different headers and footers</title>
 <mediaobject role="Figure">
- <imageobject><imagedata fileref="images/Firstpage.svg"  /></imageobject>
+ <imageobject><imagedata width="70%" fileref="images/FirstPage.svg"  /></imageobject>
 </mediaobject>
 </figure>
 </section>
