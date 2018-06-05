@@ -483,7 +483,7 @@
             <sect3>
                 <title>Standard Numbering System</title>
                 <para>The Standard Numbering System (SNS) consists of groups of characters (numbers
-                    or upper-case letters) separated by dashes. The first group or two or three
+                    or upper-case letters) separated by dashes. The first group of two or three
                     characters is the system code, the second group, rather confusingly, has one
                     character for the sub-system and another for the sub-sub-system code and the
                     final group of two or four characters is the assembly code, e.g. XX-XX-XX or
