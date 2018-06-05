@@ -43,6 +43,7 @@
     <xi:include href="papers/Markup2018RobWalpole.xml"/>
     <xi:include href="papers/MarkupUK_bibliographic_references.xml"/>
     <!-- Bethan goes here -->
+    <xi:include href="papers/ToveyPaper.xml"/>
     <xi:include href="papers/willems/Modern%20amendment%20drafting.xml"/>
     <xi:include href="papers/graham/CSS-Print.xml"/>
     <xi:include href="papers/maus/paper.xml"/>

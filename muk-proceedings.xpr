@@ -44,11 +44,11 @@
                             </scenarioAssociation>
                             <scenarioAssociation>
                                 <field name="url">
-                                    <String>xsl/muk-headers-footers.xsl</String>
+                                    <String>xsl/docbook-xsl-1.79.1/template/titlepage.xsl</String>
                                 </field>
                                 <field name="scenarioIds">
                                     <list>
-                                        <String>muk-proceedings-db</String>
+                                        <String>titlepage</String>
                                     </list>
                                 </field>
                                 <field name="scenarioTypes">
@@ -59,11 +59,11 @@
                             </scenarioAssociation>
                             <scenarioAssociation>
                                 <field name="url">
-                                    <String>xsl/docbook-xsl-1.79.1/template/titlepage.xsl</String>
+                                    <String>xsl/muk-headers-footers.xsl</String>
                                 </field>
                                 <field name="scenarioIds">
                                     <list>
-                                        <String>titlepage</String>
+                                        <String>muk-proceedings-db</String>
                                     </list>
                                 </field>
                                 <field name="scenarioTypes">

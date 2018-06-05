@@ -1,0 +1,556 @@
+<article xmlns="http://docbook.org/ns/docbook" version="5.0">
+<info>
+<title>The Cryptic Crossword Corpus Project:
+first steps in establishing a markup vocabulary</title>
+<titleabbrev>First steps</titleabbrev>
+<author>
+  <personname>Bethan S. T. Tovey</personname>
+</author>
+<abstract>
+<para>In a quick crossword, the relationship between clue and answer
+is usually simply definitional: the clue offers a definition or
+description of, or a synonym for, the answer. In a cryptic crossword,
+the relationship between clue and answer is significantly more
+complex, and may be one of many types. Anagrams, puns, hidden words,
+deletions, reversals, and other techniques are used, often in
+combination. Every word in a clue does one of three jobs: a) defining
+the answer (a synonym or definition of the answer word(s)); b)
+producing part or all of the answer word; or c) indicating how the
+words in b) are to be manipulated. It follows that each part of an
+answer will relate back to one or more words in the clue from category
+b), while the whole answer will relate to the word(s) in category a).
+</para>
+<para>This paper describes the early work of creating a markup scheme
+which relates each part of a cryptic crossword clue to the relevant
+part of its answer, as well as giving full linguistic detail for each
+word. The aim of this project is to create a corpus of cryptic clues
+and answers which can be explored to answer linguistic questions.</para>
+</abstract>
+</info>
+
+<section>
+<title>Introduction</title>
+
+<para>Cryptic crossword clues form a textual genre that remains surprisingly
+under-theorized from almost any relevant linguistic standpoint
+<phrase role="citations">(<link linkend="Pham2016" role="cite parencite">Pham, 2016</link>)</phrase>.
+Two papers by semioticians stand out
+as contributions to the understanding of the genre <phrase role="citations">(<link linkend="Greimas1967" role="cite parencite">Greimas, 1967</link>;
+<link linkend="Vantu1991" role="cite parencite">Vântu, 1991</link>)</phrase>, as does a
+recent corpus-linguistic analysis of crossword puzzles as a distinct
+register <phrase role="citations">(<link linkend="Pham2016" role="cite parencite">Pham, 2016</link>)</phrase>. Articles examining the linguistic
+playfulness and ambiguity of cryptic clues may be added to these as
+examples of introductory explorations <phrase role="citations">(<link linkend="Cleary1996" role="cite parencite">Cleary, 1996</link>; <link linkend="Coffey1998" role="cite parencite">Coffey, 1998</link>; <link linkend="Rambousek2004" role="cite parencite">Rambousek, 2004</link>)</phrase>. Beyond this, many papers
+published about crosswords (whether quick or cryptic) tend to be
+psychological investigations of crossword solvers' intelligence or
+other cognitive abilities, or the role of crosswords (and other
+puzzles) in cognitive development and in preventing cognitive decline
+<phrase role="citations">(e.g. <link linkend="Underwood1994" role="cite parencite">Underwood, 1994</link>; <link linkend="Lewis2006" role="cite parencite">Lewis, 2006</link>; <link linkend="Friedlander2009" role="cite parencite">Friedlander, 2009</link>; <link linkend="Nickerson2011" role="cite parencite">Nickerson, 2011</link>; <link linkend="Moxley2015" role="cite parencite">Moxley, 2015</link>; <link linkend="Friedlander2016" role="cite parencite">Friedlander, 2016</link>)</phrase>. The other common type of paper
+is the description of computational approaches to writing or solving
+crossword clues <phrase role="citations">(e.g. <link linkend="Williams1979" role="cite parencite">Williams, 1979</link>; <link linkend="Smith1986" role="cite parencite">Smith, 1986</link>; <link linkend="Littman2000" role="cite parencite">Littman, 2000</link>;
+<link linkend="Hardcastle2007" role="cite parencite">Hardcastle, 2007</link>)</phrase>.</para>
+
+<para>Could it be that the paucity of linguistic analyses of the
+cryptic crossword can be attributed to a lack of interesting
+linguistic features? After all, an entire puzzle's worth of crossword
+clues contains relatively few words in total, and there is little
+discursive linkage between individual clues. In the terms defined by
+the foundational text-linguistic work by <phrase role="citations"><link linkend="HallidayHasan1976" role="cite textcite">Halliday (1976)</link></phrase>, a set of cryptic crossword
+clues lacks <emphasis>texture</emphasis>: the network of linguistic
+relationships between sentences that makes a coherent
+<emphasis>text</emphasis>. A set of clues is a set of fragments, but
+not a text.</para>
+
+<para>Nevertheless, a number of authors have argued for the merit of
+the cryptic crossword as an object of linguistic study. From the
+perspective of semiotics, <phrase role="citations"><link linkend="Greimas1967" role="cite textcite">Greimas (1967)</link></phrase> suggests that the
+crossword should be analysed on the same terms as other types of
+aesthetic "communication différée" (p. 799) (<emphasis>delayed
+communication</emphasis>). By this, he means uses of language (like
+poetry) which are non-direct, and which necessitate a process of
+decoding in order to achieve communication between the creator (known
+as the "setter" of a cryptic crossword) and the audience. He notes
+that the absence of grammatical predicates in French crossword clues
+is the type of feature upon which a typology of the genre might be
+built. Since the predicate carries many of the temporal specifics of a
+sentence, as well as indicating the role of elements such as subject
+and object, it is no surprise to find that the lack of a predicate is
+also a feature of the English cryptic clue. <phrase role="citations"><link linkend="Stratmann1978" role="cite textcite">Stratmann (1978)</link></phrase> calls attention to the
+relationship between the cryptic clue's encoding of meaning and the
+literary tradition of Lewis Carroll and James Joyce. He links the
+success and complexity of the cryptic crossword clue to specific
+linguistic features of English, calling attention to the abundance of
+short words and the lack of mandatory inflectional endings, aspects of
+the language that make flexible clue-writing much easier. Indeed,
+<phrase role="citations"><link linkend="Connor2013" role="cite textcite">Connor (2013b)</link></phrase> argues that English is "the best
+crosswording language" (p.114) as a result of its large vocabulary and
+rich range of synonyms (the result of large-scale borrowing from other
+languages over more than a millennium). The cryptic crossword clue
+benefits from the range of potential ambiguity residing in English
+syonyms, as well as in the comparative lack of grammatical specificity
+that <phrase role="citations"><link linkend="Stratmann1978" role="cite textcite">Stratmann (1978)</link></phrase> identifies. In an uninflected
+language like English, it is no doubt easier to have a word that looks
+like (say) a noun, but is intended by the setter as a verb; there are
+few required word-endings that would give the game away. </para>
+
+<para>Genre-theoretical approaches to the crossword have also been
+successfully attempted. <phrase role="citations"><link linkend="Vantu1991" role="cite textcite">Vântu (1991)</link></phrase>, in an exploration of
+Romanian crossword clues, argues that they may best be analyzed as
+wordplay or as jokes. <phrase role="citations"><link linkend="Cleary1996" role="cite textcite">Cleary (1996)</link></phrase> calls English cryptic crosswords
+"exercises in constructed ambiguity" (p.15). Like Vantu, he sees in
+them a source for study of wordplay and linguistic humour, as well as
+of the construction and comprehension of meaning. Finally,
+<phrase role="citations"><link linkend="Pham2016" role="cite parencite">Pham’s, (2016)</link></phrase>
+work on register and intertextuality is perhaps
+the fullest exploration of the crossword in terms of linguistic
+theory. Using a corpus of clues and answers, she argues that the use
+of intertextual reference is a distinctive feature of the crossword as
+a genre. She also establishes the distinctiveness of cryptic and
+non-cryptic crosswords as sub-genres.</para>
+
+<para>Evidently, there are sufficient grounds for considering the
+cryptic crossword as an interesting linguistic object. The Cryptic
+Crossword Corpus Project (CCCP) aims to provide a corpus-linguistic
+basis for further work on this genre. The project will gather clues
+from a range of different publications and crossword compilers,
+including the big names such as <emphasis>The Times</emphasis> and
+<emphasis>The Guardian</emphasis>, but also smaller and (perhaps) more
+esoteric publications such as the satirical current-affairs magazine
+<emphasis>Private Eye</emphasis> and the socialist newspaper
+<emphasis>Morning Star</emphasis>. It may also prove possible to
+include clues from cryptic crosswords outside Britain; for example,
+<emphasis>The Sydney Morning Herald</emphasis> and <emphasis>The
+Hindu</emphasis> both set a cryptic crossword, as (occasionally) does
+<emphasis>The New York Times</emphasis>. For the moment, however, the
+CCCP will focus on British crosswords.</para>
+
+</section>
+<section><title>A brief explanation of cryptic crosswords</title>
+
+<para>Although crosswords are now to be found in many of the world's
+languages, for the most part these are "quick" crosswords, whose clues
+generally consist of a simple synonym of the target answer <phrase role="citations">(<link linkend="Connor2013" role="cite parencite">Connor, 2013b</link>)</phrase>. The first quick crossword is
+generally agreed to have been published in New York in 1913; the
+British cryptic was an offshoot, first found in the 1930s <phrase role="citations">(<link linkend="Arnot1981" role="cite parencite">Arnot, 1981</link>)</phrase>. The cryptic is largely a British
+phenomenon; <phrase role="citations"><link linkend="Connor2013web" role="cite textcite">Connor (2013a)</link></phrase> suggests that this is partly
+attributable to a British taste for "imagery of the nudge-and-wink
+variety", toilet humour, and mild profanity, but also to a lack of
+other solvers from whom to learn the conventions of the cryptic clue.
+Learning how to solve cryptic crossword clues is a matter of practice,
+and of learning the rules by which words are encoded into clues
+<phrase role="citations">(<link linkend="Stratmann1978" role="cite parencite">Stratmann, 1978</link>)</phrase>. In order to understand the
+specific markup needs of the CCCP, it will therefore be necessary to
+take a brief tour of how target answers may be encoded by cryptic
+crossword setters.</para>
+
+<para>A quick clue for the location of this conference might simply
+read "Capital city (6)' (the number in parentheses indicates how many
+letters are in the target answer). There are, of course, a number of
+capital cities with six letters; the quick-crossword solver relies on
+the intersecting words to provide some of the letters needed to narrow
+down the possibilities until the correct target is found. The
+cryptic-crossword solver, in contrast, should be left in no doubt of
+the correct answer, even if there are no intersecting letters
+available to confirm it. This is achieved by careful writing of clues
+that encode each target answer in two ways.</para>
+
+<para>The commonest structure for a cryptic clue consists of the
+<emphasis>definition</emphasis> and the <emphasis>subsidiary
+indication</emphasis>. The definition provides some kind of synonym or
+narrative definition of the target; the subsidiary indication encodes
+the target in some other way. A frequent type of subsidiary indication
+is the <emphasis>charade</emphasis>, in which letters or groups of
+letters from the target are clued in sequence in the subsidiary
+indication. If we take our "capital city" example, a charade clue
+might read as follows: "Left Ontario with DeLillo for UK city" (6).
+The clue breaks down as follows: <emphasis>L</emphasis>, a common
+abbreviation for "left"; <emphasis>ON</emphasis>, the postal
+abbreviation for "Ontario"; <emphasis>DON</emphasis>, the first name
+of the American novelist DeLillo. Put together, these fragments
+provide the target <emphasis>LONDON</emphasis>. "UK city", of course,
+is the definition. Notice the words "with" and "for". These are not
+mere filler. Each one has meaning in constructing the clue: "with"
+indicates that the fragments can be placed together, and "for" is a
+common indicator that what follows is the definition of the target. I
+will call these types of words "metalanguage".</para>
+
+<para>The function of the metalanguage is more prominent in this clue:
+"City bird around nine doves, initially (6)". Here, the clue's first
+word is the definition, and all that follows is the subsidiary
+indication. We are looking for a word meaning "bird" which can be
+placed around the initial letters of "nine doves". The bird is
+<emphasis>LOON</emphasis>, and if we place <emphasis>ND</emphasis>
+between its letters we again arrive at the target
+<emphasis>LONDON</emphasis>. Again, every single word in the clue
+serves a purpose. Finally, let us consider the following clue: "Melon
+donut in possession of Julie (6)". Here we need to know that Julie
+London was a famous singer, in order to understand that "Julie"
+provides the definition component of the clue. The subsidiary
+definition is what is known as a "container" type: the letters of the
+target are inside ("in possession of") the words <emphasis>meLON
+DONut</emphasis>.</para>
+
+<para>These latter two clues show the ambiguity inherent in most
+cryptic clues, and how linguistic features are exploited to create
+that ambiguity. The apparent noun phrase "city bird" leads the reader
+away from the necessary understanding that the split between
+definition and subsidiary indication happens between the two words. We
+can see, also, that the cryptic crossword setter is permitted to play
+fast and loose with punctuation: a more honest punctuation of the clue
+as "City: bird around nine doves initially" would make the roles of
+the various words clearer. Similarly, the metalanguage in the final
+clue is most easily read as suggesting that the donut is in Julie's
+possession, whereas the solution requires understanding that "in
+possession of" works in reverse here. Either reading is perfectly
+syntactically allowable in English, but the more obvious reading is
+the wrong one for finding the target answer.</para>
+
+<para>These examples, I hope, portray a distinctive characteristic of
+a well-written cryptic clue: the solver should be left in no doubt
+that her answer is correct <phrase role="citations">(<link linkend="Pham2016" role="cite parencite">Pham, 2016</link>)</phrase>. The subsidiary
+indication makes it clear that no other answer is possible, by
+providing specific (albeit heavily encoded) instructions about the
+physical makeup of the target answer <phrase role="citations">(<link linkend="Coffey1998" role="cite parencite">Coffey, 1998</link>)</phrase>. Not all clues
+consist of a definition and subsidiary indication, however. So-called
+"double-definition" clues are also popular. These offer two
+definitions, incorporated into an apparently single syntactic unit,
+which approach the target answer from two different directions. An
+example from <emphasis>The Times</emphasis> will exemplify this type
+of clue: "Alert goalkeeper may dive thus (2, 3, 4)". The answer is "ON
+THE BALL", for which "alert" is a synonym, and "goalkeeper may dive
+thus" is a descriptive definition. Once the solver has hit upon this
+answer, it is quite clear that nothing else will fit the bill; there
+is no other phrase that is defined by both of the definitions. Another
+example, this time from the <emphasis>Daily Mail</emphasis>, shows the
+dangers of attempting this type of clue: "Guess there's no proof for
+it (10)". The answer, "CONJECTURE", is not particularly obvious. The
+two definitions, the synonym "Guess" and the descriptive "there's no
+proof for it" could apply to many similar words. It will be
+interesting to see whether intuitions about what makes for a good and
+a bad clue can be supported by linguistic evidence. For example, it
+seems possible that a good double-definition clue needs to have a
+certain amount of semantic distance between the two definitions. If
+these are too close, there's a risk (as in the Daily Mail example)
+that the clue ends up being too broad. It is the intersection of
+apparently quite different synonyms or definitions which both apply to
+a single target that makes for a good clue.</para>
+
+</section>
+<section><title>Developing the markup vocabulary for CCCP</title>
+
+<para>The previous section of this paper has given an outline of a
+sample of the elements that are used to construct a cryptic crossword
+clue. In developing a markup vocabulary for CCCP, it has been
+necessary to consider how these elements (as well as others not
+discussed above for reasons of space) relate to each other, and which
+of them are required in order to give a comprehensive account of the
+structure of a clue. There are, of course, elements above the level of
+the clue that could also be captured, such as the source of the
+crossword, the name of the setter, the date on which the crossword
+appeared, and so on. </para>
+ 
+<para>Making decisions about how much detail to include required some
+predictions about the questions that might be asked of the corpus data
+at a later stage of the project. <phrase role="citations"><link linkend="Cleary1996" role="cite textcite">Cleary (1996)</link></phrase> suggested some
+possible avenues for research, including examining differences between
+setters, and the use of polysemous words both in clues and as targets.
+To this might be added comparison of the "house styles" of various
+newspapers, comparison of the language of clues at different points in
+time, and the use of words with ambiguous part of speech. Evidently,
+these questions require marking up not only the structural features of
+the clue itself, but also of the name of the publication, the setter,
+the date, and the parts of speech of individual word. Since I am also
+interested in how various fragments of the target answers are commonly
+(or, indeed, uncommonly) represented in the subsidiary indications,
+there also needs to be a way to link each part of the clue to the
+corresponding part of the answer.</para>
+
+<para>The following example shows a single clue and answer pair within
+the root <literal>&lt;corpus&gt;</literal> element:</para>
+
+<programlisting>&lt;corpus&gt;
+    &lt;publication pub="independent" type="anthology" ISBN="0550101756" pubdate="2005"&gt;
+        &lt;puzzle id="1" setter="Aelred"&gt;
+            &lt;item id="4"&gt;
+                &lt;clue&gt;
+                    &lt;subsidiary&gt;
+                        &lt;source class="definition" id="1"&gt;
+                            &lt;word pos="JJ"&gt;Feeble&lt;/word&gt;
+                            &lt;word pos="NN"&gt;type&lt;/word&gt;
+                        &lt;/source&gt;
+                        &lt;meta class="locator" type="concatenation"&gt;
+                            &lt;word pos="VVZ"&gt;adopts&lt;/word&gt;
+                        &lt;/meta&gt;
+                        &lt;source class="translation" id="2"&gt;
+                            &lt;word pos="DT"&gt;the&lt;/word&gt;
+                        &lt;/source&gt;
+                        &lt;meta class="operator" type="translation"&gt;
+                            &lt;word pos="JJ"&gt;French&lt;/word&gt;
+                        &lt;/meta&gt;
+                    &lt;/subsidiary&gt;
+                    &lt;def type="hypernym"&gt;
+                        &lt;word pos="NN"&gt;headdress&lt;/word&gt;
+                    &lt;/def&gt;
+                &lt;/clue&gt;
+                &lt;solution words="1" letters="6" text="wimple" pos="NN"&gt;
+                    &lt;unit id="1"&gt;WIMP&lt;/unit&gt;
+                    &lt;unit id="2"&gt;LE&lt;/unit&gt;
+                &lt;/solution&gt;
+            &lt;/item&gt;
+        &lt;/puzzle&gt;
+    &lt;/publication&gt;
+&lt;/corpus&gt;</programlisting>
+
+<para>(N.B. for ease of reading, part-of-speech tagging is omitted
+from all examples below).</para>
+
+<para>The first element within the root,
+<literal>&lt;publication&gt;</literal>, captures the published source
+for the crosswords. In this case, the source is an anthology, so the
+ISBN and the publication date are also captured, as is the publication
+- in this case, <emphasis>The Independent</emphasis>. Within this
+element, the first <literal>&lt;puzzle&gt;</literal> element has an
+<emphasis role="bold">id</emphasis> attribute (to indicate its place
+within the anthology) and a <emphasis role="bold">setter</emphasis>
+attribute. This attribute must often have the value "anon", because
+many anthologies fail to identify the specific setter of each puzzle.
+Each <literal>&lt;puzzle&gt;</literal> element contains a number of
+<literal>&lt;item&gt;</literal> elements; these contain the clue and
+answer pairs.</para>
+
+<para>The clue in the above example has the structure defined in
+section 2 above: a subsidiary indication and a definition. These are
+captured inside the <literal>&lt;clue&gt;</literal> element, as
+<literal>&lt;subsidiary&gt;</literal> and
+<literal>&lt;def&gt;</literal>. The attribute <emphasis role="bold">type</emphasis> on <literal>&lt;def&gt;</literal>
+indicates whether the definition element is a straight synonym, a
+phrase, a narrative definition, or some other kind of semantic
+relative of the target answer; in this case, the definition is a
+hypernym (a term that is more general than the target answer). This
+information will be useful for exploring questions of how different
+kinds of definition might affect clue difficulty.</para>
+
+<para>The child elements of <literal>&lt;subsidiary&gt;</literal> are
+<literal>&lt;source&gt;</literal> (for the words that are manipulated
+to restructure the target answer) and <literal>&lt;meta&gt;</literal>
+(for metalanguage). The <literal>source</literal> attribute <emphasis role="bold">class</emphasis> indicates how the word must be
+manipulated in order to produce an answer (or answer fragment). In
+this example, the first <literal>&lt;source&gt;</literal> is a
+definition of its corresponding fragment, and the second must be
+translated. The attribute <emphasis role="bold">class</emphasis> on
+<literal>&lt;meta&gt;</literal> indicates the function performed by
+the metalanguage. In this case, the first example is of the "locator"
+class, and the "concatenation" subtype, which indicates that the
+result of the second <literal>&lt;source&gt;</literal> is placed after
+the first. The second example is an operator, and an additional
+<emphasis role="bold">type</emphasis> attribute tells us that the
+operation required is translation. Finally, each individual word in
+the clue is enclosed in a <literal>&lt;word&gt;</literal> element,
+with an attribute indicating part of speech. The part-of-speech tagset
+used is the Penn Treebank tagset as modified for use in the Sketch
+Engine corpus software <phrase role="citations">(<link linkend="SketchEngine" role="cite parencite">, </link>)</phrase>. The
+<literal>&lt;solution&gt;</literal> element contains basic information
+such as number of words, number of letters, and the plain text of the
+target answer, as well as its part of speech (if that can be
+determined). The target itself is then broken down into
+<literal>&lt;unit&gt;</literal> elements, each of which has an
+<emphasis role="bold">id</emphasis> attribute whose value corresponds
+to the <emphasis role="bold">id</emphasis> of the
+<literal>&lt;source&gt;</literal> element from which it was produced.
+For a double-definition clue, the markup looks a little
+different:</para>
+
+<programlisting>&lt;item id="13"&gt;
+    &lt;clue&gt;
+        &lt;def type="synonym"&gt;Alert&lt;/def&gt;
+        &lt;def type="descriptive"&gt;goalkeeper may dive thus&lt;/def&gt;
+    &lt;/clue&gt;
+    &lt;solution words="3" letters="9" text="on the ball" pos="PHRASE"&gt;
+        &lt;unit&gt;ON THE BALL&lt;/unit&gt;
+    &lt;/solution&gt;
+&lt;/item&gt;</programlisting>
+
+<para>Here there are two <literal>&lt;def&gt;</literal> elements, and
+the single <literal>&lt;unit&gt;</literal> element is not given an
+<emphasis role="bold">id</emphasis> attribute, as it is assumed that
+definitions always point towards the answer.</para>
+
+<para>Clues with "container" type <emphasis role="bold">locator</emphasis> class metalanguage generally require
+embedding one <literal>&lt;unit&gt;</literal> within another in the
+answer. This is easily achieved by making it legal for one
+<literal>&lt;unit&gt;</literal> to have another as a child
+element:</para>
+
+<programlisting>&lt;item id="6"&gt;
+    &lt;clue&gt;
+        &lt;def type="descriptive"&gt;Irish leader&lt;/def&gt;
+        &lt;subsidiary&gt;
+            &lt;source class="anagram" id="1"&gt;is a cheat&lt;/source&gt;
+            &lt;punct&gt;,&lt;/punct&gt;
+            &lt;meta class="operator" type="anagram"&gt;worried&lt;/meta&gt;
+            &lt;meta class="locator" type="container"&gt;about&lt;/meta&gt;
+            &lt;source class="abbreviation" id="2"&gt;nothing&lt;/source&gt;
+        &lt;/subsidiary&gt;
+    &lt;/clue&gt;
+    &lt;solution words="1" letters="9" text="Taoiseach" pos="NP"&gt;
+        &lt;unit id="1"&gt;TA&lt;unit id="2"&gt;O&lt;/unit&gt;ISEACH&lt;/unit&gt;
+    &lt;/solution&gt;
+&lt;/item&gt;</programlisting>
+
+<para>Another distinctive markup requirement is found in <emphasis>The
+Sun</emphasis>, which publishes "Two-Speed Crosswords". The same grid
+of target answers is offered with two sets of clues: one quick, and
+one cryptic. On the principle that it is always better to capture too
+much information than too little, I decided to add the quick clues in
+an initial <literal>&lt;quick&gt;</literal> element for these
+crosswords:</para>
+
+<programlisting>&lt;item id="2"&gt;
+    &lt;clue&gt;
+        &lt;quick&gt;On fire&lt;/quick&gt;
+        &lt;subsidiary&gt;
+            &lt;source class="literal" id="1"&gt;A&lt;/source&gt;
+            &lt;source class="synonym" id="2"&gt;fair&lt;/source&gt;
+        &lt;/subsidiary&gt;
+        &lt;def type="synonym"&gt;land&lt;/def&gt;
+    &lt;/clue&gt;
+    &lt;solution words="1" letters="6" text="alight" pos="VV"&gt;
+        &lt;unit id="1"&gt;A&lt;/unit&gt;
+        &lt;unit id="2"&gt;LIGHT&lt;/unit&gt;
+    &lt;/solution&gt;
+&lt;/item&gt;</programlisting>
+
+</section>
+<section><title>Conclusion</title>
+
+<para>The markup vocabulary I have sketched out above is by no means
+fixed at this stage. As more clues from more sources are added to the
+corpus, it may be that changes are needed in order to accommodate the
+quirks of a particular author. There are also some issues for which I
+am not sure that satisfactory solutions have yet been found. Perhaps
+the largest of these issues is that of reference. Some clues may refer
+to other clues within the same puzzle, using the answer to another
+clue to construct their own definitions or subsidiary indications. It
+is clear that there needs to be a way to indicate such cross-reference
+within a puzzle. But what about exophoric reference (reference to
+things outside the text)? If we want to understand how linguistic
+differences affect the difficulty level of various puzzles, for
+example, we might take a discourse-analytic perspective and consider
+how the clues reference culture outside the bounds of the puzzle
+itself. For example, the "LONDON" clues discussed above refer to two
+cultural figures: Don DeLillo and Julie London. These are evidently
+figures from different domains - literature and popular music,
+respectively. Is this information useful? If so, how can it be
+captured? Depth of information is also a question: is it enough to
+specify the domain from which these figures come, or would it also be
+useful to know the period in which they were active? Should their
+status as real-life figures (as opposed to fictional characters) also
+be captured?</para>
+
+<para>The answer to these questions, and to others that will
+undoubtedly arise, will need a certain amount of trial and error, and
+answers will emerge during the process of marking up more and more
+clues. Evidently, the initial stages outlined here are just the
+beginning of what promises to be a complex but rewarding
+project.</para>
+
+</section>
+
+<bibliography>
+<bibliomixed xml:id="Arnot1981">Arnot, M. (<date>1981</date>). <citetitle>A history of the crossword
+puzzle.</citetitle> London: Macmillan.
+</bibliomixed>
+<bibliomixed xml:id="Cleary1996">Cleary, J. (<date>1996</date>). Misleading contexts: the construction
+of ambiguity in the cryptic crossword clue. <citetitle>Edinburgh Working Papers
+in Applied Linguistics</citetitle>, <volumenum>7</volumenum>, 14–29.
+</bibliomixed>
+<bibliomixed xml:id="Coffey1998">Coffey, S. (<date>1998</date>). Linguistic aspects of the cryptic
+crossword. <citetitle>English Today</citetitle>, <volumenum>14</volumenum>(1), 14–18.
+</bibliomixed>
+<bibliomixed xml:id="Connor2013web">Connor, A. (<date>2013a</date>, December). <citetitle>Are cryptic crosswords too
+rude for americans?</citetitle> Retrieved June 4, 2018, from
+https://www.theguardian.com/crosswords/crossword-blog/2013/
+dec/18/cryptic-crosswords-too-rude-for-americans-puzzle
+</bibliomixed>
+<bibliomixed xml:id="Connor2013">Connor, A. (<date>2013b</date>). <citetitle>Two girls, one on each knee</citetitle>. London: Penguin.
+</bibliomixed>
+<bibliomixed xml:id="Friedlander2009">Friedlander, K. J. &amp; Fine, P. (<date>2009</date>). Expertise in
+cryptic crossword performance: an exploratory survey. In A.
+Williamon, S. Pretty, &amp; R. Buck (Eds.), <citetitle>Proceedings of the
+international symposium on performance science, Auckland</citetitle> (pp.
+279–284). European Association of Conservatoires (AEC). Utrecht.
+</bibliomixed>
+<bibliomixed xml:id="Friedlander2016">Friedlander, K. J. &amp; Fine, P. A. (<date>2016</date>). The grounded
+expertise components approach in the novel area of cryptic crossword
+solving. <citetitle>Frontiers in psychology</citetitle>, <volumenum>7</volumenum>, 1–21.
+</bibliomixed>
+<bibliomixed xml:id="Greimas1967">Greimas, A. J. (<date>1967</date>). L’écriture cruciverbiste. In <citetitle>To
+honor roman jakobson: essays on the occasion of his seventieth
+birthday</citetitle> (Vol. 1, pp. 799–815). La Haye: Mouton.
+</bibliomixed>
+<bibliomixed xml:id="HallidayHasan1976">Halliday, M. A. K. &amp; Hasan, R. (<date>1976</date>). <citetitle>Cohesion in
+English</citetitle>. London: Longman.</bibliomixed>
+<bibliomixed xml:id="Hardcastle2007">Hardcastle, D. (<date>2007</date>). Cryptic crossword
+clues: generating text with a hidden meaning. In <citetitle>Proceedings of the
+eleventh european workshop on natural language generation</citetitle> (pp.
+147–150). Association for Computational Linguistics.
+</bibliomixed>
+<bibliomixed xml:id="Kilgarriff2004">Kilgarriff, A., Rychlý, P., Smr, P., &amp; Tugwell, D.
+(<date>2004</date>). Itri-04-08 the sketch engine. <citetitle>Information Technology</citetitle>.
+</bibliomixed>
+<bibliomixed xml:id="Lewis2006">Lewis, M. B. (<date>2006</date>). Eye-witnesses should not do cryptic
+crosswords prior to identity parades. <citetitle>Perception</citetitle>,
+<volumenum>35</volumenum>(10), 1433–1436.
+</bibliomixed>
+<bibliomixed xml:id="Littman2000">Littman, M. L. (<date>2000</date>). Computer language games. In T.
+Marsland &amp; I. Frank (Eds.), <citetitle>International conference on computers
+and games</citetitle> (pp. 396–404). Lecture notes in computer science. Berlin:
+Springer.
+</bibliomixed>
+<bibliomixed xml:id="Moxley2015">Moxley, J. H., Ericsson, K. A., Scheiner, A., &amp;
+Tuffiash, M. (<date>2015</date>). The effects of experience and disuse on crossword
+solving. <citetitle>Applied Cognitive Psychology</citetitle>, <volumenum>29</volumenum>,
+73–80.
+</bibliomixed>
+<bibliomixed xml:id="Nickerson2011">Nickerson, R. S. (<date>2011</date>). Five down, absquatulated:
+crossword puzzle clues to how the mind works. <citetitle>Psychonomic bulletin
+&amp; review</citetitle>, <volumenum>18</volumenum>, 217–241.
+</bibliomixed>
+<bibliomixed xml:id="SketchEngine"><citetitle>English TreeTagger PoS tagset with Sketch Engine
+modifications</citetitle>. (n.d.). Retrieved from
+https://www.sketchengine.eu/english-treetagger-pipeline-2/
+</bibliomixed>
+<bibliomixed xml:id="Pham2016">Pham, T. (<date>2016</date>). The register of English crossword
+puzzles: studies in intertextuality. In C. Schubert &amp; C.
+Sanchez-Stockhammer (Eds.), <citetitle>Variational text linguistics: revisiting
+register in English</citetitle> (pp. 111–136). Berlin: De Gruyter Mouton.
+</bibliomixed>
+<bibliomixed xml:id="Rambousek2004">Rambousek, J. (<date>2004</date>). Between language play and language
+game. <citetitle>Theory and Practice in English Studies</citetitle>,
+<volumenum>2</volumenum>, 165–171.
+</bibliomixed>
+<bibliomixed xml:id="Smith1986">Smith, G. &amp; Du Boulay, J. (<date>1986</date>). The generational of
+cryptic crossword clues. <citetitle>The Computer Journal</citetitle>,
+<volumenum>29</volumenum>(3), 282–284.
+</bibliomixed>
+<bibliomixed xml:id="Stratmann1978">Stratmann, G. (<date>1978</date>). Versuch uber die Kunst des
+britischen Crossword und Appell, dieselbe zu importieren (nebst einem
+eingedeutschten Exempel). <citetitle>anglistik und englischunterricht</citetitle>,
+<volumenum>4</volumenum>,
+125–136.
+</bibliomixed>
+<bibliomixed xml:id="Underwood1994">Underwood, G., Deihim, C., &amp; Batt, V. (<date>1994</date>). Expert
+performance in solving word puzzles: from retrieval cues to crossword
+clues. <citetitle>Applied Cognitive Psychology</citetitle>,
+<volumenum>8</volumenum>(6), 531–548.
+</bibliomixed>
+<bibliomixed xml:id="Vantu1991">Vântu, I. (<date>1991</date>). La sémiotique des mots croisés. Revue
+roumaine de linguistique, 23–29.
+</bibliomixed>
+<bibliomixed xml:id="Williams1979">Williams, P. W. &amp; Woodhead, D.
+(<date>1979</date>). Computer assisted analysis of cryptic crosswords. <citetitle>The Computer
+Journal</citetitle>, <volumenum>22</volumenum>(1), 67–70.
+</bibliomixed>
+</bibliography>
+
+</article>
