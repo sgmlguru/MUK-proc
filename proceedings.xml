@@ -51,6 +51,7 @@
     <xi:include href="papers/berndzen_xproc_markkup-uk.xml"/>
     <xi:include href="papers/Lightweight%20XML%20DevOps%20using%20Apache%20Ant%20(MarkupUk%20-%202018.xml"/>
     <!-- Mike Kay goes here -->
+    <xi:include href="papers/markupuk2018mhk.xml"/>
     <xi:include href="papers/markupuk-laf01/markupuk-laf01/markupuk-laf02.xml"/>
     <xi:include href="papers/pemberton/testsuite.db"/>
 </book>
