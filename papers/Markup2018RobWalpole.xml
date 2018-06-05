@@ -658,7 +658,7 @@
             </tbody>
         </table>
         <para>In order to match the entry in the publication module with the correct data module, a
-            title look up was used. It soon became apparent that in some cases the lookup was unable
+            title lookup was used. It soon became apparent that in some cases the lookup was unable
             to resolve the correct data module as multiple data modules had the same title. Further
             investigation showed that the reason for this was that the legacy system did not support
             content re-use and therefore the same document had been copied into multiple locations
