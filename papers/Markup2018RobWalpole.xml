@@ -756,7 +756,7 @@
                 example the model identification code to be used.</para>
             <para>For the Knowledge Warehouse project, a proper review of the BRDP was not done
                 prior to the implementation for the reasons mentioned earlier, although many of the
-                decision still had to be made. With the benefit of hindsight, a proper BRDP review
+                decisions still had to be made. With the benefit of hindsight, a proper BRDP review
                 would’ve been beneficial and prevented some inconsistencies that had to be rectified
                 later. For example there was confusion about whether the country code of modules
                 should be UK or GB and both codes were used in documents. In fact only GB is an ISO
