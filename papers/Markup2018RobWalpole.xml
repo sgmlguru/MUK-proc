@@ -523,7 +523,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <para>Another important factor to consider is allowing space to for the content to
+                <para>Another important factor to consider is allowing space for the content to
                     grow. For this reason it was decided quickly to use 4 characters for the
                     assembly (or subject) code so that no artificial constraints were created early
                     on in the project.</para>
