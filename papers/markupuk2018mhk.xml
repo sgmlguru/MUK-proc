@@ -3,7 +3,7 @@
 <article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0"
     xml:lang="en">
     <info>
-        <title>XML Tree Models for Efficient Copy Operations</title>
+        <title>Writing an XSD 1.1 validator in XSLT 3.0</title>
         <authorgroup>
             <author>
                 <personname>
