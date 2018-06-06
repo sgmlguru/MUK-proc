@@ -63,9 +63,9 @@
         <sect2>
             <title>What is S1000D?</title>
             <para>S1000D describes itself variously as an “international specification for technical
-                publication using a common source database”[<xref linkend="s1kd01"/>] and “an
+                publication using a common source database”<xref linkend="s1kd01"/> and “an
                 international specification for the procurement and production of technical
-                    publications”[<xref linkend="s1kd02"/>]. Essentially it is an XML specification
+                    publications”<xref linkend="s1kd02"/>. Essentially it is an XML specification
                 designed to standardise data exchange and enable both producers and consumers to
                 create, manage and exchange content without being tied to any one proprietary
                 solution. It is predominantly used for defence and civil aviation purposes and
@@ -91,11 +91,11 @@
                 States and first published in 1956. Originally this specification was just a
                 document numbering system but has developed over time into the current ATA iSpec
                 2200 specification which also covers content, structure and exchange of engineering
-                and maintenance information from manufacturer to operator [<xref linkend="s1kd03"/>] </para>
+                and maintenance information from manufacturer to operator <xref linkend="s1kd03"/> </para>
             <para>ASD decided to set up the Documentation Working Group (DWG) to try to harmonise
                 civil and military documentation and to use ATA 100 as a base. The group realised
-                that creating a harmonised specification would have many advantages including[<xref
-                    linkend="s1kd02"/>]:</para>
+                that creating a harmonised specification would have many advantages including<xref
+                    linkend="s1kd02"/>:</para>
             <itemizedlist>
                 <listitem>
                     <para>cost saving in information generation - avoidance of duplications</para>
@@ -315,7 +315,7 @@
                 <title>Common Source Database</title>
                 <para>The S1000D specification defines the Common Source Database (CSDB) as “an
                     information store and management tool for all objects required to produce the
-                    technical publications within projects”[<xref linkend="s1kd04"/>]. In practice
+                    technical publications within projects”<xref linkend="s1kd04"/>. In practice
                     that means that it is the repository for all data modules and publication
                     modules plus any graphics or other multimedia used. It must also contain
                     supporting management files such as Data Dispatch Notes (DDN) and Data
@@ -680,7 +680,7 @@
                 <para>The Issuing Authority is the organisation that produced the publication. This
                     five-character code can be made up of numbers and upper-case letters. The
                     specification recommends using a Commercial and Government Entity (CAGE) code
-                        [<xref linkend="s1kd05"/>] for the issuing authority, which happens to fit
+                        <xref linkend="s1kd05"/> for the issuing authority, which happens to fit
                     the criteria exactly. CAGE codes are widely used and many aerospace
                     organisations, including airlines, are already using them, as was the case in
                     the Knowledge Warehouse project. If in doubt there are various CAGE code search
@@ -720,7 +720,7 @@
         <title>Business Rules</title>
         <para>The S1000D specification talks a great deal about business rules which it defines as
             “decisions that are made by a project or an organization on how to implement
-                S1000D”[<xref linkend="s1kd06"/>. Initially there was a feeling in the project team
+                S1000D”<xref linkend="s1kd06"/>. Initially there was a feeling in the project team
             that business rules were probably unnecessary for the Knowledge Warehouse project. Of
             course they would be essential if for developing technical documentation for an aircraft
             but for general-purpose document management they seemed an unnecessary concern. This
@@ -961,7 +961,7 @@
             spectrum of requirements and it is for this reason that the specification is a bulky and
             intimidating document. </para>
         <para>Perhaps the key to getting the most out of S1000D is in chapter 1.4.1 of the
-                specification[<xref linkend="s1kd07"/>] where it talks about tailoring for a
+                specification<xref linkend="s1kd07"/> where it talks about tailoring for a
             specific project or organisation. I think this is a very helpful way to think about it,
             especially if you take the analogy of a tailor a little further. We all know that
             tailors cut cloth and sew the pieces together to create a bespoke item of clothing for
@@ -1155,19 +1155,19 @@
 
     <bibliography>
         <title>References</title>
-        <bibliomixed xml:id="s1kd01" xreflabel="1">S1000D Official Homepage<bibliosource
+        <bibliomixed xml:id="s1kd01" xreflabel="[1]"><abbrev>1</abbrev>S1000D Official Homepage<bibliosource
                 xlink:href="http://public.s1000d.org/Pages/Home.aspx"
                 >http://public.s1000d.org/Pages/Home.aspx</bibliosource>
         </bibliomixed>
-        <bibliomixed xml:id="s1kd02" xreflabel="2">"International specification for technical publications using a common source database", Issue No. 4.1, published by ASD/AIA, 2012: Chapter 1.1</bibliomixed>
-        <bibliomixed xml:id="s1kd03" xreflabel="3">ATA e-Business Program: Standards <bibliosource
+        <bibliomixed xml:id="s1kd02" xreflabel="[2]"><abbrev>2</abbrev>"International specification for technical publications using a common source database", Issue No. 4.1, published by ASD/AIA, 2012: Chapter 1.1</bibliomixed>
+        <bibliomixed xml:id="s1kd03" xreflabel="[3]"><abbrev>3</abbrev>ATA e-Business Program: Standards <bibliosource
                 xlink:href="http://ataebiz.org/Pages/standards.aspx"
                 >http://ataebiz.org/Pages/standards.aspx</bibliosource></bibliomixed>
-        <bibliomixed xml:id="s1kd04" xreflabel="4">"International specification for technical publications using a common source database", Issue No. 4.1, published by ASD/AIA, 2012: Chapter 4.2</bibliomixed>
-        <bibliomixed xml:id="s1kd05" xreflabel="5">Commercial and Government Entity Program
+        <bibliomixed xml:id="s1kd04" xreflabel="[4]"><abbrev>4</abbrev>"International specification for technical publications using a common source database", Issue No. 4.1, published by ASD/AIA, 2012: Chapter 4.2</bibliomixed>
+        <bibliomixed xml:id="s1kd05" xreflabel="[5]"><abbrev>5</abbrev>Commercial and Government Entity Program
                 <bibliosource xlink:href="https://cage.dla.mil/"
                 >https://cage.dla.mil/</bibliosource></bibliomixed>
-        <bibliomixed xml:id="s1kd06" xreflabel="6">"International specification for technical publications using a common source database", Issue No. 4.1, published by ASD/AIA, 2012: Chapter 2.5</bibliomixed>
-        <bibliomixed xml:id="s1kd07" xreflabel="7">"International specification for technical publications using a common source database", Issue No. 4.1, published by ASD/AIA, 2012: Chapter 1.4.1</bibliomixed>
+        <bibliomixed xml:id="s1kd06" xreflabel="[6]"><abbrev>6</abbrev>"International specification for technical publications using a common source database", Issue No. 4.1, published by ASD/AIA, 2012: Chapter 2.5</bibliomixed>
+        <bibliomixed xml:id="s1kd07" xreflabel="[7]"><abbrev>7</abbrev>"International specification for technical publications using a common source database", Issue No. 4.1, published by ASD/AIA, 2012: Chapter 1.4.1</bibliomixed>
     </bibliography>
 </article>
