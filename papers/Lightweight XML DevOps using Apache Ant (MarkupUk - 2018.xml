@@ -25,7 +25,7 @@
     Server (TFS) as a code repository and
     <link xlink:href="https://ant.apache.org">Apache Ant</link> as a
     build tool to perform a variety of XML related tasks, principally
-    XLST and <link xlink:href="http://schematron.com">Schematron</link>
+    XSLT and <link xlink:href="http://schematron.com">Schematron</link>
     development for a wide variety of types of content with numerous
     internal end users. While TFS is a functional tool it does have
     certain limitations (branching, for example, among others) but was
@@ -993,27 +993,27 @@
   </para>
 </section>
 <bibliography>
-    <bibliomixed xml:id="id-apache-ant">"Apache Ant", https://ant.apache.org</bibliomixed>
-    <bibliomixed xml:id="id-schematron">"Schematron", http://schematron.com</bibliomixed>
-    <bibliomixed xml:id="id-semver">"Semantic Versioning 2.0.0", https://semver.org</bibliomixed>
-    <bibliomixed xml:id="id-docbook">"DocBook.org", https://docbook.org</bibliomixed>
-    <bibliomixed xml:id="id-markdown">"Markdown: Syntax", https://daringfireball.net/projects/markdown/syntax</bibliomixed>
-    <bibliomixed xml:id="id-ivy">"Apache Ivy", http://ant.apache.org/ivy/</bibliomixed>
-    <bibliomixed xml:id="id-maven">"Apache Maven Project", https://maven.apache.org</bibliomixed>
-    <bibliomixed xml:id="id-xpants">"XML - Practical Ant Scripts", https://github.com/encodis/xpants</bibliomixed>
-    <bibliomixed xml:id="id-xspec">"XSpec", https://github.com/xspec/xspec</bibliomixed>
-    <bibliomixed xml:id="id-antcontrib">"Ant Contrib Tasks", http://ant-contrib.sourceforge.net</bibliomixed>
-    <bibliomixed xml:id="id-saxon">"SAXON: The XSLT and XQuery Processor", https://www.saxonica.com/products/products.xml</bibliomixed>
-    <bibliomixed xml:id="id-xmlresolver">"XML Resolver", http://www.java2s.com/Code/Jar/x/Downloadxmlresolverjar.htm</bibliomixed>
-    <bibliomixed xml:id="id-trang">"Trang: Multi-format schema converter based on RELAX NG", http://www.thaiopensource.com/relaxng/trang.html</bibliomixed>
-    <bibliomixed xml:id="id-jing">"Jing: A RELAX NG validator in Java", http://www.thaiopensource.com/relaxng/jing.html</bibliomixed>
-    <bibliomixed xml:id="id-aws">"AWS Command Line Interface", https://aws.amazon.com/cli/</bibliomixed>
-    <bibliomixed xml:id="id-git">"Git", https://github.com/git/git</bibliomixed>
-    <bibliomixed xml:id="id-pandoc">"Pandoc: a universal document converter", https://pandoc.org/</bibliomixed>
-    <bibliomixed xml:id="id-python">"Python", https://www.python.org/</bibliomixed>
-    <bibliomixed xml:id="id-ssh">"SSH (Secure Shell)", https://www.ssh.com/ssh/</bibliomixed>
-    <bibliomixed xml:id="id-htmltidy">"HTML Tidy", http://www.html-tidy.org/</bibliomixed>
-    <bibliomixed xml:id="id-deltaxml">"DeltaXML", https://www.deltaxml.com"</bibliomixed>
-    <bibliomixed xml:id="id-antunit">"Apache AntUnit", https://ant.apache.org/antlibs/antunit/</bibliomixed>
+    <bibliomixed xml:id="id-apache-ant"><abbrev>1</abbrev>"Apache Ant", https://ant.apache.org</bibliomixed>
+  <bibliomixed xml:id="id-schematron"><abbrev>2</abbrev>"Schematron", http://schematron.com</bibliomixed>
+  <bibliomixed xml:id="id-semver"><abbrev>3</abbrev>"Semantic Versioning 2.0.0", https://semver.org</bibliomixed>
+    <bibliomixed xml:id="id-docbook"><abbrev>4</abbrev>"DocBook.org", https://docbook.org</bibliomixed>
+    <bibliomixed xml:id="id-markdown"><abbrev>5</abbrev>"Markdown: Syntax", https://daringfireball.net/projects/markdown/syntax</bibliomixed>
+    <bibliomixed xml:id="id-ivy"><abbrev>6</abbrev>"Apache Ivy", http://ant.apache.org/ivy/</bibliomixed>
+    <bibliomixed xml:id="id-maven"><abbrev>7</abbrev>"Apache Maven Project", https://maven.apache.org</bibliomixed>
+    <bibliomixed xml:id="id-xpants"><abbrev>8</abbrev>"XML - Practical Ant Scripts", https://github.com/encodis/xpants</bibliomixed>
+    <bibliomixed xml:id="id-xspec"><abbrev>9</abbrev>"XSpec", https://github.com/xspec/xspec</bibliomixed>
+    <bibliomixed xml:id="id-antcontrib"><abbrev>10</abbrev>"Ant Contrib Tasks", http://ant-contrib.sourceforge.net</bibliomixed>
+    <bibliomixed xml:id="id-saxon"><abbrev>11</abbrev>"SAXON: The XSLT and XQuery Processor", https://www.saxonica.com/products/products.xml</bibliomixed>
+    <bibliomixed xml:id="id-xmlresolver"><abbrev>12</abbrev>"XML Resolver", http://www.java2s.com/Code/Jar/x/Downloadxmlresolverjar.htm</bibliomixed>
+    <bibliomixed xml:id="id-trang"><abbrev>13</abbrev>"Trang: Multi-format schema converter based on RELAX NG", http://www.thaiopensource.com/relaxng/trang.html</bibliomixed>
+    <bibliomixed xml:id="id-jing"><abbrev>14</abbrev>"Jing: A RELAX NG validator in Java", http://www.thaiopensource.com/relaxng/jing.html</bibliomixed>
+    <bibliomixed xml:id="id-aws"><abbrev>15</abbrev>"AWS Command Line Interface", https://aws.amazon.com/cli/</bibliomixed>
+    <bibliomixed xml:id="id-git"><abbrev>16</abbrev>"Git", https://github.com/git/git</bibliomixed>
+    <bibliomixed xml:id="id-pandoc"><abbrev>17</abbrev>"Pandoc: a universal document converter", https://pandoc.org/</bibliomixed>
+    <bibliomixed xml:id="id-python"><abbrev>18</abbrev>"Python", https://www.python.org/</bibliomixed>
+    <bibliomixed xml:id="id-ssh"><abbrev>19</abbrev>"SSH (Secure Shell)", https://www.ssh.com/ssh/</bibliomixed>
+    <bibliomixed xml:id="id-htmltidy"><abbrev>20</abbrev>"HTML Tidy", http://www.html-tidy.org/</bibliomixed>
+    <bibliomixed xml:id="id-deltaxml"><abbrev>21</abbrev>"DeltaXML", https://www.deltaxml.com"</bibliomixed>
+    <bibliomixed xml:id="id-antunit"><abbrev>22</abbrev>"Apache AntUnit", https://ant.apache.org/antlibs/antunit/</bibliomixed>
 </bibliography>
 </article>
