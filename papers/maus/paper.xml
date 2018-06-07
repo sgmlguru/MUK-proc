@@ -284,7 +284,7 @@
       <para>
         To run the final pipeline we harvest all emblem book descriptions from the OAI-PMH web service. The pipeline
         then iterates every emblem book description and validates it against the revised Emblem Schema. The document is
-        skipped with a warning message if validation fails. Otherwise an XSL transformation converts the every emblem
+        skipped with a warning message if validation fails. Otherwise an XSL transformation converts every emblem
         from its Emblem Schema representation to RDF/XML conforming to our emblem ontology. The bibliographic
         description is transformed as well and added to every emblem contained in a particular emblem book. The
         resulting RDF/XML document is validated with a RelaxNG grammar and serialized to disc. Because we publish the
