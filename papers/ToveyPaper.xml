@@ -348,7 +348,7 @@ operation required is translation. Finally, each individual word in
 the clue is enclosed in a <literal>&lt;word&gt;</literal> element,
 with an attribute indicating part of speech. The part-of-speech tagset
 used is the Penn Treebank tagset as modified for use in the Sketch
-Engine corpus software <phrase role="citations">(<link linkend="SketchEngine" role="cite parencite">, </link>)</phrase>. The
+Engine corpus software <phrase role="citations">(<link linkend="SketchEngine" role="cite parencite">Sketch Engine</link>)</phrase>. The
 <literal>&lt;solution&gt;</literal> element contains basic information
 such as number of words, number of letters, and the plain text of the
 target answer, as well as its part of speech (if that can be
