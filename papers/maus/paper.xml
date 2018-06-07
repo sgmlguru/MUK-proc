@@ -287,8 +287,8 @@
         skipped with a warning message if validation fails. Otherwise an XSL transformation converts every emblem
         from its Emblem Schema representation to RDF/XML conforming to our emblem ontology. The bibliographic
         description is transformed as well and added to every emblem contained in a particular emblem book. The
-        resulting RDF/XML document is validated with a RelaxNG grammar and serialized to disc. Because we publish the
-        emblem descriptions as static files on a web server we apply a transformation to HTML and serialize it to disc.
+        resulting RDF/XML document is validated with a RelaxNG grammar and serialized to disk. Because we publish the
+        emblem descriptions as static files on a web server we apply a transformation to HTML and serialize it to disk.
       </para>
       <para>
         Due to the lack of native support for RDF serialization in XProc we use the <link
@@ -310,7 +310,7 @@
     </para>
     <para>
       In the modelling phase we detect flaws in the underlying data and conversion routines. We were able to fix most
-      of the problem and construct an XProc pipeline turns Emblem Schema documents into RDF/XML documents. With the
+      of the problem and construct an XProc pipeline which turns Emblem Schema documents into RDF/XML documents. With the
       help of the latter pipeline we published information about approximately 12300 emblems in 220 emblem books as
       Linked Open Data.
     </para>
