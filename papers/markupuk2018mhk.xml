@@ -296,7 +296,9 @@
          <scm:state nr="5" final="true"/>
       </scm:finiteStateMachine>
       <scm:assertion xmlns:xs="http://www.w3.org/2001/XMLSchema"
-         test="if (publisher eq 'McGraw Hill') then starts-with(@isbn, '007') else                      if (publisher eq 'Academic Press') then starts-with(@isbn, '012') else true()"
+         test="if (publisher eq 'McGraw Hill') then starts-with(@isbn, '007')
+                     else if (publisher eq 'Academic Press') then starts-with(@isbn, '012')
+                     else true()"
          defaultNamespace=""
          xml:base="file:/Users/mike/Documents/papers/markupuk2018/books.xsd"/>
    </scm:complexType>
@@ -854,7 +856,8 @@
                         <xsl:sequence select="scm:error($node, ' must satisfy assertion ' || @test)"/>
                     </xsl:if>
                     <xsl:catch errors="*">
-                        <xsl:sequence select="scm:error($node, ' must satisfy assertion ' || @test || '. Evaluation of the assertion failed with a dynamic error: ' || $err:description)"/>
+                        <xsl:sequence select="scm:error($node, ' must satisfy assertion ' || @test || '.
+                                Evaluation of the assertion failed with a dynamic error: ' || $err:description)"/>
                     </xsl:catch>
                 </xsl:try>
             </xsl:for-each>
