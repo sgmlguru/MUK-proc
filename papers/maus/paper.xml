@@ -78,7 +78,7 @@
         We assign a persistent identifier to every emblem using UIUC's handle system. For each emblem we provide a
         transcription of all language variations of the emblem's <glossterm>motto</glossterm>. If the emblem has a
         <glossterm>subscriptio</glossterm> we record just its language variations. E.g. we provide information that the
-        emblem has a german or latin <glossterm>subscriptio</glossterm> but not its actual content. The
+        emblem has a German or Latin <glossterm>subscriptio</glossterm> but not its actual content. The
         <glossterm>pictura</glossterm> is further classified with <link
         xlink:href="http://iconclass.nl">ICONCLASS</link>, a specialized classification for art and iconography. With
         the help of ICONCLASS scholars can access emblems based on the subject represented in their
@@ -168,11 +168,11 @@
         didn't validate against the Emblem Schema we decided to take a step back and start a deeper
         investigation. </para>
       <para>
-        The library engaged in the creation of digital content since the late nineties, specifically in the creation
+        The library engaged in the creation of digital content since the late nineties, specifically in the creation of
         resources for digital emblem studies since the early 2000s. Not surprisingly the overall biggest problem we
-        faced was the lack of proper documentation. Altough we were lucky to still have staff around that was involved
+        faced was the lack of proper documentation. Although we were lucky to still have staff around that was involved
         in the projects back then we had to resort to a certain amount of guesswork regarding the reasons why documents
-        looked the way they did. Human memory turned out to unreliable and no substitute for proper
+        looked the way they did. Human memory turned out to be unreliable and no substitute for proper
         documentation. Having an XML database at hand to run queries across the documents helped a lot. What struck us
         as odd was that even though documents were associated with a DTD or a schema the DTD or schema was not used to
         actually validate the documents. This meant that we had to base our guesses on existing transformation and
@@ -186,17 +186,17 @@
         <para>
           The reliance on micro syntax to record emblem information is prone to errors. In order to e.g. state the fact
           that the current page shows <glossterm>pictura</glossterm> and <glossterm>motto</glossterm> of emblem E018850,
-          and the <glossterm>motto</glossterm> is a the german text <quote>So muß es mir ergehn, Soll ich sonst fäste
+          and the <glossterm>motto</glossterm> is the German text <quote>So muß es mir ergehn, Soll ich sonst fäste
           Stehn.</quote> an undergraduate has to use the code <code>E018850_P_M-de@So muß es mir ergehn. Soll ich sonst
           fäste Stehn.</code>.
         </para>
         <para>
           The conversion script does not validate this micro syntax and silently drops information that doesn't fit the
           expected structure. We observed <glossterm>motti</glossterm> ending up in language tags and missing emblem
-          parts alltogether. We assume that most of those errors are catched during data entry by a manual inspection of
+          parts alltogether. We assume that most of those errors are caught during data entry by a manual inspection of
           the emblem book's web representation, though.
         </para>
-        <para> More problematically are "semantic errors" that are introduced to the document
+        <para> More problematic are "semantic errors" that are introduced to the document
           structure. In some cases the conversion script adds a superfluous section after a
             <glossterm>pictura</glossterm>. Our current theory is that the section is added to hold
           a paragraph which in turn holds page breaks. This could be explained by a more or less
@@ -208,7 +208,7 @@
                 Einheit, z.B. p, gesetzt wird und den Beginn einer Seite
               kennzeichnet.</quote></para>
           </footnote>. We are still uncertain if the addition of this superfluous section was done
-          deliberately or is an artifact of the conversion process. We believe the latter is the
+          deliberately or is an artefact of the conversion process. We believe the latter is the
           case because the TEI guidelines would have provided an anonymous block element <tag class="element">tei:ab</tag>
           without the semantics of a textual division. </para>
         <para> Given the complicated nature of this problem and constraints of the project we
