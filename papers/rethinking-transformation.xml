@@ -4,7 +4,7 @@
         <title>Rethinking transformation – the potential of code generation</title>
         <author>
             <personname>Hans-Jürgen Rennau</personname>
-            <email>hans-juergen.rennau@parsqube.de</email>
+            <!--<email>hans-juergen.rennau@parsqube.de</email>-->
             <personblurb>
                 <para/>
             </personblurb>
@@ -14,7 +14,7 @@
         </author>
         <author>
             <personname>Hauke Brandes</personname>
-            <email>hauke.brandes@parsqube.de</email>
+            <!--<email>hauke.brandes@parsqube.de</email>-->
             <personblurb>
                 <para/>
             </personblurb>

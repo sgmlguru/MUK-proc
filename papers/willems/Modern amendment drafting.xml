@@ -4,7 +4,7 @@
 	    <title>Modern amendment drafting - The road to XML</title>
 		<author>
 			<personname>Bert Willems</personname>
-			<email>bert.willems@fontoxml.com</email>
+			<!--<email>bert.willems@fontoxml.com</email>-->
 			<uri>https://fontoxml.com</uri>
 			<personblurb>
 				<para>As the product architect of FontoXML, a web-based authoring tool, it is Bert's job to find the perfect balance between technology and user experience. He is passionate about information &amp; IT architecture and likes to solve problems.</para>

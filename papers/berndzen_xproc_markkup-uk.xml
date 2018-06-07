@@ -12,7 +12,7 @@
             <affiliation>
                 <orgname>&lt;xml-project /&gt;</orgname>
             </affiliation>
-            <email>achim.berndzen@xml-project.com</email>
+            <!--<email>achim.berndzen@xml-project.com</email>-->
         </author>
         <abstract>
             <para>While XProc&#160;1.0 is an XML-centric workflow language, XProc&#160;3.0 attempts

@@ -5,7 +5,7 @@
     <title>The XForms 2.0 Test Suite</title>
     <author>
       <personname><firstname>Steven</firstname><surname>Pemberton</surname></personname>
-      <email>steven.pemberton@cwi.nl</email>
+      <!--<email>steven.pemberton@cwi.nl</email>-->
       <uri>http://www.cwi.nl/~steven/</uri>
       <affiliation>
         <orgname>CWI, Amsterdam</orgname>
