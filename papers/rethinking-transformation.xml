@@ -52,7 +52,7 @@
             described by a document model. Such code might be called <emphasis role="bold"/>document
             model driven code.</para>
         <para>While a document model implies the tree structure of its instance documents, this tree
-            structures is usually implicit, rather than explicit, due to the use of references which
+            structure is usually implicit, rather than explicit, due to the use of references which
             “flatten” the representation <xref linkend="location-trees"/>. However, a de-normalizing
             transformation (replacing references by a copy of the referenced component) can generate
             a <emphasis role="bold">document model tree</emphasis>, a tree-structured document model
@@ -179,7 +179,7 @@ let $context := /* return
                     </listitem>
                     <listitem>
                         <para>For each instance:</para>
-                        <itemizedlist spacing="compact">
+                        <orderedlist spacing="compact">
                             <listitem>
                                 <para>Instantiate element <emphasis role="ital">(write start tag;
                                         content will follow)</emphasis></para>
@@ -187,14 +187,14 @@ let $context := /* return
                             <listitem>
                                 <para>If element has simple content: set the value</para>
                             </listitem>
-                            <listitem>
+                            <!--REPEAT? <listitem>
                                 <para>If element has simple content: set the value</para>
-                            </listitem>
+                            </listitem>-->
                             <listitem>
                                 <para>If element has attributes/child elements: continue at
                                     (2)</para>
                             </listitem>
-                        </itemizedlist>
+                        </orderedlist>
                     </listitem>
                 </orderedlist>
             </listitem>
@@ -245,7 +245,7 @@ let $context := /* return
                         <entry align="left">• E=? </entry>
                         <entry align="left">- Which value to use for a simple content
                             element</entry>
-                        <entry align="left">(2b.ii)</entry>
+                        <entry align="left">(3b.ii)</entry>
                     </row>
                 </tbody>
             </tgroup>
@@ -1254,7 +1254,7 @@ return
                 tree to a SNAT tree.</para>
         </section>
         <section>
-            <title>Infering context propagation</title>
+            <title>Inferring context propagation</title>
             <para>As discussed in previous sections, the SNAT model of a transformation defines
                 three primitive operations – context-propagator, context-distributor,
                 context-atomizer. Among these, it is the context-propagator which represents
