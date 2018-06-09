@@ -37,8 +37,8 @@
       <affiliation>
         <orgname>Antenna House, Inc.</orgname>
       </affiliation>
-      <email>tony@antennahouse.com</email>
-      <email>tgraham@antenna.co.jp</email>
+      <!--<email>tony@antennahouse.com</email>-->
+      <!--<email>tgraham@antenna.co.jp</email>-->
       <uri xlink:href="http://www.antennahouse.com/">http://www.antennahouse.com/</uri>
     </author>
     </info>
@@ -190,8 +190,8 @@ In printing, there is an expectation that formatted objects are arranged neatly 
 </section>
 <!--******************************************************************-->
 
-<section role="Chapter">
-<title xml:id="PageSetup">Page Setting</title>
+  <section role="Chapter" xml:id="PageSetup">
+<title>Page Setting</title>
 
 <para>In paged media, the document is formatted as one or more page boxes. The content area of a page box is called the page area. The margin area of a page box is used for headers and footers.</para>
 <figure role="FigureBox">
@@ -214,7 +214,7 @@ In printing, there is an expectation that formatted objects are arranged neatly 
 </mediaobject>
 </figure>
 
-<para>In practice, page designs vary quite a lot.  The printed ‘page’ now includes package inserts for medications, marketing brochures, children’s books, parts catalogs, and much more besides.  The economics of printing or the need to print on A4 or Letter size paper on an office printer can influence the page design.  Assymetric page design, where the page area has the same position on facing pages, was once a radical idea but now is not uncommon.  Furthermore, novels, in particular, are often sold in multiple editions with different page sizes that each reuse the same page areas with reduced margins.</para>
+<para>In practice, page designs vary quite a lot.  The printed ‘page’ now includes package inserts for medications, marketing brochures, children’s books, parts catalogs, and much more besides.  The economics of printing or the need to print on A4 or Letter size paper on an office printer can influence the page design.  Asymmetric page design, where the page area has the same position on facing pages, was once a radical idea but now is not uncommon.  Furthermore, novels, in particular, are often sold in multiple editions with different page sizes that each reuse the same page areas with reduced margins.</para>
 </section>
 
 <section>
@@ -574,8 +574,8 @@ h1 { <emphasis role="bold">string-set: Chapter content()</emphasis>; }
 </programlisting>
 </section>
 
-<section role="property">
-<title xml:id="StringSet">Variable strings : <code role="property">string-set</code> property</title>
+  <section role="property" xml:id="StringSet">
+<title>Variable strings : <code role="property">string-set</code> property</title>
 
 <para>Use the <code role="property">string-set</code> property to make a named variable for a string. </para>
 <para>The string-set value is pairs of a variable name and followed by the content list stored in the named string. Strings defined with a string-set value can be referenced in running headers.</para>
@@ -681,7 +681,7 @@ p.Title {
 <section>
 <title xml:id="LeftRightFirstPage">Left and Right Page Headers: <code xml:id="page-left">:left</code> and <code xml:id="page-right">:right</code></title>
 
-<para>You can set left and right margins as well as headers and footers<footnote><para>Use <code role="code">string(Title)</code> and <code role="code">string(Chapter)</code>, see "<xref role="SectionRef" linkend="StringSet" />.</para></footnote> separately for left and right pages. These may be different again for the first page. You can also hide the titles and page number from the left-hand side of the left pages and the right-hand side of the right pages when it is the first page.</para>
+<para>You can set left and right margins as well as headers and footers<footnote><para>Use <code role="code">string(Title)</code> and <code role="code">string(Chapter)</code>, see <xref role="SectionRef" linkend="StringSet" />.</para></footnote> separately for left and right pages. These may be different again for the first page. You can also hide the titles and page number from the left-hand side of the left pages and the right-hand side of the right pages when it is the first page.</para>
 <para>When used together with named pages, the style of the left and right pages and of the first page of each named page can be specified.</para>
 
 <programlisting>

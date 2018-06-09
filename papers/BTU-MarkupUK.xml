@@ -8,7 +8,7 @@
      <author><personname><firstname>B. Tommie</firstname><surname>Usdin</surname></personname>
      <affiliation><orgname>Mulberry Technologies, Inc.</orgname>
      <address>17 West Jefferson Street, Suite 207, Rockville, MD  USA</address></affiliation>
-     <email>btusdin@mulberrytech.com</email></author>
+     <!--<email>btusdin@mulberrytech.com</email>--></author>
  </info>   
     <section>
         <title>Introduction</title>

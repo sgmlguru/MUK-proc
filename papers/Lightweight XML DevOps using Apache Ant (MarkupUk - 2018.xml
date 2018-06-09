@@ -7,7 +7,7 @@
     <title>Lightweight XML DevOps using Apache Ant</title>
     <author>
         <personname><firstname>Philip</firstname><surname>Hodder</surname></personname>
-        <email>philip.hodder@encodis.com</email>
+        <!--<email>philip.hodder@encodis.com</email>-->
     </author>
     <abstract>
         <para>
@@ -548,7 +548,7 @@
     <listitem>
       <para>
         Documentation for the macros does not require separate hosting.
-        The Markdonw is extracted as part of a local build process and
+        The Markdown is extracted as part of a local build process and
         uploaded to GitHub Docs.
       </para>
     </listitem>

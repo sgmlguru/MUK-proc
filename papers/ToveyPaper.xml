@@ -2,7 +2,7 @@
 <info>
 <title>The Cryptic Crossword Corpus Project:
 first steps in establishing a markup vocabulary</title>
-<titleabbrev>First steps</titleabbrev>
+<!--<titleabbrev>First steps</titleabbrev>-->
 <author>
   <personname>Bethan S. T. Tovey</personname>
 </author>
@@ -144,7 +144,7 @@ take a brief tour of how target answers may be encoded by cryptic
 crossword setters.</para>
 
 <para>A quick clue for the location of this conference might simply
-read "Capital city (6)' (the number in parentheses indicates how many
+read "Capital city (6)" (the number in parentheses indicates how many
 letters are in the target answer). There are, of course, a number of
 capital cities with six letters; the quick-crossword solver relies on
 the intersecting words to provide some of the letters needed to narrow
@@ -259,7 +259,7 @@ newspapers, comparison of the language of clues at different points in
 time, and the use of words with ambiguous part of speech. Evidently,
 these questions require marking up not only the structural features of
 the clue itself, but also of the name of the publication, the setter,
-the date, and the parts of speech of individual word. Since I am also
+the date, and the parts of speech of individual words. Since I am also
 interested in how various fragments of the target answers are commonly
 (or, indeed, uncommonly) represented in the subsidiary indications,
 there also needs to be a way to link each part of the clue to the
@@ -348,7 +348,7 @@ operation required is translation. Finally, each individual word in
 the clue is enclosed in a <literal>&lt;word&gt;</literal> element,
 with an attribute indicating part of speech. The part-of-speech tagset
 used is the Penn Treebank tagset as modified for use in the Sketch
-Engine corpus software <phrase role="citations">(<link linkend="SketchEngine" role="cite parencite">, </link>)</phrase>. The
+Engine corpus software <phrase role="citations">(<link linkend="SketchEngine" role="cite parencite">Sketch Engine</link>)</phrase>. The
 <literal>&lt;solution&gt;</literal> element contains basic information
 such as number of words, number of letters, and the plain text of the
 target answer, as well as its part of speech (if that can be

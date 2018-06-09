@@ -12,7 +12,7 @@
             <affiliation>
                 <orgname>&lt;xml-project /&gt;</orgname>
             </affiliation>
-            <email>achim.berndzen@xml-project.com</email>
+            <!--<email>achim.berndzen@xml-project.com</email>-->
         </author>
         <abstract>
             <para>While XProc&#160;1.0 is an XML-centric workflow language, XProc&#160;3.0 attempts
@@ -22,7 +22,7 @@
                 typically connected to XML processing. Although XProc&#160;3.0 is still
                     <emphasis>work in progress</emphasis>, this paper will present and comment its
                 current concepts for processing non-XML documents. The main focus of this paper is
-                to evaluate in a practical example, how an non-XML workflow which fits every day
+                to evaluate in a practical example, how a non-XML workflow which fits every day
                 needs of pipeline authors can be developed in XProc&#160;3.0 . The discussed use
                 case deals with non-XML documents, that often appear in XML-related workflows such
                 as zipped archives, ePUBs, images and JSON.</para>
@@ -52,16 +52,16 @@
                     xlink:href="https://spec.xproc.org"
                     >https://spec.xproc.org</link>.</para></footnote></para>
         <para>In this paper I would like to give an introduction to workflows for non-XML documents
-            in XProc&#160;3.0. To do this as practical as possible I decided to layout a typical
+            in XProc&#160;3.0. To do this as practically as possible I decided to layout a typical
             workflow involving the necessity to deal with non-XML documents and to show, how this
             could be done in XProc&#160;3.0. Of course the workflow is a little bit of a made-up
             story because it was chosen for the purpose of demonstration. But it will show some
             basic structures of dealing with non-XML documents in XProc&#160;3.0 and can serve as a
-            blue print for real life projects. </para>
+            blueprint for real life projects. </para>
         <para>The workflow discussed here is this: We have a bunch of ePUBs in a folder somewhere
             and we have been asked to design a workflow which analyses the content of the ePUB and
             creates an RDF metadata description and an inventory in JSON which has to be sent to one
-            of our inventory-servers which –for what reason ever– happens to understand only JSON.
+            of our inventory-servers which – for whatever reason – happens to understand only JSON.
             I will explain the details of this workflow later, but please keep in mind that it
             involves dealing with a lot of non-XML documents such as ZIP (the ePUB itself), plain
             text, graphics in JPEG, RDF and last but not least JSON.</para>
@@ -129,7 +129,7 @@
             XProc knew that there are not only XML-documents, so there was a section on "Non-XML
             documents" in the original specs. This section is about thirteen lines and makes a
             distinction between almost-XML documents (HTML) and non-XML documents. For the first
-            there is the ability to turn it into XML, and for the seconds a mechanism is presented,
+            there is the ability to turn it into XML, and for the second a mechanism is presented,
             to let them <quote>flow quietly through the pipeline</quote>: The non-XML document is
             either converted into text or base64-encoded and wrapped in an element node with a
             document-node, which means it now <quote>can be processed like any other XML
@@ -161,7 +161,7 @@
         <para>Some of these steps are really handy, some are mere workarounds. But from a purist
             perspective they are all workarounds because XProc is designed to be a language where
             documents flow between ports, and reading and/or writing to file systems is clashing
-            with the style. But even it you do not share a puristic approach to language design,
+            with the style. But even if you do not share a puristic approach to language design,
             there are some problems with this approach:<itemizedlist>
                 <listitem>
                     <para>As your intermediate results are written to the file system, you have to
@@ -173,7 +173,7 @@
                         documents on your file system with its intermediate results.</para>
                 </listitem>
                 <listitem>
-                    <para>Sometimes its not even handy, e.g. when you have to write a ZIP-archive to
+                    <para>Sometimes it's not even handy, e.g. when you have to write a ZIP-archive to
                         the file system and then read it again because you want to send it to some
                         web service from the pipeline.</para>
                 </listitem>
@@ -194,7 +194,7 @@
     </section>
     <section>
        <title>XProc&#160;3.0's new concept of a document</title>
-        <para>Before I we look at the new document model introduced with XProc&#160;3.0 in detail,
+        <para>Before we look at the new document model introduced with XProc&#160;3.0 in detail,
             let us first look at the challenges the XProc Working Group had to face in order to
             allow processing of non-XML documents. In XProc&#160;1.0 everything that could possibly
             flow from the output port of one step to the input port of another step, was a
@@ -210,7 +210,7 @@
             makes sense of an image, but not for a text document or an XML document.</para>
         <para>The other side of the same coin is a situation, when a pipeline author by accident
             exposes an image document to a step, that expects an XML document. Parsing an image
-            document with an XML parse will most certainly lead into an error and the pipeline
+            document with an XML parser will most certainly lead into an error and the pipeline
             breaks. To be able to debug this kind of situation it is most useful not to get the
             information, that something is wrong with the XML document, as the parser will tell us,
             but to state, that a non-XML document appeared somewhere, where only an XML document is
@@ -234,7 +234,7 @@
                 <literal>image/jpeg</literal> and so on, to distinguish different types of
             documents.</para>
         <para>Steps in XProc&#160;3.0 now also use the media type notation to declare, which kind of
-            documents are expected on a specific port. If a document that matches the steps
+            documents are expected on a specific port. If a document that matches the step's
             specification arrives, everything is fine: The step can perform the expected operation
             and new documents (pairs of representation and document-properties) are produced on the
             step's output ports. But if an incoming document does not match the content-types
@@ -331,7 +331,7 @@
             I ran in a lot of times for one specific project, was the problem to add a
             processing-instruction as first node of the preamble, so the browser could recognize the
             XForms in the produced documents. This might sound like an easy task for someone
-            familiar with XQuery or XLST, but in XProc&#160;1.0 it was tricky. The natural choice is
+            familiar with XQuery or XSLT, but in XProc&#160;1.0 it was tricky. The natural choice is
             of course <literal>p:insert</literal> where one matches the root element of the
             document, and tell the processor to insert the processing instruction before the root
             element. But you can not do this, because <literal>p:insert</literal> inserts

@@ -4,7 +4,7 @@
         <title>Two (and a half) models for markup of bibliographic references</title>
         <author>
             <personname><firstname>Mark</firstname><surname>Dunn</surname></personname>
-            <email>mark.dunn@oup.com</email>
+            <!--<email>mark.dunn@oup.com</email>-->
             <affiliation>
                 <orgname>Oxford University Press</orgname>
             </affiliation>

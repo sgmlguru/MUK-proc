@@ -4,7 +4,7 @@
 	    <title>Modern amendment drafting - The road to XML</title>
 		<author>
 			<personname>Bert Willems</personname>
-			<email>bert.willems@fontoxml.com</email>
+			<!--<email>bert.willems@fontoxml.com</email>-->
 			<uri>https://fontoxml.com</uri>
 			<personblurb>
 				<para>As the product architect of FontoXML, a web-based authoring tool, it is Bert's job to find the perfect balance between technology and user experience. He is passionate about information &amp; IT architecture and likes to solve problems.</para>
@@ -38,7 +38,7 @@
         <para>This amendment replaces the word "his" with "their" in paragraph A57C(b)(vi).</para>
         <para>The process of making a change to the law starts with a deputy (a member of the parliamentary commission and/or the parliament) writing an initial draft of the amendment. This initial draft is sent to the drafting office. The drafting office’s job is to ensure that each legal document (including amendments) is well written, unambiguous and consistent with the other legal document(s) in the legal system. It is often the case that they make changes to the draft or they need to make changes to other parts of the law in order to keep the legal system consistent. This often requires discussion with the deputy and new versions of the draft go back and forth.</para>
         <para>The current process in the parliaments (at least in Italy and the Netherlands) is still very manual: sometimes the amendments are written on paper which needs to be digitalized first. Other times the amendments are written in Microsoft Word. In both cases, the amendments need to be converted before they can be published. The amendments are often published as PDF files or as HTML on a website.</para>
-        <para>Both the Dutch and the Italian parliament use digital workflows and tools, for example, to register amendments. The content of those systems is still primarily Word-based. Adopting an XML-first workflow would eliminate the need for conversion and would enable a whole new suite of tools. However, introducing changes to parliamentary processes is a time-consuming task, often requiring a change in the statute.</para>
+        <para>Both the Dutch and the Italian parliaments use digital workflows and tools, for example, to register amendments. The content of those systems is still primarily Word-based. Adopting an XML-first workflow would eliminate the need for conversion and would enable a whole new suite of tools. However, introducing changes to parliamentary processes is a time-consuming task, often requiring a change in the statute.</para>
     </section>
     
     <section>
@@ -56,7 +56,7 @@
                 <para>Simulation of the effect of an amendment to the actual law.</para>
             </listitem>
         </orderedlist>
-        <para>The scope of the experiment is to test whether it is possible to realize those benefits in a software system. The first part of the system is a UI where users write the content of an amendment document. The UI is implemented using a WYSIWYG XML editor. The second part of the system provides real-time warnings and the on-demand simulation in case there are no warnings.</para>
+        <para>The scope of the experiment is to test whether it is possible to realize those benefits in a software system. The first part of the system is a UI where users write the content of an amendment document. The UI is implemented using a WYSIWYG XML editor. The second part of the system provides real-time warnings and on-demand simulation in case there are no warnings.</para>
         
         <section>
             <title>Validating amendments</title>

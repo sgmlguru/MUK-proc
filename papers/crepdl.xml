@@ -12,7 +12,7 @@
           <firstname>Makoto</firstname>
           <surname>Murata</surname>
         </personname>
-        <email>eb2mmrt@gmail.com</email>
+        <!--<email>eb2mmrt@gmail.com</email>-->
         <affiliation>
           <orgname>Keio University and JEPA</orgname>
         </affiliation>
@@ -49,7 +49,7 @@
 
     <para>Historically, legacy encodings have protected users from the proliferation of characters.
       For example, as long as you use Shift JIS, you only have to worry about 7,000 characters. But
-      UTF-8 now exposes almost 88,000 CJK ideographic characters.</para>
+      UTF-8 now exposes almost 88,000 CJK<footnote><para>Chinese, Japanese and Korean</para></footnote> ideographic characters.</para>
 
     <para>In the Unicode era, we need a language for describing which character is to be allowed and
       then examining text against descriptions in this language. ISO/IEC 19757-7 Character
@@ -58,12 +58,12 @@
       second edition can handle code point sequences, which represent grapheme clusters
       (“user-perceived characters”).</para>
 
-    <para>The rest of this paper is organized as follows. In Sections 2 and 3, we study subsets in
-      Unicode and ISO/IEC 10646, respectively. In Section 4, we study two existing machine-readable
+    <para>The rest of this paper is organized as follows. In <xref linkend="subsetsInUnicode"/> and <xref linkend="subsetsinISOIEC10646"/>, we study subsets in
+      Unicode and ISO/IEC 10646, respectively. In <xref linkend="machineReadableNotations"/>, we study two existing machine-readable
       notations for describing subsets: regular expressions <xref linkend="uts18"/> and a W3C
       notation <xref linkend="w3cnotation"/>. In particular, we make clear that regular expressions
       have performance problems for huge subsets and cannot directly capture subsets defined in
-      terms of other subsets. In Section 5, we have a quick overview of the design and
+      terms of other subsets. In <xref linkend="crepdlDesignImpl"/>, we have a quick overview of the design and
       implementation of CREPDL and see how it overcomes limitations of the existing
       notations.</para>
 
@@ -75,20 +75,20 @@
 
     <para>But Unicode does not define any subsets. It does not provide any mechanisms for specifying
       such subsets either. This is made clear by the following bullet extracted from
-      "Interpretation" subsubclausse in the subclause 3.2 (Conformance Requirements) of the Unicode
+      "Interpretation" subsubclause in the subclause 3.2 (Conformance Requirements) of the Unicode
       standard.</para>
-    <itemizedlist>
+    <blockquote><itemizedlist>
       <listitem>
         <para>Any means for specifying a subset of characters that a process can interpret is
           outside the scope of this standard.</para>
       </listitem>
-    </itemizedlist>
+    </itemizedlist></blockquote>
 
     <para>However, it is true that Unicode regular expressions can be used for representing subsets.
       We will discuss this topic in Section 4.1.</para>
   </section>
 
-  <section>
+  <section xml:id="subsetsinISOIEC10646">
     <title>Subsets in ISO/IEC 10646</title>
 
 
@@ -150,7 +150,7 @@ FF  FD</programlisting>
 
         <para>Although this collection is not small, CJK collections are significantly larger. For
           example, <code>JIS2004 IDEOGRAPHICS EXTENSION</code> (collection 371) has 3695 code
-          points. <code>BASIC JAPANESE</code> (collection 285) contains 6884 code points. IICORE
+          points. <code>BASIC JAPANESE</code> (collection 285) contains 6884 code points. <code>IICORE</code>
           (collection 370) has 9810 code points. Ranges are not useful for such CJK collections
           since code points in them are scattered. The definitions of these CJK collections are
           provided as electronic attachments.</para>
@@ -195,7 +195,7 @@ FF  FD</programlisting>
 
         <para>The size of <code>CONTEMPORARY LITHUANIAN LETTERS</code> is much smaller than that of
             <code>MOJI-JOHO-KIBAN IDEOGRAPHS-2016</code>. The number of code points and grapheme
-          clusters in <code>CONTEMPORA BY LITHUANIAN LETTERS</code> (collection 284) is less than
+          clusters in <code>CONTEMPORARY LITHUANIAN LETTERS</code> (collection 284) is less than
           100. But the number of code points in <code>MOJI-JOHO-KIBAN IDEOGRAPHS-2016</code> is more
           than 52000 and that of grapheme clusters is more than 10000.</para>
       </section>
@@ -223,7 +223,7 @@ FF  FD</programlisting>
       </section>
     </section>
   </section>
-  <section>
+  <section xml:id="machineReadableNotations">
     <title>Existing Machine-readable Notations for Describing Subsets</title>
     <section>
       <title>Unicode Regular Expressions</title>
@@ -251,9 +251,9 @@ FF  FD</programlisting>
           Likewise, they cannot reference other regular expressions. Thus, regular expressions
           cannot directly capture collections defined in terms of other collections. It is thus
           necessary to create a gigantic regular expression by copying the definition of each
-          referenced collection. This might be acceptable for MODERN EUROPEAN SCRIPTS (collection
-          283). But it is too inconvenient for COMMON JAPANESE (collection 287) since it references
-          JIS2004 IDEOGRAPHICS EXTENSION (collection 371), which contains 3695 code points.</para>
+          referenced collection. This might be acceptable for <code>MODERN EUROPEAN SCRIPTS</code> (collection
+          283). But it is too inconvenient for <code>COMMON JAPANESE</code> (collection 287) since it references
+          <code>JIS2004 IDEOGRAPHICS EXTENSION</code> (collection 371), which contains 3695 code points.</para>
 
 
       </section>
@@ -262,9 +262,9 @@ FF  FD</programlisting>
 
         <para>Unicode regular expression engines are slow for large collections. However, hash-based
           set operations are much faster. This observation is based on an experiment with ICU's
-          Regular Expressions package and a hash-based set of the programming language F#.</para>
+          Regular Expressions package<footnote><para><uri>http://www.icu-project.org/userguide/regexp</uri></para></footnote> and a hash-based set of the programming language F#.</para>
 
-        <para>First, I created a regular expression for the MULTILINGUAL EUROPEAN SUBSET 2
+        <para>First, I created a regular expression for the <code>MULTILINGUAL EUROPEAN SUBSET 2</code>
           collection. After creating a matcher (an instance of the class RegexMatcher) from it, I
           invoked it for the string "&amp;#x3000;" 100000 times. In my computing environment (AMD
           A10-7800, 16GB Memory, Windows 10), the elapsed time was about 0.4 seconds.</para>
@@ -275,7 +275,7 @@ FF  FD</programlisting>
           package.</para>
 
 
-        <para>Second, I did the same experiment for the IICORE collection. In the case of the
+        <para>Second, I did the same experiment for the <code>IICORE</code> collection. In the case of the
           regular expression matcher, the elapsed time was about 23 seconds. In the case of the
           hash-based set, the elapsed time was about 0.015 seconds. Thus, the hash-based set is more
           than 1600 times faster than the ICU's Regular Expressions package.</para>
@@ -310,7 +310,7 @@ FF  FD</programlisting>
       <para>However, the W3C notation lacks mechanisms for describing grapheme clusters.</para>
     </section>
   </section>
-  <section>
+  <section xml:id="crepdlDesignImpl">
     <title>Design and Implementation of CREPDL</title>
     <section>
       <title>Language Design</title>
@@ -329,7 +329,7 @@ FF  FD</programlisting>
         <listitem>
           <para>CREPDL allows references to collections defined in ISO/IEC 10646 and other
             well-known subsets. The <code>repertoire</code> element of CREPDL represents such
-            references. For example, IICORE (collection 370) can be referenced by
+            references. For example, <code>IICORE</code> (collection 370) can be referenced by
               <code>&lt;repertoire registry="10646" number="370"/></code>.</para>
         </listitem>
         <listitem>
@@ -354,7 +354,7 @@ FF  FD</programlisting>
         text stream by applying the algorithm as defined in <xref linkend="usa29"/>. It then
         validates each grapheme cluster.</para>
 
-      <para>Huge well-known collections referenced by <code>&lt;repertoire</code> can be implemented
+      <para>Huge well-known collections referenced by <code>&lt;repertoire></code> can be implemented
         by hash-based sets. Thus, the CREPDL processor can handle such collections very
         efficiently.</para>
 
