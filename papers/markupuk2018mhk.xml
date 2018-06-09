@@ -167,7 +167,8 @@
    </xs:sequence>
    <xs:attribute name="isbn" type="ISBNType" use="required"/>
    <xs:assert test="if (publisher eq 'McGraw-Hill') then starts-with(@isbn, '007') else 
-                    if (publisher eq 'Academic Press') then starts-with(@isbn, '012') else true()"/>
+                    if (publisher eq 'Academic Press') then starts-with(@isbn, '012') 
+                    else true()"/>
   </xs:complexType>
  </xs:element>
  
@@ -482,39 +483,44 @@
         
         <programlisting><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <validation-report xmlns="http://saxon.sf.net/ns/validation"
-                   system-id="file:/Users/mike/Documents/papers/markupuk2018/books-invalid.xml">
+                   system-id="file:/Users/mike/Documents/papers/markupuk2018/
+                   books-invalid.xml">
    <error line="6"
           column="15"
           path="/Q{}books[1]/Q{}book[1]/Q{}date[1]"
           xsd-part="1"
-          constraint="cvc-complex-type.2.4">In content of element &lt;book&gt;: The content model does not allow 
-            element &lt;Q{}date&gt; to appear immediately after element &lt;publisher&gt;. No further elements 
-            are allowed at this point. </error>
+          constraint="cvc-complex-type.2.4">In content of element &lt;book&gt;: The 
+            content model does not allow element &lt;Q{}date&gt; to appear immediately 
+            after element &lt;publisher&gt;. No further elements are allowed at 
+            this point. </error>
    <error line="7"
           column="31"
           path="/Q{}books[1]/Q{}book[1]/Q{}price[1]/@currency"
           xsd-part="2"
-          constraint="cvc-complex-type.3">Value "NZD" contravenes the enumeration facet "EUR, USD, CAD, GBP" of 
-            the type Q{}currencyType</error>
+          constraint="cvc-complex-type.3">Value "NZD" contravenes the enumeration 
+          facet "EUR, USD, CAD, GBP" of the type Q{}currencyType</error>
    <error line="11"
           column="17"
           path="/Q{}books[1]/Q{}book[2]/Q{}author[1]"
           xsd-part="1"
-          constraint="cvc-complex-type.2.4">In content of element &lt;book&gt;: The content model does not allow 
-            element &lt;Q{}author&gt; to appear immediately after element &lt;title&gt;. No further elements 
-            are allowed at this point. </error>
+          constraint="cvc-complex-type.2.4">In content of element &lt;book&gt;: 
+            The content model does not allow element &lt;Q{}author&gt; to appear 
+            immediately after element &lt;title&gt;. No further elements are allowed 
+            at this point. </error>
    <error line="13"
           column="15"
           path="/Q{}books[1]/Q{}book[2]/Q{}date[1]"
           xsd-part="2"
-          constraint="cvc-datatype-valid.1">The content "1990-04" of element &lt;date&gt; does not match the 
-            required simple type. Cannot convert '1990-04' to a gYear</error>
+          constraint="cvc-datatype-valid.1">The content "1990-04" of element &lt;date&gt;
+            does not match the required simple type. Cannot convert '1990-04' to a 
+            gYear</error>
    <error line="9"
           column="29"
           path="/Q{}books[1]/Q{}book[2]"
           xsd-part="1"
-          constraint="sec-cvc-assertion.0">Element book does not satisfy assertion if (publisher eq 'McGraw Hill') 
-            then starts-with(@isbn, '007') else if (publisher eq 'Academic Press') then starts-with(@isbn, '012') 
+          constraint="sec-cvc-assertion.0">Element book does not satisfy assertion 
+            if (publisher eq 'McGraw Hill') then starts-with(@isbn, '007') else 
+            if (publisher eq 'Academic Press') then starts-with(@isbn, '012') 
             else true()</error>
    <meta-data>
       <validator name="SAXON-EE" version="9.9.0.1"/>
@@ -694,16 +700,22 @@
             is therefore frustrating that the XSLT 3.0 type system is so poor at validating these maps and reporting type errors. Saxon 
             therefore introduces an extension to XSLT 3.0, called tuple types. Here is a declaration of the returned structure as
             a tuple type:</para>
-            <programlisting><![CDATA[
-              tuple(    valid: xs:boolean?,          (: indicates whether the subtree is valid (default = true) :) 
-                        errors: element(vr:error)*,  (: a list of errors found when validating the subtree :) 
-                        value: xs:anyAtomicType*,    (: the typed value of an element or attribute :)
-                        type: xs:string*,            (: the types of the typed values, as component IDs :)
-                        lexical: xs:string?,         (: the lexical form of a value after whitespace normalization :)
-                        id: xs:string*,              (: any ID values found while validating an element or attribute :) 
-                        id-map: map(xs:string, element())*,  (: a mapping from ID values to elements :)
-                        idrefs: xs:string*)          (: any IDREF values found while validating an element or attribute :)
-                ]]></programlisting>
+<programlisting><![CDATA[
+  tuple(    valid: xs:boolean?,          (: indicates whether the subtree is valid (default
+                                            = true) :) 
+            errors: element(vr:error)*,  (: a list of errors found when validating the 
+                                            subtree :) 
+            value: xs:anyAtomicType*,    (: the typed value of an element or attribute :)
+            type: xs:string*,            (: the types of the typed values, as component 
+                                            IDs :)
+            lexical: xs:string?,         (: the lexical form of a value after whitespace 
+                                            normalization :)
+            id: xs:string*,              (: any ID values found while validating an element 
+                                            or attribute :) 
+            id-map: map(xs:string, element())*,  (: a mapping from ID values to elements :)
+            idrefs: xs:string*)          (: any IDREF values found while validating an 
+                                            element or attribute :)
+    ]]></programlisting>
             <para>This clearly documents the expected contents of the map much more precisely than the bland declaration 
                 <code>map(xs:string, item()*)</code>.</para>
             <para>Tuples in Saxon are not a separate data type in the way that maps and arrays are separate data types. Rather, a tuple type
@@ -714,17 +726,23 @@
             context such as <code>$result?valid eq "true"</code>.</para>
             <para>Because tuple type declarations are often quite lengthy, as in this example, Saxon allows them to be declared once
             using a type alias:</para>
-            <programlisting><![CDATA[<saxon:type-alias name="validation-outcome" type="
-              tuple(    valid: xs:boolean?,          (: indicates whether the subtree is valid (default = true) :) 
-                        errors: element(vr:error)*,  (: a list of errors found when validating the subtree :) 
-                        value: xs:anyAtomicType*,    (: the typed value of an element or attribute :)
-                        type: xs:string*,            (: the types of the typed values, as component IDs :)
-                        lexical: xs:string?,         (: the lexical form of a value after whitespace normalization :)
-                        id: xs:string*,              (: any ID values found while validating an element or attribute :) 
-                        id-map: map(xs:string, element())*,  (: a mapping from ID values to elements :)
-                        idrefs: xs:string*)          (: any IDREF values found while validating an element or attribute :)
-             "/>
-                ]]></programlisting>
+<programlisting><![CDATA[<saxon:type-alias name="validation-outcome" type="
+  tuple(    valid: xs:boolean?,          (: indicates whether the subtree is valid (default 
+                                            = true) :) 
+            errors: element(vr:error)*,  (: a list of errors found when validating the 
+                                            subtree :) 
+            value: xs:anyAtomicType*,    (: the typed value of an element or attribute :)
+            type: xs:string*,            (: the types of the typed values, as component 
+                                            IDs :)
+            lexical: xs:string?,         (: the lexical form of a value after whitespace 
+                                            normalization :)
+            id: xs:string*,              (: any ID values found while validating an element 
+                                            or attribute :) 
+            id-map: map(xs:string, element())*,  (: a mapping from ID values to elements :)
+            idrefs: xs:string*)          (: any IDREF values found while validating an element 
+                                            or attribute :)
+ "/>
+    ]]></programlisting>
             <para>And the type can then be referenced wherever an <code>as</code> attribute can appear, for example:</para>
             <programlisting><![CDATA[<xsl:template match="*" as="map(xs:string, item()*)" saxon:as="~validation-outcome"/>]]></programlisting>
             <para>The syntax of <code>saxon:as</code> is an XPath <code>SequenceType</code> augmented with Saxon-specific
@@ -746,7 +764,8 @@
             <xsl:on-completion>
                 <xsl:if test="not($state/@final = 'true')">
                     <xsl:sequence select="map{'errors': 
-                                              scm:error($node, 'Element content is incomplete')}"/>
+                                              scm:error($node, 'Element content is 
+                                              incomplete')}"/>
                 </xsl:if>
             </xsl:on-completion>
             <xsl:variable name="matching-edge" as="element(scm:edge)?"
@@ -754,7 +773,8 @@
                            and string(@targetNamespace) = namespace-uri(current())]]"/>
             <xsl:variable name="matching-wildcard-edge" as="element(scm:edge)?"
                 select="$state/scm:edge[scm:get(@term)[self::scm:wildcard[
-                                          scm:wildcard-matches($containing-type, ., current())]]]"/>
+                                          scm:wildcard-matches($containing-type, ., 
+                                          current())]]]"/>
             <xsl:choose>
                 <xsl:when test="empty($matching-edge) and empty($matching-wildcard-edge)">
                      <xsl:break select="map{'errors': scm:error(., 'Element ' || name()
@@ -766,7 +786,8 @@
                     <xsl:sequence select="scm:check-wildcard-match($containing-type, $wildcard, .)"/>
                     <xsl:next-iteration>
                         <xsl:with-param name="state" 
-                                        select="$states[@nr = $matching-wildcard-edge/@to]"/>
+                                        select="$states[@nr = 
+                                                $matching-wildcard-edge/@to]"/>
                     </xsl:next-iteration>
                 </xsl:when>
                 <xsl:otherwise>
@@ -778,7 +799,8 @@
                     </xsl:apply-templates>
                     <xsl:next-iteration>
                         <xsl:with-param name="state" 
-                                        select="$states[@nr = $matching-edge/@to]"/>
+                                        select="$states[@nr = 
+                                                $matching-edge/@to]"/>
                     </xsl:next-iteration>
                 </xsl:otherwise>
             </xsl:choose>            
@@ -835,7 +857,8 @@
             <title>Checking Assertions</title>
             <para>The code for checking input data against assertions defined in the schema is very straightforward. Here is the actual logic
                 (no simplifications this time):</para>
-            <programlisting><![CDATA[    <xsl:function name="scm:check-assertions" as="map(*)" saxon:as="tuple(error: element(vr:error)*)">
+            <programlisting><![CDATA[    <xsl:function name="scm:check-assertions" as="map(*)" saxon:as="tuple(error:
+                element(vr:error)*)">
         <xsl:param name="type" as="element(scm:complexType)"/>
         <xsl:param name="node" as="element()"/>
         <xsl:variable name="copy-sans-comments" as="element()">
@@ -853,11 +876,14 @@
                         </xsl:evaluate>
                     </xsl:variable>
                     <xsl:if test="not($assertion-result)">
-                        <xsl:sequence select="scm:error($node, ' must satisfy assertion ' || @test)"/>
+                        <xsl:sequence select="scm:error($node, ' must satisfy assertion '
+                        || @test)"/>
                     </xsl:if>
                     <xsl:catch errors="*">
-                        <xsl:sequence select="scm:error($node, ' must satisfy assertion ' || @test || '.
-                                Evaluation of the assertion failed with a dynamic error: ' || $err:description)"/>
+                        <xsl:sequence select="scm:error($node, ' must satisfy assertion ' 
+                        || @test || '.
+                                Evaluation of the assertion failed with a dynamic error: '
+                                || $err:description)"/>
                     </xsl:catch>
                 </xsl:try>
             </xsl:for-each>
@@ -946,10 +972,12 @@
             <para>Usability is measured primarily by the quality of the error messages. This is not yet as good as the Java validator. Here is the validation report
             produced for the invalid booklist document supplied earlier:</para>
             
-            <programlisting><![CDATA[<vr:validation-report xmlns:vr="http://saxon.sf.net/ns/validation">
-   <vr:error path="/Q{}books[1]/Q{}book[1]/Q{}date[1]">Element date is not allowed here</vr:error>
-   <vr:error path="/Q{}books[1]/Q{}book[2]/Q{}author[1]">Element author is not allowed here</vr:error>
-   <vr:error path="/Q{}books[1]/Q{}book[2]"> must satisfy assertion 
+        <programlisting><![CDATA[<vr:validation-report xmlns:vr="http://saxon.sf.net/ns/validation">
+    <vr:error path="/Q{}books[1]/Q{}book[1]/Q{}date[1]">Element date is not allowed 
+    here</vr:error>
+    <vr:error path="/Q{}books[1]/Q{}book[2]/Q{}author[1]">Element author is not allowed 
+    here</vr:error>
+    <vr:error path="/Q{}books[1]/Q{}book[2]"> must satisfy assertion 
                             if (publisher eq 'McGraw Hill') 
                             then starts-with(@isbn, '007') 
                             else if (publisher eq 'Academic Press') 
