@@ -701,20 +701,20 @@
             therefore introduces an extension to XSLT 3.0, called tuple types. Here is a declaration of the returned structure as
             a tuple type:</para>
 <programlisting><![CDATA[
-  tuple(    valid: xs:boolean?,          (: indicates whether the subtree is valid (default
-                                            = true) :) 
-            errors: element(vr:error)*,  (: a list of errors found when validating the 
-                                            subtree :) 
-            value: xs:anyAtomicType*,    (: the typed value of an element or attribute :)
-            type: xs:string*,            (: the types of the typed values, as component 
-                                            IDs :)
-            lexical: xs:string?,         (: the lexical form of a value after whitespace 
-                                            normalization :)
-            id: xs:string*,              (: any ID values found while validating an element 
-                                            or attribute :) 
-            id-map: map(xs:string, element())*,  (: a mapping from ID values to elements :)
-            idrefs: xs:string*)          (: any IDREF values found while validating an 
-                                            element or attribute :)
+  tuple( valid: xs:boolean?,          (: indicates whether the subtree is valid (default
+                                         = true) :) 
+         errors: element(vr:error)*,  (: a list of errors found when validating the 
+                                         subtree :) 
+         value: xs:anyAtomicType*,    (: the typed value of an element or attribute :)
+         type: xs:string*,            (: the types of the typed values, as component 
+                                         IDs :)
+         lexical: xs:string?,         (: the lexical form of a value after whitespace 
+                                         normalization :)
+         id: xs:string*,              (: any ID values found while validating an element 
+                                         or attribute :) 
+         id-map: map(xs:string, element())*,  (: a mapping from ID values to elements :)
+         idrefs: xs:string*)          (: any IDREF values found while validating an 
+                                         element or attribute :)
     ]]></programlisting>
             <para>This clearly documents the expected contents of the map much more precisely than the bland declaration 
                 <code>map(xs:string, item()*)</code>.</para>
@@ -759,52 +759,53 @@
             rules for a complex type are constructed by the schema compiler and embedded in the SCM file that is used
             as input to the validator.</para>
             <para>A simplified validator for a simple finite state machine could be written like this:</para>
-            <programlisting><![CDATA[       <xsl:iterate select="$node/*">
-            <xsl:param name="state" select="$initial-state" as="element(scm:state)"/>
-            <xsl:on-completion>
-                <xsl:if test="not($state/@final = 'true')">
-                    <xsl:sequence select="map{'errors': 
-                                              scm:error($node, 'Element content is 
-                                              incomplete')}"/>
-                </xsl:if>
-            </xsl:on-completion>
-            <xsl:variable name="matching-edge" as="element(scm:edge)?"
-                select="$state/scm:edge[scm:get(@term)[@name = local-name(current()) 
-                           and string(@targetNamespace) = namespace-uri(current())]]"/>
-            <xsl:variable name="matching-wildcard-edge" as="element(scm:edge)?"
-                select="$state/scm:edge[scm:get(@term)[self::scm:wildcard[
-                                          scm:wildcard-matches($containing-type, ., 
-                                          current())]]]"/>
-            <xsl:choose>
-                <xsl:when test="empty($matching-edge) and empty($matching-wildcard-edge)">
-                     <xsl:break select="map{'errors': scm:error(., 'Element ' || name()
-                                                          || ' is not allowed here')}"/>
-                </xsl:when>
-                <xsl:when test="empty($matching-edge)">
-                    <xsl:variable name="wildcard" select="scm:get($matching-wildcard-edge/@term)" 
-                                                  as="element(scm:wildcard)?"/>
-                    <xsl:sequence select="scm:check-wildcard-match($containing-type, $wildcard, .)"/>
-                    <xsl:next-iteration>
-                        <xsl:with-param name="state" 
-                                        select="$states[@nr = 
-                                                $matching-wildcard-edge/@to]"/>
-                    </xsl:next-iteration>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:variable name="decl" 
-                                  select="scm:get($matching-edge/@term)" 
-                                  as="element(scm:element)"/>
-                    <xsl:apply-templates select="." mode="explicit-decl">
-                        <xsl:with-param name="decl" select="$decl"/>
-                    </xsl:apply-templates>
-                    <xsl:next-iteration>
-                        <xsl:with-param name="state" 
-                                        select="$states[@nr = 
-                                                $matching-edge/@to]"/>
-                    </xsl:next-iteration>
-                </xsl:otherwise>
-            </xsl:choose>            
-        </xsl:iterate>]]></programlisting>
+            <programlisting><![CDATA[<xsl:iterate select="$node/*">
+    <xsl:param name="state" select="$initial-state" as="element(scm:state)"/>
+    <xsl:on-completion>
+        <xsl:if test="not($state/@final = 'true')">
+            <xsl:sequence select="map{'errors': 
+                                      scm:error($node, 'Element content is 
+                                      incomplete')}"/>
+        </xsl:if>
+    </xsl:on-completion>
+    <xsl:variable name="matching-edge" as="element(scm:edge)?"
+        select="$state/scm:edge[scm:get(@term)[@name = local-name(current()) 
+                   and string(@targetNamespace) = namespace-uri(current())]]"/>
+    <xsl:variable name="matching-wildcard-edge" as="element(scm:edge)?"
+        select="$state/scm:edge[scm:get(@term)[self::scm:wildcard[
+                                  scm:wildcard-matches($containing-type, ., 
+                                  current())]]]"/>
+    <xsl:choose>
+        <xsl:when test="empty($matching-edge) and empty($matching-wildcard-edge)">
+             <xsl:break select="map{'errors': scm:error(., 'Element ' || name()
+                                                  || ' is not allowed here')}"/>
+        </xsl:when>
+        <xsl:when test="empty($matching-edge)">
+            <xsl:variable name="wildcard" select="scm:get($matching-wildcard-edge/@term)" 
+                                          as="element(scm:wildcard)?"/>
+            <xsl:sequence select="scm:check-wildcard-match($containing-type, $wildcard, 
+                                  .)"/>
+            <xsl:next-iteration>
+                <xsl:with-param name="state" 
+                                select="$states[@nr = 
+                                        $matching-wildcard-edge/@to]"/>
+            </xsl:next-iteration>
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:variable name="decl" 
+                          select="scm:get($matching-edge/@term)" 
+                          as="element(scm:element)"/>
+            <xsl:apply-templates select="." mode="explicit-decl">
+                <xsl:with-param name="decl" select="$decl"/>
+            </xsl:apply-templates>
+            <xsl:next-iteration>
+                <xsl:with-param name="state" 
+                                select="$states[@nr = 
+                                        $matching-edge/@to]"/>
+            </xsl:next-iteration>
+        </xsl:otherwise>
+    </xsl:choose>            
+</xsl:iterate>]]></programlisting>
             
             <para>The way this code works is as follows:</para>
             <itemizedlist>
@@ -857,39 +858,39 @@
             <title>Checking Assertions</title>
             <para>The code for checking input data against assertions defined in the schema is very straightforward. Here is the actual logic
                 (no simplifications this time):</para>
-            <programlisting><![CDATA[    <xsl:function name="scm:check-assertions" as="map(*)" saxon:as="tuple(error:
-                element(vr:error)*)">
-        <xsl:param name="type" as="element(scm:complexType)"/>
-        <xsl:param name="node" as="element()"/>
-        <xsl:variable name="copy-sans-comments" as="element()">
-            <xsl:apply-templates select="$node" mode="copy-sans-comments"/>
-        </xsl:variable>
-        <xsl:variable name="failures" as="element(vr:error)*">
-            <xsl:for-each select="$type/scm:assertion">
-                <xsl:try>
-                    <xsl:variable name="assertion-result" as="item()*">
-                        <xsl:evaluate xpath="@test" 
-                            context-item="$copy-sans-comments"  
-                            namespace-context="scm:make-namespace-context(.)"
-                            base-uri="{base-uri($scm)}">
-                            <xsl:with-param name="value" select="$copy-sans-comments"/>
-                        </xsl:evaluate>
-                    </xsl:variable>
-                    <xsl:if test="not($assertion-result)">
-                        <xsl:sequence select="scm:error($node, ' must satisfy assertion '
-                        || @test)"/>
-                    </xsl:if>
-                    <xsl:catch errors="*">
-                        <xsl:sequence select="scm:error($node, ' must satisfy assertion ' 
-                        || @test || '.
-                                Evaluation of the assertion failed with a dynamic error: '
-                                || $err:description)"/>
-                    </xsl:catch>
-                </xsl:try>
-            </xsl:for-each>
-        </xsl:variable>
-        <xsl:sequence select="map{'errors': $failures}"/>
-    </xsl:function>]]></programlisting>
+            <programlisting><![CDATA[<xsl:function name="scm:check-assertions" as="map(*)" saxon:as="tuple(error:
+            element(vr:error)*)">
+    <xsl:param name="type" as="element(scm:complexType)"/>
+    <xsl:param name="node" as="element()"/>
+    <xsl:variable name="copy-sans-comments" as="element()">
+        <xsl:apply-templates select="$node" mode="copy-sans-comments"/>
+    </xsl:variable>
+    <xsl:variable name="failures" as="element(vr:error)*">
+        <xsl:for-each select="$type/scm:assertion">
+            <xsl:try>
+                <xsl:variable name="assertion-result" as="item()*">
+                    <xsl:evaluate xpath="@test" 
+                        context-item="$copy-sans-comments"  
+                        namespace-context="scm:make-namespace-context(.)"
+                        base-uri="{base-uri($scm)}">
+                        <xsl:with-param name="value" select="$copy-sans-comments"/>
+                    </xsl:evaluate>
+                </xsl:variable>
+                <xsl:if test="not($assertion-result)">
+                    <xsl:sequence select="scm:error($node, ' must satisfy assertion '
+                    || @test)"/>
+                </xsl:if>
+                <xsl:catch errors="*">
+                    <xsl:sequence select="scm:error($node, ' must satisfy assertion ' 
+                    || @test || '.
+                            Evaluation of the assertion failed with a dynamic error: '
+                            || $err:description)"/>
+                </xsl:catch>
+            </xsl:try>
+        </xsl:for-each>
+    </xsl:variable>
+    <xsl:sequence select="map{'errors': $failures}"/>
+</xsl:function>]]></programlisting>
             
             <para>Notes relating to this code:</para>
             <itemizedlist>
