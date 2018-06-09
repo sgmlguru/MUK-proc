@@ -701,8 +701,8 @@
             therefore introduces an extension to XSLT 3.0, called tuple types. Here is a declaration of the returned structure as
             a tuple type:</para>
 <programlisting><![CDATA[
-  tuple( valid: xs:boolean?,          (: indicates whether the subtree is valid (default
-                                         = true) :) 
+  tuple( valid: xs:boolean?,          (: indicates whether the subtree is valid 
+                                         (default = true) :) 
          errors: element(vr:error)*,  (: a list of errors found when validating the 
                                          subtree :) 
          value: xs:anyAtomicType*,    (: the typed value of an element or attribute :)
@@ -710,8 +710,8 @@
                                          IDs :)
          lexical: xs:string?,         (: the lexical form of a value after whitespace 
                                          normalization :)
-         id: xs:string*,              (: any ID values found while validating an element 
-                                         or attribute :) 
+         id: xs:string*,              (: any ID values found while validating an 
+                                         element or attribute :) 
          id-map: map(xs:string, element())*,  (: a mapping from ID values to elements :)
          idrefs: xs:string*)          (: any IDREF values found while validating an 
                                          element or attribute :)
@@ -727,20 +727,21 @@
             <para>Because tuple type declarations are often quite lengthy, as in this example, Saxon allows them to be declared once
             using a type alias:</para>
 <programlisting><![CDATA[<saxon:type-alias name="validation-outcome" type="
-  tuple(    valid: xs:boolean?,          (: indicates whether the subtree is valid (default 
-                                            = true) :) 
-            errors: element(vr:error)*,  (: a list of errors found when validating the 
-                                            subtree :) 
-            value: xs:anyAtomicType*,    (: the typed value of an element or attribute :)
-            type: xs:string*,            (: the types of the typed values, as component 
-                                            IDs :)
-            lexical: xs:string?,         (: the lexical form of a value after whitespace 
-                                            normalization :)
-            id: xs:string*,              (: any ID values found while validating an element 
-                                            or attribute :) 
-            id-map: map(xs:string, element())*,  (: a mapping from ID values to elements :)
-            idrefs: xs:string*)          (: any IDREF values found while validating an element 
-                                            or attribute :)
+  tuple( valid: xs:boolean?,          (: indicates whether the subtree is valid 
+                                         (default = true) :) 
+         errors: element(vr:error)*,  (: a list of errors found when validating the 
+                                         subtree :) 
+         value: xs:anyAtomicType*,    (: the typed value of an element or attribute :)
+         type: xs:string*,            (: the types of the typed values, as component 
+                                         IDs :)
+         lexical: xs:string?,         (: the lexical form of a value after whitespace 
+                                         normalization :)
+         id: xs:string*,              (: any ID values found while validating an 
+                                         element or attribute :) 
+         id-map: map(xs:string, element())*,  (: a mapping from ID values to elements :)
+         idrefs: xs:string*)          (: any IDREF values found while validating an 
+                                         element or attribute :)
+
  "/>
     ]]></programlisting>
             <para>And the type can then be referenced wherever an <code>as</code> attribute can appear, for example:</para>
@@ -781,10 +782,11 @@
                                                   || ' is not allowed here')}"/>
         </xsl:when>
         <xsl:when test="empty($matching-edge)">
-            <xsl:variable name="wildcard" select="scm:get($matching-wildcard-edge/@term)" 
-                                          as="element(scm:wildcard)?"/>
-            <xsl:sequence select="scm:check-wildcard-match($containing-type, $wildcard, 
-                                  .)"/>
+            <xsl:variable name="wildcard" 
+                          select="scm:get($matching-wildcard-edge/@term)" 
+                          as="element(scm:wildcard)?"/>
+            <xsl:sequence select="scm:check-wildcard-match($containing-type, 
+                                  $wildcard, .)"/>
             <xsl:next-iteration>
                 <xsl:with-param name="state" 
                                 select="$states[@nr = 
@@ -976,8 +978,8 @@
         <programlisting><![CDATA[<vr:validation-report xmlns:vr="http://saxon.sf.net/ns/validation">
     <vr:error path="/Q{}books[1]/Q{}book[1]/Q{}date[1]">Element date is not allowed 
     here</vr:error>
-    <vr:error path="/Q{}books[1]/Q{}book[2]/Q{}author[1]">Element author is not allowed 
-    here</vr:error>
+    <vr:error path="/Q{}books[1]/Q{}book[2]/Q{}author[1]">Element author is not 
+    allowed here</vr:error>
     <vr:error path="/Q{}books[1]/Q{}book[2]"> must satisfy assertion 
                             if (publisher eq 'McGraw Hill') 
                             then starts-with(@isbn, '007') 
