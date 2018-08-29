@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--<?oxygen RNGSchema="docbook.rng" type="xml"?>-->
 <article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0"
-    xml:lang="en">
+    xml:lang="en" xml:id="kay">
     <info>
         <title>An XSD 1.1 Schema Validator Written in XSLT 3.0</title>
         <authorgroup>

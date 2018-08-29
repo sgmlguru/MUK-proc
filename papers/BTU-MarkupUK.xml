@@ -2,7 +2,7 @@
 
 <?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <?xml-stylesheet type="text/css" href="../../../Applications/oxygen%2017/frameworks/docbook/css/docbook.css"?>
-<article xmlns="http://docbook.org/ns/docbook">
+<article xmlns="http://docbook.org/ns/docbook" xml:id="usdin">
  <info>
      <title>Shared Tag Sets as Social Constructs</title>
      <author><personname><firstname>B. Tommie</firstname><surname>Usdin</surname></personname>
