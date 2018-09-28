@@ -29,11 +29,11 @@
                             </scenarioAssociation>
                             <scenarioAssociation>
                                 <field name="url">
-                                    <String>xsl/docbook-xsl-1.79.1/template/titlepage.xsl</String>
+                                    <String>xsl/muk-sponsors.xsl</String>
                                 </field>
                                 <field name="scenarioIds">
                                     <list>
-                                        <String>titlepage</String>
+                                        <String>muk-proceedings-db</String>
                                     </list>
                                 </field>
                                 <field name="scenarioTypes">
@@ -44,11 +44,11 @@
                             </scenarioAssociation>
                             <scenarioAssociation>
                                 <field name="url">
-                                    <String>xsl/muk-sponsors.xsl</String>
+                                    <String>xsl/docbook-xsl-1.79.1/template/titlepage.xsl</String>
                                 </field>
                                 <field name="scenarioIds">
                                     <list>
-                                        <String>muk-proceedings-db</String>
+                                        <String>titlepage</String>
                                     </list>
                                 </field>
                                 <field name="scenarioTypes">
@@ -121,10 +121,10 @@
                                     <Boolean>false</Boolean>
                                 </field>
                                 <field name="outputFile">
-                                    <File>${pd}/out.pdf</File>
+                                    <File>${pd}/home/ari/Documents/MUK-proceedings/Markup-UK-2018-proceedings.pdf</File>
                                 </field>
                                 <field name="outputResource">
-                                    <String>${pd}/out.pdf</String>
+                                    <String>${pd}//home/ari/Documents/MUK-proceedings/Markup-UK-2018-proceedings.pdf</String>
                                 </field>
                                 <field name="openOtherLocationInBrowser">
                                     <Boolean>false</Boolean>
