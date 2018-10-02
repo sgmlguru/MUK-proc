@@ -121,10 +121,10 @@
                                     <Boolean>false</Boolean>
                                 </field>
                                 <field name="outputFile">
-                                    <File>${pd}/home/ari/Documents/MUK-proceedings/Markup-UK-2018-proceedings.pdf</File>
+                                    <File>${pd}/Markup-UK-2018-proceedings.pdf</File>
                                 </field>
                                 <field name="outputResource">
-                                    <String>${pd}//home/ari/Documents/MUK-proceedings/Markup-UK-2018-proceedings.pdf</String>
+                                    <String>${pd}/Markup-UK-2018-proceedings.pdf</String>
                                 </field>
                                 <field name="openOtherLocationInBrowser">
                                     <Boolean>false</Boolean>
