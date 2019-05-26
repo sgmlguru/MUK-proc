@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbookxi.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<book
+    xmlns="http://docbook.org/ns/docbook" 
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.0">
+    <info>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="xsl/img/background.jpg"/>
+            </imageobject>
+        </mediaobject>
+        <cover>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="xsl/img/background.jpg"/>
+                </imageobject>
+            </mediaobject>
+        </cover>
+        <title>Markup UK 2019 Proceedings</title>
+        
+    </info>
+    
+    <!-- Tommie - Dragons -->
+    
+    <!-- Beyond the Brick - Karin and Jaime (OK) -->
+    <xi:include href="papers-2019/karin-jaime/paper.xml"/>
+    
+    <!-- Software we lost - Peter -->
+    
+    <!-- xprocedit - Marco and Gerrit -->
+    
+    <!-- Generating docs - Andy (OK) -->
+    <xi:include href="papers-2019/andy/paper.xml"/>
+    
+    <!-- XQ - Alain (delayed) -->
+    
+    <!-- Subcheck -Andreas and Michael (OK) -->
+    <xi:include href="papers-2019/2019-05-24-tai-seiferle-article-submission/paper.xml"/>
+    
+    <!-- diff3 - Robin and Nigel -->
+    
+    <!-- railways - John -->
+    
+    
+    <!-- SQF - Octavian -->
+    
+    <!-- Accessibility - Tony -->
+    
+    <!-- Scrap the App - Barnabas -->
+    <xi:include href="papers-2019/barnabas/paper.xml"/>
+    
+    <!-- Doc XML - Erik -->
+    <xi:include href="papers-2019/erik/documenting-xml-structures.xml"/>
+    
+    <!-- XMLPaper - Cristian -->
+    
+    <!-- Myths - Liam -->
+    
+    <!-- Regexp adventure - Syd -->
+    
+    <!-- XSpec - Sandro -->
+    
+    
+</book>
