@@ -39,20 +39,20 @@
         </itemizedlist>
     </acknowledgements>-->
     
-    <xi:include href="papers/BTU-MarkupUK.xml"/>
-    <xi:include href="papers/Markup2018RobWalpole.xml"/>
-    <xi:include href="papers/MarkupUK_bibliographic_references.xml"/>
+    <xi:include href="papers-2018//BTU-MarkupUK.xml"/>
+    <xi:include href="papers-2018//Markup2018RobWalpole.xml"/>
+    <xi:include href="papers-2018//MarkupUK_bibliographic_references.xml"/>
     <!-- Bethan goes here -->
-    <xi:include href="papers/ToveyPaper.xml"/>
-    <xi:include href="papers/willems/Modern%20amendment%20drafting.xml"/>
-    <xi:include href="papers/graham/CSS-Print.xml"/>
-    <xi:include href="papers/maus/paper.xml"/>
-    <xi:include href="papers/crepdl.xml"/>
-    <xi:include href="papers/rethinking-transformation.xml"/>
-    <xi:include href="papers/berndzen_xproc_markkup-uk.xml"/>
-    <xi:include href="papers/Lightweight%20XML%20DevOps%20using%20Apache%20Ant%20(MarkupUk%20-%202018.xml"/>
+    <xi:include href="papers-2018//ToveyPaper.xml"/>
+    <xi:include href="papers-2018//willems/Modern%20amendment%20drafting.xml"/>
+    <xi:include href="papers-2018//graham/CSS-Print.xml"/>
+    <xi:include href="papers-2018//maus/paper.xml"/>
+    <xi:include href="papers-2018//crepdl.xml"/>
+    <xi:include href="papers-2018//rethinking-transformation.xml"/>
+    <xi:include href="papers-2018//berndzen_xproc_markkup-uk.xml"/>
+    <xi:include href="papers-2018//Lightweight%20XML%20DevOps%20using%20Apache%20Ant%20(MarkupUk%20-%202018.xml"/>
     <!-- Mike Kay goes here -->
-    <xi:include href="papers/markupuk2018mhk.xml"/>
-    <xi:include href="papers/markupuk-laf01/markupuk-laf01/markupuk-laf02.xml"/>
-    <xi:include href="papers/pemberton/testsuite.db"/>
+    <xi:include href="papers-2018//markupuk2018mhk.xml"/>
+    <xi:include href="papers-2018//markupuk-laf01/markupuk-laf01/markupuk-laf02.xml"/>
+    <xi:include href="papers-2018//pemberton/testsuite.db"/>
 </book>
