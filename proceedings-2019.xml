@@ -40,7 +40,7 @@
     <!-- Subcheck -Andreas and Michael (OK) -->
     <xi:include href="papers-2019/2019-05-24-tai-seiferle-article-submission/paper.xml"/>
     
-    <!-- diff3 - Robin and Nigel -->
+    <!-- diff3 - Robin and Nigel (end of this week) -->
     
     <!-- railways - John -->
     <xi:include href="papers-2019/john/BranchLine.xml"/>
@@ -60,6 +60,7 @@
     <xi:include href="papers-2019/cristian/paper.xml"/>
     
     <!-- Myths - Liam -->
+    <xi:include href="papers-2019/liam/paper.xml"/>
     
     <!-- Regexp adventure - Syd -->
     
