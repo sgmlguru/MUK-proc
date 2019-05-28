@@ -43,6 +43,7 @@
     <!-- diff3 - Robin and Nigel -->
     
     <!-- railways - John -->
+    <xi:include href="papers-2019/john/BranchLine.xml"/>
     
     
     <!-- SQF - Octavian -->
@@ -63,6 +64,7 @@
     <!-- Regexp adventure - Syd -->
     
     <!-- XSpec - Sandro -->
+    <xi:include href="papers-2019/sandro/xspec_in_the_cloud_with_diamonds.xml"/>
     
     
 </book>
