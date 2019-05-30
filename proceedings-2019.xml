@@ -41,6 +41,7 @@
     <xi:include href="papers-2019/2019-05-24-tai-seiferle-article-submission/paper.xml"/>
     
     <!-- diff3 - Robin and Nigel (end of this week) -->
+    <xi:include href="papers-2019/robin/MarkupUK2019/markupuk-laf04.xml"/>
     
     <!-- railways - John -->
     <xi:include href="papers-2019/john/BranchLine.xml"/>
