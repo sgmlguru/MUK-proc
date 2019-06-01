@@ -50,6 +50,7 @@
     <!-- SQF - Octavian -->
     
     <!-- Accessibility - Tony -->
+    <xi:include href="papers-2019/tony/paper.xml"/>
     
     <!-- Scrap the App - Barnabas -->
     <xi:include href="papers-2019/barnabas/paper.xml"/>
