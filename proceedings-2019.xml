@@ -32,6 +32,7 @@
     <xi:include href="papers-2019/peter/software.xml"/>
     
     <!-- xprocedit - Marco and Gerrit -->
+    <xi:include href="papers-2019/marco-gerrit/paper/Geue_Imsieke_xprocedit.xml"/>
     
     <!-- Generating docs - Andy (OK) -->
     <xi:include href="papers-2019/andy/paper.xml"/>
@@ -50,6 +51,7 @@
     
     
     <!-- SQF - Octavian -->
+    <xi:include href="papers-2019/octavian/markupuk-2019-paper-master/paper.xml"/>
     
     <!-- Accessibility - Tony -->
     <xi:include href="papers-2019/tony/paper.xml"/>
@@ -67,6 +69,7 @@
     <xi:include href="papers-2019/liam/paper.xml"/>
     
     <!-- Regexp adventure - Syd -->
+    <xi:include href="papers-2019/syd/selector_regex.xml"/>
     
     <!-- XSpec - Sandro -->
     <xi:include href="papers-2019/sandro/xspec_in_the_cloud_with_diamonds.xml"/>
