@@ -511,7 +511,7 @@
 			paper in the Git repository first. This will imply integrating with a Functions as a
 			Service platform that will run the publishing process.</para>
 	</section>
-	<bibliography xml:id="references">
+	<bibliography xml:id="cristian-references">
 		<bibliomixed xml:id="JATS"><abbrev>JATS</abbrev>
 			<author>
 				<personname><surname>Tamir</surname><firstname>Hassan</firstname></personname>

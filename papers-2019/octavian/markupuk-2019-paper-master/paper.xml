@@ -576,7 +576,7 @@
             Schematron quick fixes even outside of Schematron language.</para>
     </section>
 
-	<bibliography xml:id="references">
+	<bibliography xml:id="octavian-references">
 		
 		<bibliomixed>
 			<abbrev>SQF Spec</abbrev> Schematron Quick Fix specification, <bibliomisc><link

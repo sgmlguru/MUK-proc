@@ -589,7 +589,7 @@ function _:swagger($model as map(*),
 
 	</section>
 
-	<bibliography xml:id="references">
+	<bibliography xml:id="bunce-references">
 		<bibliomixed><abbrev>XQUERY31SPEC</abbrev>
 			<author>
 				<personname><surname>Speigel</surname>

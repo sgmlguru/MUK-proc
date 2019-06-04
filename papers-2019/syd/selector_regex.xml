@@ -770,7 +770,7 @@ ANY =
   <!-- https://www.starwars.com/video/never-tell-me-the-odds 3,720:1 -->
   <!-- https://ruclip.com/video/GYDDBV-Cego/catwoman-oooops-scene-hd-the-dark-knight-rises.html -->
   
-  <bibliography xml:id="references">
+  <bibliography xml:id="syd-references">
     <bibliomixed>
       <abbrev>P5</abbrev>
       <author><orgname class="consortium">The TEI Consortium</orgname></author>,

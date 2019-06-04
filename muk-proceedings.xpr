@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project version="20.0">
+<project version="21.0">
     <meta>
         <filters directoryPatterns="" filePatterns="muk-proceedings.xpr" positiveFilePatterns="" showHiddenFiles="false"/>
         <options>
-            <serialized version="20.0" xml:space="preserve">
+            <serialized version="21.0" xml:space="preserve">
                 <serializableOrderedMap>
                     <entry>
                         <String>enable.project.master.files.support</String>
@@ -18,22 +18,7 @@
                                 </field>
                                 <field name="scenarioIds">
                                     <list>
-                                        <String>muk-proceedings-db</String>
-                                    </list>
-                                </field>
-                                <field name="scenarioTypes">
-                                    <list>
-                                        <String>XML</String>
-                                    </list>
-                                </field>
-                            </scenarioAssociation>
-                            <scenarioAssociation>
-                                <field name="url">
-                                    <String>xsl/muk-sponsors.xsl</String>
-                                </field>
-                                <field name="scenarioIds">
-                                    <list>
-                                        <String>muk-proceedings-db</String>
+                                        <String>muk-proceedings-db-2019</String>
                                     </list>
                                 </field>
                                 <field name="scenarioTypes">
@@ -57,21 +42,6 @@
                                     </list>
                                 </field>
                             </scenarioAssociation>
-                            <scenarioAssociation>
-                                <field name="url">
-                                    <String>xsl/muk-headers-footers.xsl</String>
-                                </field>
-                                <field name="scenarioIds">
-                                    <list>
-                                        <String>muk-proceedings-db</String>
-                                    </list>
-                                </field>
-                                <field name="scenarioTypes">
-                                    <list>
-                                        <String>XML</String>
-                                    </list>
-                                </field>
-                            </scenarioAssociation>
                         </scenarioAssociation-array>
                     </entry>
                     <entry>
@@ -82,7 +52,7 @@
                                     <null/>
                                 </field>
                                 <field name="name">
-                                    <String>muk-proceedings-db</String>
+                                    <String>muk-proceedings-db-2019</String>
                                 </field>
                                 <field name="baseURL">
                                     <String></String>
@@ -103,7 +73,7 @@
                                     <String>${pdu}/xsl/muk-proceedings-db.xsl</String>
                                 </field>
                                 <field name="inputXMLURL">
-                                    <String>${pdu}/proceedings.xml</String>
+                                    <String>${pdu}/proceedings-2019.xml</String>
                                 </field>
                                 <field name="defaultScenario">
                                     <Boolean>false</Boolean>
@@ -121,10 +91,10 @@
                                     <Boolean>false</Boolean>
                                 </field>
                                 <field name="outputFile">
-                                    <File>${pd}/Markup-UK-2018-proceedings.pdf</File>
+                                    <File>${pd}/Markup-UK-2019-proceedings.pdf</File>
                                 </field>
                                 <field name="outputResource">
-                                    <String>${pd}/Markup-UK-2018-proceedings.pdf</String>
+                                    <String>${pd}/Markup-UK-2019-proceedings.pdf</String>
                                 </field>
                                 <field name="openOtherLocationInBrowser">
                                     <Boolean>false</Boolean>

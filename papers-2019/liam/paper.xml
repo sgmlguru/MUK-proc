@@ -581,7 +581,7 @@
 
 	</section>
 
-	<bibliography xml:id="references">
+	<bibliography xml:id="liam-references">
 		<bibliomixed> <abbrev>DB5SPEC</abbrev> <author>
 			<personname><surname>Walsh</surname><firstname>Norman</firstname></personname>
 			</author>: <title>The DocBook Schema</title>. Working Draft 5.0a1, <date>29 June

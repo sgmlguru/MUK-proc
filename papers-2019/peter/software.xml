@@ -1,8 +1,8 @@
-<!DOCTYPE article SYSTEM "/dtds/docbook/docbook-5.0/dtd/docbook.dtd" [
+<!--<!DOCTYPE article SYSTEM "/dtds/docbook/docbook-5.0/dtd/docbook.dtd" [
 <!ATTLIST date YYYY-MM-DD CDATA #REQUIRED>
 <!ATTLIST confdates YYYY-MM-DD CDATA #REQUIRED>
 <!ATTLIST biblioref linkend IDREFS #REQUIRED>
-<!-- entities for direct conversion to LaTeX -->
+<!-\- entities for direct conversion to LaTeX -\->
 <!ENTITY TeX "\TeX{}">
 <!ENTITY LaTeX "\LaTeX{}">
 <!ENTITY LyX "\LyX{}">
@@ -12,8 +12,8 @@
 <!ENTITY checkmarkneg "\checkmarkneg{}">
 <!ENTITY circmark "\circmark{}">
 <!ENTITY dollar "\$">
-<!-- entities for direct conversion to XHTML/HTML5 -->
-<!-- uncomment this block and comment out the other one if you're NOT using LaTeX
+<!-\- entities for direct conversion to XHTML/HTML5 -\->
+<!-\- uncomment this block and comment out the other one if you're NOT using LaTeX
 <!ENTITY TeX "TeX">
 <!ENTITY LaTeX "LaTeX">
 <!ENTITY LyX "LyX">
@@ -23,9 +23,12 @@
 <!ENTITY checkmarkneg "✗">
 <!ENTITY circmark "◯">
 <!ENTITY dollar "$"> 
--->
-]>
-<article>
+-\->
+]>-->
+<article xmlns="http://docbook.org/ns/docbook" 
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  version="5.0">
   <?LaTeX \hyphenation{navi-ga-tion helico-pter graphi-cal}?>
   <info>
     <title>Software we have lost</title>
@@ -240,9 +243,9 @@
 	  Editor</para>
       </listitem>
       <listitem>
-	<para>Microstar <productname>Near&ampers;Far
+	<para>Microstar <productname>Near&amp;Far
 	    Author for Word</productname> and
-	    <productname>Near&ampers;Far Designer</productname>, a graphical
+	    <productname>Near&amp;Far Designer</productname>, a graphical
 	  <acronym>DTD</acronym> editor</para>
       </listitem>
       <listitem>
@@ -272,7 +275,7 @@
       </listitem>
       <listitem>
 	<para><acronym>DFN</acronym> <productname>DAPHNE</productname>
-	  (VMS only; converted to &TeX;)</para>
+	  (VMS only; converted to TeX)</para>
       </listitem>
       <listitem>
 	<para><acronym>EBT</acronym> (later Inso)
@@ -282,7 +285,7 @@
       </listitem>
       <listitem>
 	<para>James Clark’s <productname>Jade</productname> (using
-	  <acronym>DSSSL</acronym>) can convert to &TeX; and other
+	  <acronym>DSSSL</acronym>) can convert to TeX and other
 	  formats</para> 
       </listitem>
       <listitem>
@@ -304,7 +307,7 @@
       typically produced <productname>Postscript</productname>
       (pre-<acronym>PDF</acronym> days). Some handled
       <acronym>SGML</acronym> input direct, others via an established
-      conversion route; output was formatted using &TeX; or a
+      conversion route; output was formatted using TeX or a
       proprietary typesetting engine.</para>
     <itemizedlist xml:id="formatterlist" spacing="compact">
       <listitem>
@@ -320,7 +323,7 @@
 	  original had no <acronym>SGML</acronym> support)</para>
       </listitem>
       <listitem>
-	<para>&LaTeX;, typesetter, usually via transformation through
+	<para>LaTeX, typesetter, usually via transformation through
 	  <productname>Omnimark</productname>, <productname>Balise</productname>,
 	  <productname>Jade</productname>, or similar</para>
       </listitem>
@@ -356,7 +359,7 @@
     <para>Other categories not covered here include design tools,
       search engines, and databases. The only three of these of which
       this author has direct experience (noted below) were Microstar’s
-      <productname>Near&ampers;Far Designer</productname>, Tim Bray’s
+      <productname>Near&amp;Far Designer</productname>, Tim Bray’s
       <productname>PAT</productname> search engine in <xref
 	linkend="pat"/>, and the <productname>SGML DARC</productname>
       document management database in <xref linkend="darc"/>.</para>
@@ -428,7 +431,7 @@
       <para>Three of the products listed in <xref
 	  linkend="parserlist"/> were tested.</para>
       <sect3 xml:id="arcsgml">
-	<title><productname>ARC SGML</productname>  &circmark;</title>
+	<title><productname>ARC SGML</productname>  ◯</title>
 	<para>This software was installed from the copy distributed on
 	  the <acronym>SGML’97</acronym> <acronym>CD-ROM</acronym>.
 	  However, the <filename>INSTALL</filename> and
@@ -444,7 +447,7 @@
       </sect3>
       <sect3 xml:id="aspsgml">
 	<title><productname>ASP
-	    SGML</productname>  &checkmarkneg;</title>
+	    SGML</productname>  ✗</title>
 	<para>Several attempts were made to compile this parser from
 	  the source code available in <filename>Sgml.tar.z</filename>
 	  but the changes in the C libraries over the years mean that
@@ -456,7 +459,7 @@
 	  fulfils the same function.</para>
       </sect3>
       <sect3>
-	<title><productname>sgmls</productname>  &checkmark;</title>
+	<title><productname>sgmls</productname>  ☑</title>
 	<para>Derived from <productname>ARC SGML</productname>, the
 	  parser was rewritten as part of the
 	  <productname>Jade</productname> <acronym>DSSSL</acronym>
@@ -548,7 +551,7 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
 	<productname>Write-It!</productname> were not reviewed either
 	due to lack of software or incompatibilities.</para>
       <sect3 xml:id="adept">
-	<title>ADEPT  &checkmarkneg;</title>
+	<title>ADEPT  ✗</title>
 	<para>The Arbortext editor is perhaps the best-known
 	  industrial <acronym>SGML</acronym> and
 	  <acronym>XML</acronym> editor. It was (is) a very large
@@ -568,7 +571,7 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
 	  and running in a few minutes, which is not the case with
 	  <productname>ADEPT</productname>. It was also
 	  <emphasis>expensive</emphasis>: in 1992, the present author
-	  was quoted &dollar;5,000 per seat and no discounts.</para>
+	  was quoted $5,000 per seat and no discounts.</para>
 	<figure floatstyle="h" xml:id="adepted">
 	  <title><productname>ADEPT</productname> showing the Insert
 	    Element dialog (left); and editing mathematics
@@ -584,12 +587,12 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
 	</figure>
 	<para>A strong feature of<productname>ADEPT</productname> was
 	  mathematics (in an earlier incarnation, Arbortext also sold a
-	  commercial version of &TeX;, and the &TeX; engine remained
+	  commercial version of TeX, and the TeX engine remained
 	  inside their products for many years). The graphical
 	  interface to mathematical editing (see <xref
 	    linkend="adepted"/>) was a <foreignphrase>de
 	    facto</foreignphrase> industry standard which was only
-	  challenged by &LyX; and more recently
+	  challenged by LyX and more recently
 	  <productname>Word</productname>’s <productname>Equation
 	    Editor</productname>.</para>
 	<para>As with <productname>Author/Editor</productname> and
@@ -645,8 +648,8 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
 	</figure>
       </sect3>
       <sect3 xml:id="ae">
-	<title><productname>Author/Editor</productname>  &checkmark;</title>
-	<subtitle><productname>RulesBuilder</productname>  &circmark;</subtitle>
+	<title><productname>Author/Editor</productname>  ☑</title>
+	<subtitle><productname>RulesBuilder</productname>  ◯</subtitle>
 	<para>This was one of the most widely-used
 	  editors: easy to use and fuss-free in operation. Its
 	interface later became familiar to a much wider audience as it
@@ -690,7 +693,7 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
       </sect3>
       <sect3 xml:id="emacspsgml">
 	<title><productname>Emacs</productname> +
-	  <productname>psgml</productname>  &checkmark;</title>
+	  <productname>psgml</productname>  ☑</title>
 	<para><acronym>GNU</acronym> <productname>Emacs</productname>
 	  is a plain-text editor and work environment by Richard
 	  Stallman, with a macro and programming facility using a
@@ -745,7 +748,7 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
 	  abbreviations.</para>
       </sect3>
       <sect3 xml:id="epcedit">
-	<title><productname>epcedit</productname>  &checkmark;</title>
+	<title><productname>epcedit</productname>  ☑</title>
 	<para>This is an <acronym>SGML</acronym> (and later,
 	  <acronym>XML</acronym>) editor from tkSGML by Heinz Detlev
 	  Koch and Roman Halstenberg. While it is no longer under
@@ -773,7 +776,7 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
 	  styling the sample document is also shown on in <xref linkend="epcboth"/></para>
       </sect3>
       <sect3 xml:id="incon">
-	<title><productname>InContext</productname>  &checkmark;</title>
+	<title><productname>InContext</productname>  ☑</title>
 	<para><productname>InContext</productname> is one of a small
 	  number of <acronym>SGML</acronym> editors more suited to
 	  <wordasword>data</wordasword> applications, with the
@@ -814,7 +817,7 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
       </sect3>
       <sect3 xml:id="mdpte">
 	<title><productname>MultiDoc Pro Translating
-	    Editor</productname>  &checkmark;</title>
+	    Editor</productname>  ☑</title>
 	<para>This is a companion program to the <productname>MultiDoc
 	    Pro Browser</productname> and
 	  <productname>Publisher</productname>, sharing the same
@@ -851,9 +854,9 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
 	  ways of expressing things.</para>
       </sect3>
       <sect3 xml:id="nf">
-	<title><productname>Near&ampers;Far Author for
-	    Word</productname>  &checkmarkneg;</title> 
-	<para>From the same stable as <productname>Near&ampers;Far
+	<title><productname>Near&amp;Far Author for
+	    Word</productname>  ✗</title> 
+	<para>From the same stable as <productname>Near&amp;Far
 	    Designer</productname> (see <xref linkend="nfd"/>), this
 	  is not a standalone editor but an add-on for Microsoft
 	  <productname>Word</productname>. It adds
@@ -867,7 +870,7 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
 	  as the companion <productname>Designer</productname>
 	  program (see <xref linkend="nfaedit"/>).</para>
 	<figure floatstyle="h" xml:id="nfaedit">
-	  <title><productname>Near&ampers;Far Author for
+	  <title><productname>Near&amp;Far Author for
 	      Word</productname> editing a
 	      <productname>Word</productname> document with named styles</title> 
 	  <mediaobject>
@@ -897,7 +900,7 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
 	  executing from within the editor.</para>
       </sect3>
       <sect3 xml:id="grif">
-	<title>GriF <productname>SGML Editor</productname>  &checkmarkneg;</title>
+	<title>GriF <productname>SGML Editor</productname>  ✗</title>
 	<para>The GriF <productname>SGML Editor</productname> has one
 	  of the least complex interfaces to editing
 	  <acronym>SGML</acronym>. It provides a synchronous
@@ -949,7 +952,7 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
 	  in the document model where input is possible.</para>
       </sect3>
       <sect3>
-	<title>WordPerfect+SGML  &checkmark;</title>
+	<title>WordPerfect+SGML  ☑</title>
 	<para><productname>WordPerfect</productname> was for many
 	  years <emphasis>the</emphasis> dominant wordprocessor,
 	  especially in the <acronym>MS-DOS</acronym> period.
@@ -1004,7 +1007,7 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
       <para>Of the systems in <xref linkend="processorlist"/>,
 	<productname>Jade</productname> is not covered here.</para>
       <sect3 xml:id="balise">
-	<title><productname>Balise</productname>  &checkmarkneg;</title>
+	<title><productname>Balise</productname>  ✗</title>
 	<para><productname>Balise</productname> was known as the
 	  <phrase>Swiss Army Knife</phrase> of
 	  <acronym>SGML</acronym>. It can act as a parser and
@@ -1025,8 +1028,8 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
 	  sections.</para>
       </sect3>
       <sect3 xml:id="daphne">
-	<title><productname>DAPHNE</productname>  &boxmark;</title>
-	<para><acronym>SGML</acronym>-to-&LaTeX; converter for
+	<title><productname>DAPHNE</productname>  □</title>
+	<para><acronym>SGML</acronym>-to-LaTeX converter for
 	  <acronym>VAX</acronym>/<acronym>VMS</acronym> from the
 	  German Research Network (<acronym>DFN</acronym>) based on
 	  the <acronym>QWERTZ</acronym> <acronym>DTD</acronym> created
@@ -1036,7 +1039,7 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
 	  as is known, this is no longer available.</para>
       </sect3>
       <sect3 xml:id="dyna">
-	<title><productname>DynaText</productname>  &checkmark;</title>
+	<title><productname>DynaText</productname>  ☑</title>
 	<para>There are three components to the
 	  <productname>DynaText</productname> system:
 	  <productname>DynaTag</productname>, which models conversions
@@ -1093,7 +1096,7 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
 	  served immediately to the next request.</para>
       </sect3>
       <sect3 xml:id="om">
-	<title><productname>Omnimark</productname>  &checkmark;</title>
+	<title><productname>Omnimark</productname>  ☑</title>
 	<para>Until the appearance of <acronym>XSLT</acronym>,
 	  <productname>Omnimark</productname> was a frequent choice
 	  for <acronym>SGML</acronym> conversions. It contained a
@@ -1106,7 +1109,7 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
 	  arbitrary text formats (<phrase>cross-translation</phrase>).</para>
 	<figure xml:id="omex" floatstyle="h">
 	  <title>Fragment of <productname>Omnimark</productname> code
-	    showing transformation to &LaTeX;</title>
+	    showing transformation to LaTeX</title>
 	<programlisting>
 down-translate
 
@@ -1149,7 +1152,7 @@ element ACRONYM
       </sect3>
       <sect3>
 	<title>Microsoft <productname>SGML Author for
-	    Word</productname>  &checkmarkneg;</title>
+	    Word</productname>  ✗</title>
 	<para>Despite the name, this is 
 	  <emphasis>not</emphasis> an authoring editor. It was
 	  (perhaps still is) a plug-in converter from
@@ -1166,7 +1169,7 @@ element ACRONYM
 	  have the publications staff convert it and edit it, and then
 	  convert back to <productname>Word</productname> and hand it
 	  back to the author to carry on writing or editing, again and
-	  again until ready. Microstar’s <productname>Near&ampers;Far
+	  again until ready. Microstar’s <productname>Near&amp;Far
 	    Author for Word</productname> provides a similar facility,
 	  but embedded within the <productname>Word</productname>
 	  interface itself.</para>
@@ -1181,7 +1184,7 @@ element ACRONYM
       <sect3 xml:id="panopub">
 	<title><productname>Panorama</productname>
 	  <productname>Publisher</productname> and
-	  <productname>Viewer</productname>  &checkmark;</title> 
+	  <productname>Viewer</productname>  ☑</title> 
 	<para>The <productname>Panorama Free</productname> plugin for
 	  <productname>Netscape</productname> was many end-users’
 	  first sight of <acronym>SGML</acronym>, although if properly
@@ -1256,7 +1259,7 @@ PUBLIC "+//Silmaril//DTD Recipes//EN"
 	  effect.</para>
       </sect3>
       <sect3 xml:id="frame">
-	<title><productname>FrameMaker+SGML</productname>  &checkmarkneg;</title>
+	<title><productname>FrameMaker+SGML</productname>  ✗</title>
 	<para><productname>FrameMaker</productname> was another
 	  long-time standard for publishing, and had the ability
 	  to work with <acronym>SGML</acronym> documents since Adobe
@@ -1288,7 +1291,7 @@ PUBLIC "+//Silmaril//DTD Recipes//EN"
 	  provided for in the code.</para>
       </sect3>
       <sect3 xml:id="mdppub">
-	<title><productname>MultiDoc Pro Publisher</productname>  &checkmark;</title>
+	<title><productname>MultiDoc Pro Publisher</productname>  ☑</title>
 	<para><productname>MDP</productname> used the same mechanisms
 	  and file structures as <productname>Panorama</productname>
 	  (see <xref linkend="panopub"/>), so files prepared for one
@@ -1315,9 +1318,9 @@ PUBLIC "+//Silmaril//DTD Recipes//EN"
       <title>Other software</title>
       <para></para>
       <sect3 xml:id="nfd">
-	<title><productname>Near&ampers;Far
-	    Designer</productname>  &checkmark;</title>
-	<para>A companion to <productname>Near&ampers;Far Author for
+	<title><productname>Near&amp;Far
+	    Designer</productname>  ☑</title>
+	<para>A companion to <productname>Near&amp;Far Author for
 	    Word</productname> (see <xref linkend="nf"/>),
 	  <productname>Designer</productname> was a graphical
 	  interface to <acronym>DTD</acronym> creation and
@@ -1330,7 +1333,7 @@ PUBLIC "+//Silmaril//DTD Recipes//EN"
 	    and dragged around the document model while working to
 	    find an optimal way of representing the document.</para>
 	<figure floatstyle="h" xml:id="nfdpic">
-	  <title><productname>Near&ampers;Far Designer</productname>’s
+	  <title><productname>Near&amp;Far Designer</productname>’s
 	    view of the sample Recipe <acronym>DTD</acronym> and the
 	    <productname>DocBook3</productname> <acronym>DTD</acronym></title>
 	  <mediaobject>
@@ -1359,7 +1362,7 @@ PUBLIC "+//Silmaril//DTD Recipes//EN"
 	  as immediately comprehensible.</para>
       </sect3>
       <sect3 xml:id="pat">
-	<title><productname>PAT</productname>  &boxmark;</title>
+	<title><productname>PAT</productname>  □</title>
 	<para>At the time, <productname>PAT</productname> was claimed
 	  as the only native <acronym>SGML</acronym> database product
 	  <biblioref linkend="snee"/>. It was created to provide
@@ -1385,7 +1388,7 @@ PUBLIC "+//Silmaril//DTD Recipes//EN"
 	  days.</para>
       </sect3>
       <sect3 xml:id="darc">
-	<title><productname>SGML Darc</productname>  &checkmark;</title>
+	<title><productname>SGML Darc</productname>  ☑</title>
 	<para>The <acronym>SGML</acronym> Document Archive from the
 	  <acronym>KTH</acronym> in Stockholm is perhaps not strictly
 	  a native <acronym>SGML</acronym> database, but provides some
@@ -1573,7 +1576,7 @@ PUBLIC "+//Silmaril//DTD Recipes//EN"
 	    the schema or <acronym>DTD</acronym> tree is common in
 	    many <acronym>XML</acronym> editors, none of them yet
 	    appears to match the design, clarity, and ease of use of
-	    <productname>Near&ampers;Far Designer</productname></para>
+	    <productname>Near&amp;Far Designer</productname></para>
 	</listitem>
 	<listitem>
 	  <para><emphasis>The use of <acronym>XML</acronym> in the web
@@ -1818,12 +1821,12 @@ FEATURES
 	<para>Citec <productname>MultiDoc Pro</productname> Publisher 2.5</para>
       </listitem>
       <listitem>
-	<para>Microstar <productname>Near&ampers;Far Author</productname> 2.0 on
+	<para>Microstar <productname>Near&amp;Far Author</productname> 2.0 on
 	  3½" diskettes (needs <productname>Word</productname> 6 or 7
 	  <emphasis>only</emphasis>)</para>
       </listitem>
       <listitem>
-	<para>Microstar <productname>Near&ampers;Far Designer</productname> on
+	<para>Microstar <productname>Near&amp;Far Designer</productname> on
 	  3½" diskettes for Windows 3.1 or 95/XP</para>
       </listitem>
       <listitem>
