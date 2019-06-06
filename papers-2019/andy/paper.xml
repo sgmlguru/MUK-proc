@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/css" href="resources/css/paper.css"?>
+<!--<?xml-stylesheet type="text/css" href="resources/css/paper.css"?>-->
 <article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0">
 	<info>
 		<title><emphasis role="bold">Generating documents from XQuery annotations</emphasis></title>
@@ -235,7 +235,7 @@ function print-module($uri as xs:string, $local as xs:boolean) as element()*
 					<col width="15%"/>
 					<col width="15%"/>
 					<col width="15%"/>
-					<col/>
+					<col width="15%"/>
 					<col width="10%"/>
 					<col width="30%"/>
 					<thead>
@@ -346,7 +346,7 @@ function print-module($uri as xs:string, $local as xs:boolean) as element()*
 						<caption>Renderer properties</caption>
 						<col width="20%"/>
 						<col width="20%"/>
-						<col/>
+						<col width="60%"/>
 						<thead>
 							<tr>
 								<th>Key</th>
