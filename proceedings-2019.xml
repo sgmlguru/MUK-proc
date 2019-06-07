@@ -43,8 +43,10 @@
     <!-- Subcheck -Andreas and Michael (OK) -->
     <xi:include href="papers-2019/2019-05-24-tai-seiferle-article-submission/paper.xml"/>
     
-    <!-- diff3 - Robin and Nigel (end of this week) -->
-    <xi:include href="papers-2019/robin/MarkupUK2019/markupuk-laf04.xml"/>
+    <!-- diff3 - Robin and Nigel -->
+    <!-- V1 replaced by V2, 7 June -->
+    <!--<xi:include href="papers-2019/robin/MarkupUK2019/markupuk-laf04.xml"/>-->
+    <xi:include href="papers-2019/robin/MarkupUK2019-submitted2/markupuk-laf05.xml"/>
     
     <!-- railways - John -->
     <xi:include href="papers-2019/john/BranchLine.xml"/>
