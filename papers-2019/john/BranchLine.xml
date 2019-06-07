@@ -644,7 +644,7 @@
         <figure>
             <title>Controls for display options</title>
             <informaltable frame="void">
-                <caption/>
+                <!--<caption/>-->
                 <col width="50%"/>
                 <col width="50%"/>
                 <tbody>
@@ -663,7 +663,8 @@
                         <td align="center" valign="middle">
                             <mediaobject>
                                 <imageobject>
-                                    <imagedata fileref="figures/showControl.PNG"/>
+                                    <imagedata width="50%" fileref="figures/showControl.PNG"
+                                        valign="top"/>
                                 </imageobject>
                             </mediaobject>
                         </td>
@@ -1150,12 +1151,16 @@ function eventEnded(e) {
             <abbrev>1</abbrev>
             <authorgroup>
                 <author>
-                    <firstname>Debbie</firstname>
-                    <surname>Lockett</surname>
+                    <personname>
+                        <firstname>Debbie</firstname>
+                        <surname>Lockett</surname>
+                    </personname>
                 </author>
                 <author>
-                    <firstname>Michael</firstname>
-                    <surname>Kay</surname>
+                    <personname>
+                        <firstname>Michael</firstname>
+                        <surname>Kay</surname>
+                    </personname>
                 </author>
             </authorgroup>
             <title>Saxon-JS: XSLT 3.0 in the Browser.</title>
