@@ -67,7 +67,7 @@
             operations must perform precise changes in the documents without affecting other parts
             of the XML document. </para>
         <example>
-            <title>Example: A Schematron Quick Fix that adds a 'bone' element as child of the 'dog'
+            <title>A Schematron Quick Fix that adds a 'bone' element as child of the 'dog'
                 element</title>
             <programlisting language="xml">&lt;sch:rule context="dog">
     &lt;sch:assert test="bone" sqf:fix="addBone">
@@ -129,14 +129,15 @@
                 removing any special characters or spaces from the title. In case the section does
                 not have a title, you can generate a random value for the id. </para>
             <example>
-                <title>Example: Use the title value as ID or generate a random ID</title>
+                <title>Use the title value as ID or generate a random ID</title>
                 <programlisting language="xml">&lt;sqf:fix id="addID">
   &lt;sqf:description>
       &lt;sqf:title>Add ID to the current section&lt;/sqf:title>
   &lt;/sqf:description>
   &lt;sqf:add node-type="attribute" target="id"
       select="if (exists(title) and string-length(title) > 0)
-      then substring(lower-case(replace(replace(normalize-space(string(title)), '\s', '_'),
+      then substring(lower-case(replace(replace(normalize-space(string(title)),
+                                                '\s', '_'),
       '[^a-zA-Z0-9_]', '')), 0, 50)
       else generate-id()"/>
 &lt;/sqf:fix></programlisting>
@@ -148,15 +149,15 @@
                     <emphasis>match</emphasis> attribute on the <emphasis>sqf:add</emphasis>
                 operation with the value: <emphasis>//section[not(@id)]</emphasis>. </para>
             <example>
-                <title>Example: Match all the section elements from the document and add an
-                    ID</title>
+                <title>Match all the section elements from the document and add an ID</title>
                 <programlisting language="xml">&lt;sqf:fix id="addID">
   &lt;sqf:description>
       &lt;sqf:title>Add ID to the all entries from document&lt;/sqf:title>
   &lt;/sqf:description>
   &lt;sqf:add match="//section[not(@id)]" node-type="attribute" target="id"
       select="if (exists(title) and string-length(title) > 0)
-      then substring(lower-case(replace(replace(normalize-space(string(title)), '\s', '_'),
+      then substring(lower-case(replace(replace(normalize-space(string(title)),
+                                                '\s', '_'),
       '[^a-zA-Z0-9_]', '')), 0, 50)
       else generate-id()"/>
 &lt;/sqf:fix></programlisting>
@@ -165,9 +166,11 @@
                 case you want to add an <emphasis>id</emphasis> attribute with the same value as the
                 file name.</para>
             <example>
-                <title>Example: Get the current document file name and use it as ID</title>
+                <title>Get the current document file name and use it as ID</title>
                 <programlisting language="xml">&lt;sqf:fix id="addFileID">
-  &lt;sch:let name="reqId" value="substring-before(tokenize(document-uri(/), '/')[last()], '.')"/>
+  &lt;sch:let
+    name="reqId" 
+    value="substring-before(tokenize(document-uri(/), '/')[last()], '.')"/>
   &lt;sqf:description>
       &lt;sqf:title>Set "&lt;sch:value-of select="$reqId"/>" as ID&lt;/sqf:title>
   &lt;/sqf:description>
@@ -188,10 +191,11 @@
                 will allow you to automatically fix the links from the text and mark them as
                 clickable links.</para>
             <example>
-                <title>Example: Create a clickable link from a text link</title>
+                <title>Create a clickable link from a text link</title>
                 <programlisting language="xml">&lt;sqf:fix id="convertToLink">
   &lt;sqf:description>
-      &lt;sqf:title>Convert '&lt;sch:value-of select="$linkValue"/>' text link to xref&lt;/sqf:title>
+      &lt;sqf:title>Convert '&lt;sch:value-of select="$linkValue"/>' text link
+                 to xref&lt;/sqf:title>
   &lt;/sqf:description>
   &lt;sqf:stringReplace regex="(http|www)\S+">
       &lt;xref href="{$linkValue}" format="html"/>
@@ -204,7 +208,7 @@
                 the change in the document using the <emphasis>stringReplace</emphasis>
                 operation.</para>
             <example>
-                <title>Example: Obtain the value of the link from text</title>
+                <title>Obtain the value of the link from text</title>
                 <programlisting language="xml">&lt;xsl:variable name="linkValue">
   &lt;xsl:analyze-string select="." regex="(http|www)\S+">
     &lt;xsl:matching-substring>
@@ -234,7 +238,7 @@
                 To do this, you can use XSLT to calculate and generate the exact number of cells
                 that are missing on each row.</para>
             <example>
-                <title>Example: Add the missing cells from a table</title>
+                <title>Add the missing cells from a table</title>
                 <programlisting language="xml">&lt;sqf:fix id="addCells">
   &lt;sqf:description>
       &lt;sqf:title>Add enough empty cells on each row&lt;/sqf:title>
@@ -279,11 +283,11 @@
                 the following example, the report is triggered only if the
                     <emphasis>boldCheck</emphasis> rule is not marked as ignored. </para>
             <example>
-                <title>Example: Schematron rule that is triggered only if is not ignored</title>
+                <title>Schematron rule that is triggered only if is not ignored</title>
                 <programlisting language="xml">&lt;sch:let name="ruleCheckId" value="'boldCheck'"/>
 &lt;sch:report test="not(func:isRuleIgnored(., $ruleCheckId)) and exists(b)"
-  sqf:fix="resolveBold ignoreRule ignoreRuleGlobal" role="warn"> Bold element is
-  not allowed in title. &lt;/sch:report></programlisting>
+  sqf:fix="resolveBold ignoreRule ignoreRuleGlobal" role="warn"> Bold 
+  element is not allowed in title. &lt;/sch:report></programlisting>
             </example>
             <para>To store the ID of the rule check that is ignored in the XML document, I used a
                 processing instruction with the name <emphasis>SuppressRule</emphasis>. The
@@ -298,14 +302,17 @@
                 instruction. It returns <emphasis>true</emphasis> if the rule is specified as
                 ignored.</para>
             <example>
-                <title>Example: XSLT function that verifies if an assert/report is marked as
-                    ignored</title>
+                <title>XSLT function that verifies if an assert/report is marked as ignored</title>
                 <programlisting language="xml">&lt;xsl:function name="func:isRuleIgnored" as="xs:boolean">
   &lt;xsl:param name="node"/>
   &lt;xsl:param name="ruleId"/>
   &lt;xsl:value-of
-    select="($ruleId = $node/preceding-sibling::processing-instruction()[name() = 'SuppressRule']/tokenize(., ' ')
-      or $ruleId = /processing-instruction()[name() = 'SuppressRule']/tokenize(., ' '))"/>
+    select="($ruleId =
+        $node/preceding-sibling::processing-instruction()[name() = 
+            'SuppressRule']/tokenize(., ' ')
+      or $ruleId = 
+        /processing-instruction()[name() = 
+            'SuppressRule']/tokenize(., ' '))"/>
 &lt;/xsl:function></programlisting>
             </example>
             <para>To mark a rule as ignored, you can use quick fix actions. You can define a quick
@@ -315,15 +322,19 @@
                 processing instruction is already added for other ignored rules, it will concatenate
                 the current rule ID to the existing ones.</para>
             <example>
-                <title>Example: Quick fix that adds the current check to the ignore list</title>
+                <title>Quick fix that adds the current check to the ignore list</title>
                 <programlisting language="xml">&lt;sqf:fix id="ignoreRule" role="delete">
   &lt;sqf:description>
     &lt;sqf:title>Ignore current rule&lt;/sqf:title>
   &lt;/sqf:description>
-  &lt;sch:let name="ignoredRulePI" value="preceding-sibling::processing-instruction()[name() = 'SuppressRule']"/>
+  &lt;sch:let 
+    name="ignoredRulePI" 
+    value="preceding-sibling::processing-instruction()[name() = 'SuppressRule']"/>
   &lt;sqf:delete match="$ignoredRulePI" use-when="$ignoredRulePI"/>
   &lt;sqf:add position="before">
-    &lt;xsl:processing-instruction name="SuppressRule" select="concat($ignoredRulePI, ' ', $ruleCheckId)"/>
+    &lt;xsl:processing-instruction
+     name="SuppressRule"
+     select="concat($ignoredRulePI, ' ', $ruleCheckId)"/>
   &lt;/sqf:add>
 &lt;/sqf:fix></programlisting>
             </example>
@@ -352,7 +363,7 @@
                 title. The order of the dialog boxes is define by the order of the defined user
                 entries in the quick fix.</para>
             <example>
-                <title>Example: Quick fix action that presents two user entry dialogs</title>
+                <title>Quick fix action that presents two user entry dialogs</title>
                 <programlisting language="xml">&lt;sqf:fix id="addAnchorAndTitle">
   &lt;sqf:description>
     &lt;sqf:title>Surround image with a hypertext link&lt;/sqf:title>
@@ -384,7 +395,7 @@
                 XSL template that will present the dialog box and obtain the selected value from the
                 user.</para>
             <example>
-                <title>Example: Quick fix that displays a browse dialog</title>
+                <title>Quick fix that displays a browse dialog</title>
                 <programlisting language="xml">&lt;sqf:fix id="addSrc">
   &lt;sqf:description>
     &lt;sqf:title>Browse and add @src attribute&lt;/sqf:title>
@@ -402,12 +413,15 @@
                     <emphasis>getSelectedFile()</emphasis> call. The result of the template will be
                 sent to the quick fix action that will inset it in the document.</para>
             <example>
-                <title>Example: Quick fix that displays a browse dialog</title>
+                <title>Quick fix that displays a browse dialog</title>
                 <programlisting language="xml">&lt;xsl:template name="browse">
   &lt;xsl:variable name="dialog" select="jBrowse:new()"/>
-  &lt;xsl:variable name="result" select="jBrowse:showOpenDialog($dialog, $dialog)"/>
+  &lt;xsl:variable 
+    name="result" 
+    select="jBrowse:showOpenDialog($dialog, $dialog)"/>
   &lt;xsl:if test="$result = 0">
-    &lt;xsl:value-of select="jBrowse:getSelectedFile($dialog)"/>
+    &lt;xsl:value-of
+     select="jBrowse:getSelectedFile($dialog)"/>
   &lt;/xsl:if>
 &lt;/xsl:template></programlisting>
             </example>
@@ -430,7 +444,7 @@
             quick fix can be defined as a quick fix that has abstract parameters defined at the
             beginning of an <code>sqf:fix</code> element.</para>
         <example>
-            <title>Example: Schematron abstract quick fix that can be used to rename a generic
+            <title>Schematron abstract quick fix that can be used to rename a generic
                 element</title>
             <programlisting language="xml">&lt;sqf:fix id="renameElement" role="replace">
     &lt;sqf:param name="element" abstract="true"/>
@@ -438,7 +452,11 @@
     &lt;sqf:description>
         &lt;sqf:title>Rename '$element' element in '$newName'&lt;/sqf:title>
     &lt;/sqf:description>
-    &lt;sqf:replace match="." target="$newName" node-type="element" select="node()"/>
+    &lt;sqf:replace 
+        match="."
+        target="$newName" 
+        node-type="element" 
+            select="node()"/>
 &lt;/sqf:fix></programlisting>
         </example>
         <para>An abstract quick fix can be instantiated from an abstract pattern. The pattern must
@@ -447,7 +465,7 @@
             XPath variables. The reference of the abstract parameter will be replaced by the value
             specified in the abstract pattern.</para>
         <example>
-            <title>Example: Schematron abstract pattern that reference an abstract quick fix </title>
+            <title>Schematron abstract pattern that reference an abstract quick fix </title>
             <programlisting language="xml">&lt;sch:pattern id="elementNotAllowed" abstract="true">
     &lt;sch:rule context="$element">
         &lt;sch:assert test="false()" sqf:fix="renameElement"> 
@@ -460,7 +478,7 @@
             parameters. Therefore, you can quickly adapt to multiple variants of XML formats and
             provide rules and quick fixes that will allow the user to correct the problems.</para>
         <example>
-            <title>Example: Schematron abstract pattern instantiation</title>
+            <title>Schematron abstract pattern instantiation</title>
             <programlisting language="xml">&lt;sch:pattern is-a="elementNotAllowed">
     &lt;sch:param name="element" value="orderedlist"/>
     &lt;sch:param name="newName" value="itemizedlist"/>
@@ -482,7 +500,7 @@
             current phrase. The specification does not restrict the implementations of the
                 <code>@ref</code> attribute to a specific reference structure.</para>
         <example>
-            <title>Example: Schematron QuickFix that has multilingual support</title>
+            <title>Schematron QuickFix that has multilingual support</title>
             <programlisting language="xml"> &lt;sqf:fix id="addBone">
      &lt;sqf:description>
          &lt;sqf:title ref="fix_en fix_de">Add a bone&lt;/sqf:title>
@@ -497,10 +515,14 @@
                 <code>xml:lang</code> attribute on the <code>sch:diagnostic</code> element or on its
             parent.</para>
         <example>
-            <title>Example: Schematron diagnostics </title>
+            <title>Schematron diagnostics </title>
             <programlisting language="xml"> &lt;sch:diagnostics>
-     &lt;sch:diagnostic id="fix_en" xml:lang="en">Add a bone&lt;/sch:diagnostic>
-     &lt;sch:diagnostic id="fix_de" xml:lang="de">Fügen Sie einen Knochen hinzu&lt;/sch:diagnostic>
+     &lt;sch:diagnostic 
+        id="fix_en" 
+        xml:lang="en">Add a bone&lt;/sch:diagnostic>
+     &lt;sch:diagnostic 
+        id="fix_de" 
+        xml:lang="de">Fügen Sie einen Knochen hinzu&lt;/sch:diagnostic>
  &lt;/sch:diagnostics></programlisting>
         </example>
         <para>This implementation conforms with the Schematron standard that also uses diagnostic
@@ -517,7 +539,7 @@
             pattern <code>${fileName}_${lang}.xml</code>. The <code>${fileName}</code> should be the
             name of the Schematron schema but without the extension. The <code>@ref</code> attribute
             from the quick fix must reference the property key.<example>
-                <title>Example: Java Property File for German translation </title>
+                <title>Java Property File for German translation </title>
                 <programlisting language="xml">&lt;!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 &lt;properties>
     &lt;entry key="dog.addBone.title">Füge einen Knochen hinzu&lt;/entry>
@@ -549,7 +571,7 @@
             the current item from the XPath expression, a built-in variable
                 <code>$sqf:current</code> can be used.</para>
         <example>
-            <title>Example: A Generic QuickFix that provides a quick fix to remove each item from a
+            <title>A Generic QuickFix that provides a quick fix to remove each item from a
                 list</title>
             <programlisting language="xml">&lt;sqf:fix id="removeAnyItem" use-for-each="1 to count(li)">
     &lt;sqf:description>
