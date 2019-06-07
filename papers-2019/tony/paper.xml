@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/css" href="resources/css/paper.css"?>
+<!--<?xml-stylesheet type="text/css" href="resources/css/paper.css"?>-->
 <article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0">
 <info>
 <title>Accessibility Matters</title>
@@ -96,6 +96,9 @@ strays into some aspects of styling the content to make it more accessible.</par
 <para>AH Formatter embeds PDF tags (‘StructElem’) for XSL Formatting Object elements as shown in <xref linkend="fo-tags"/>. Other XSL-FO formatters have similar mappings.<footnote><para>The information provided by other formatters, however, was either incomplete <biblioref linkend="fop"/> or not in a format that could just be pasted into this paper <biblioref linkend="xep"/>.</para></footnote></para>
 <table rules="rows" frame="below" xml:id="fo-tags">
 <caption>XSL Formatting Objects and PDF tags</caption>
+  <col width="30%"/>
+  <col width="30%"/>
+  <col width="40%"/>
 <thead>
 <tr>
 <th>FO element</th>
@@ -170,6 +173,8 @@ TH within fo:table-header, otherwise TD
 <para>AH Formatter embeds PDF tags (‘StructElem’) for HTML/CSS elements and pseudo-elements as shown in the following table:</para>
 <table rules="rows" frame="below">
 <caption>HTML elements and PDF tags</caption>
+  <col width="50%"/>
+  <col width="50%"/>
 <thead>
 <tr>
 <th>HTML element</th>
@@ -312,6 +317,8 @@ TH within fo:table-header, otherwise TD
 <para>There are multiple Structure Element types for representing the top-level hierarchy of the document:</para>
 <table rules="rows" frame="below" cellspacing="10">
 <caption>PDF tags for top-level structure of a document</caption>
+  <col width="50%"/>
+  <col width="50%"/>
 <thead>
 <tr>
 <th><para>Structure type</para></th>
@@ -426,6 +433,10 @@ TH within fo:table-header, otherwise TD
 <para>In this contrived example table (shamelessly borrowed from HTML 5.3 <biblioref linkend="th"/>), the bold text (which you might not be able to see) acts as a header for cells below and/or to the right of the header cell:</para>
 <table rules="all">
 <caption>Measurement of legs and tails in Cats and English speakers</caption>
+  <col width="25%"/>
+  <col width="25%"/>
+  <col width="25%"/>
+  <col width="25%"/>
 <thead>
 <tr> <th> ID </th><th> Measurement </th><th> Average</th> <th> Maximum</th></tr>
 </thead>
