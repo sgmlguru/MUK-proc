@@ -499,12 +499,16 @@ ANY =
         <figure xml:id="xslv">
           <title>XSLT <quote>schema</quote>, validation</title>
           <programlisting>&lt;?xml version="1.0" encoding="UTF-8"?>
-&lt;xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0">
+&lt;xsl:stylesheet 
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+  version="3.0">
 
   &lt;xsl:variable name="selector_regex">
     &lt;xsl:text>GENERATED_REGEXP_HERE&lt;/xsl:text>
   &lt;/xsl:variable>
-  &lt;xsl:variable name="anchored_selector_regex" select="'^'||$selector_regex"/>
+  &lt;xsl:variable 
+    name="anchored_selector_regex" 
+    select="'^'||$selector_regex"/>
     
   &lt;xsl:output method="text"/>
 
@@ -517,7 +521,8 @@ ANY =
     &lt;xsl:value-of select="'selector “'
                           ||@selector
                           ||'” is&amp;#x09;&amp;#x09;'"/>
-    &lt;xsl:if test="not( matches( @selector, $anchored_selector_regex ) )">NOT &lt;/xsl:if>
+    &lt;xsl:if 
+      test="not( matches( @selector, $anchored_selector_regex ) )">NOT &lt;/xsl:if>
     &lt;xsl:value-of select="'valid.&amp;#x0A;'"/>
   &lt;/xsl:template>
 
@@ -635,7 +640,8 @@ ANY =
   xmlns:pt="https://github.com/benfrain/css-performance-tests"    
   version="3.0">
 
-  &lt;!-- This pgm written 2019-06-02T09:57:25 by ./CSS3_selector_regex_generator.perl -->
+  &lt;!-- This pgm written 2019-06-02T09:57:25 by
+       ./CSS3_selector_regex_generator.perl -->
 
   &lt;!-- ========= debugging ========= -->
   &lt;!--
@@ -657,7 +663,8 @@ ANY =
   &lt;wpt:rendition selector="p "/>
   &lt;wpt:rendition selector="p[title$='bar'] "/>
   &lt;!-- ********* -->
-  &lt;w3c:rendition selector='   stub ~ [|attribute^=start]:not([|attribute~=mid])[|attribute*=dle][|attribute$=end] ~ t '/>
+  &lt;w3c:rendition selector='   stub ~ [|attribute^=start]:not([|attribute~=mid])
+                           [|attribute*=dle][|attribute$=end] ~ t '/>
   &lt;w3c:rendition selector='   #two:first-child '/>
   &lt;w3c:rendition selector='   #three:last-child '/>
   &lt;!-- ********* -->
