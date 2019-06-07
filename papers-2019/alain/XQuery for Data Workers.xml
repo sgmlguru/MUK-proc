@@ -185,7 +185,8 @@
     the node program.</para>
 
     <programlisting>C:\Users\Alain Couthures&gt;node fleur --help
-Usage: node fleur ([-s:xmlfile] [-o:outfile] (-q:queryfile|-qs:querystring) [params]|[-p:port] [-f:folder])
+Usage: node fleur ([-s:xmlfile] [-o:outfile] (-q:queryfile|-qs:querystring)
+                   [params]|[-p:port] [-f:folder])
  -s:     XML input file (optional)
  -o:     output file (optional)
  -q:     query file
@@ -221,7 +222,8 @@ Usage: node fleur ([-s:xmlfile] [-o:outfile] (-q:queryfile|-qs:querystring) [par
     is allowed by a convert mechanism for atomic values and sequences as
     parameters or returned value.</para>
 
-    <programlisting>Fleur.XPathFunctions_prof["sleep#1"] = new Fleur.Function("http://basex.org/modules/proc", "prof:sleep",
+    <programlisting>Fleur.XPathFunctions_prof["sleep#1"] = 
+    new Fleur.Function("http://basex.org/modules/proc", "prof:sleep",
  function(ms, callback) {
   if (ms &gt; 0) {
    setTimeout(function() {
@@ -446,7 +448,8 @@ let $m2 := (
 )
 let $totalPC := fn:count($m)
 return
-  &lt;html xmlns="http://www.w3.org/1999/xhtml" xmlns:xf="http://www.w3.org/2002/xforms"&gt;
+  &lt;html xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:xf="http://www.w3.org/2002/xforms"&gt;
     &lt;head&gt;
       &lt;title&gt;R&amp;eacute;partition Postes&lt;/title&gt;
       &lt;style&gt;
@@ -464,14 +467,18 @@ return
       &lt;xf:model&gt;
         &lt;xf:instance&gt;
           &lt;inventory xmlns="" total="{$totalPC}" selected="version"&gt;{
-            ('version', 'architecture', 'model', 'disktype', 'office') ! &lt;group name="{.}"&gt;
+            ('version', 'architecture', 'model', 'disktype', 'office') ! 
+              &lt;group name="{.}"&gt;
               {
                 let $n := .
                 for $s in $m2
-                group by $v := (if ($s/*[name() eq $n]) then $s/*[name() eq $n] else ' ')
+                group by $v := (if ($s/*[name() eq $n])
+                               then $s/*[name() eq $n]
+                               else ' ')
                 order by $v
                 return
-                  &lt;item name="{if ($v eq ' ') then 'unknown' else $v}" total="{fn:count($s)}"&gt;{
+                  &lt;item name="{if ($v eq ' ') then 'unknown' else $v}"
+                        total="{fn:count($s)}"&gt;{
                     $s ! name ! xs:string(.)
                   }&lt;/item&gt;
               }
@@ -483,7 +490,8 @@ return
     &lt;body&gt;
       &lt;p&gt;{
         fn:format-dateTime(file:last-modified('../private/inventory.xml'),
-          '[h01]:[m01]:[s01] [D]/[M]/[Y,2-2]') || ' - ' || $totalPC || ' ordinateurs dans l''inventaire'
+          '[h01]:[m01]:[s01] [D]/[M]/[Y,2-2]') || ' - ' || $totalPC ||
+          ' ordinateurs dans l''inventaire'
       }&lt;/p&gt;
       &lt;xf:select1 ref="@selected"&gt;
         &lt;xf:itemset ref="../group"&gt;
@@ -530,15 +538,16 @@ return
    "&amp;apos;", '&amp;amp;apos;')
   return if ($value ne '') then
    (if (contains($esc, '&amp;amp;quot;')) then
-     (' ' + $name + "='" + $esc + "'") else (' ' + $name + '="' + $esc + '"')) else ''
+     (' ' + $name + "='" + $esc + "'") 
+    else (' ' + $name + '="' + $esc + '"')) else ''
 };
 declare function local:attrs() {
   local:setattr("name", ?name) +
   local:setattr("label", ?label) +
   local:setattr("hint", ?hint) +
   local:setattr("calculation", ?calculation) +
-  local:setattr("appearance", if (?type eq 'begin_group' and ?appearance ne '') then
-   ('collapsed ' + ?appearance) else ?appearance) +
+  local:setattr("appearance", if (?type eq 'begin_group' and ?appearance ne '')
+     then ('collapsed ' + ?appearance) else ?appearance) +
   local:setattr("relevant", ?relevant) +
   local:setattr("constraint", ?constraint) +
   local:setattr("constraint_message", ?constraint_message) +
@@ -567,12 +576,15 @@ let $xlsform := '&lt;xlsform&gt;' +
   '&lt;survey&gt;' + string-join(matrix:transpose($survey !! (
   if (?type eq '') then '' else
   if (?type eq 'begin_group') then
-    ('&lt;group' + (if (?appearance eq '') then ' appearance="collapsed"' else '') + local:attrs() + '&gt;') else
+    ('&lt;group' + (if (?appearance eq '') then ' appearance="collapsed"' else '')
+     + local:attrs() + '&gt;') else
   if (?type eq 'end_group') then '&lt;/group&gt;' else
   if (starts-with(?type, 'select_one ')) then
-    ('&lt;select_one choices="' + substring-after(?type, 'select_one ') + '"' + local:attrs() + '/&gt;') else
+    ('&lt;select_one choices="' + substring-after(?type, 'select_one ') +
+     '"' + local:attrs() + '/&gt;') else
   if (starts-with(?type, 'select_multiple ')) then
-    ('&lt;select_multiple choices="' + substring-after(?type, 'select_multiple ') + '"' + local:attrs() + '/&gt;') else
+    ('&lt;select_multiple choices="' + substring-after(?type, 'select_multiple ') +
+     '"' + local:attrs() + '/&gt;') else
     ('&lt;' + ?type + local:attrs() + '/&gt;')))) +
   '&lt;/survey&gt;' +
   '&lt;choices&gt;' + string-join(matrix:transpose($choices !! (
@@ -589,30 +601,40 @@ let $leaf := function($n) {
 }
 let $subtree := function($n, $t, $l) {
   element {$n/@name} {
-    $n/* ! (if (name(current()) eq 'group') then $t(current(), $t, $l) else $l(current()))
+    $n/* ! (if (name(current()) eq 'group') 
+            then $t(current(), $t, $l) 
+            else $l(current()))
   }
 }
 let $begin := '${'
 let $end := '}'
 let $refconv := function($n, $s, $b, $e, $f, $g, $r) {
   if (contains($s, $b)) then
-   (substring-before($s, $b) + ' ' + $g($n, substring-before(substring-after($s, $b), $e), $r) + ' ' +
+   (substring-before($s, $b) + ' ' +
+     $g($n, substring-before(substring-after($s, $b), $e), $r) + ' ' +
    $f($n, substring-after($s, $e), $b, $e, $f, $g, $r)) else
    $s
 }
 let $refpath := function($n, $name, $r) {
   let $target := $n/ancestor::survey//*[string(@name) eq $name]
-  return '/' + string-join(($r, (reverse($target/ancestor-or-self::*[@name]) ! string(@name))), '/')
+  return '/' + string-join(($r, 
+              (reverse($target/ancestor-or-self::*[@name]) ! string(@name))), '/')
 }
 let $bind := function($n, $b, $e, $f, $g, $r) {
   if (name($n) eq 'group') then () else (
-    let $type := (if (name($n) = ('text', 'note', 'select_one', 'select_multiple')) then () else
+    let $type := (if (name($n) = ('text', 'note', 'select_one', 'select_multiple'))
+                  then ()
+                  else
       attribute type {'xsd:' + name($n)})
-    let $xpattrs := $n ! (@required, @readonly, @relevant) ! attribute {name()} {if (string(.) eq 'true') then 'true()' else $f(., string(.), $b, $e, $f, $g, $r)}
+    let $xpattrs := $n ! (@required, @readonly, @relevant) ! 
+                    attribute {name()} {if (string(.) eq 'true')
+                                        then 'true()'
+                                        else $f(., string(.), $b, $e, $f, $g, $r)}
     let $battrs := ($type, $xpattrs)
     return if ($battrs) then
      &lt;xf:bind
-       ref="{'/' + string-join(($r, (reverse($n/ancestor-or-self::*[@name]) ! string(@name))), '/')}"&gt;{$battrs}&lt;/xf:bind&gt; else ()
+       ref="{'/' + string-join(($r, (reverse($n/ancestor-or-self::*[@name]) ! 
+                               string(@name))), '/')}"&gt;{$battrs}&lt;/xf:bind&gt; else ()
   )
 }
 let $model := &lt;xf:model&gt;
@@ -626,35 +648,59 @@ let $model := &lt;xf:model&gt;
       &lt;/meta&gt;)}
     }
   &lt;/xf:instance&gt;
-  {$doc/xlsform/survey//* ! $bind(current(), $begin, $end, $refconv, $refpath, $root)}
+  {$doc/xlsform/survey//* ! 
+   $bind(current(), $begin, $end, $refconv, $refpath, $root)}
 &lt;/xf:model&gt;
 let $input := function($n, $r) {
-  &lt;xf:input ref="{'/' + string-join(($r, (reverse($n/ancestor-or-self::*[@name]) ! string(@name))), '/')}"&gt;
+  &lt;xf:input ref="{'/' + string-join(($r, (reverse($n/ancestor-or-self::*[@name]) !
+                                          string(@name))), '/')}"&gt;
     {$n/@appearance}
-    {if ($n/@label ne '') then &lt;xf:label mediatype="text/markdown"&gt;{$n/@label/text()}&lt;/xf:label&gt; else ()}
-    {if ($n/@hint ne '') then &lt;xf:hint mediatype="text/markdown"&gt;{$n/@hint/text()}&lt;/xf:hint&gt; else ()}
+    {if ($n/@label ne '') 
+     then &lt;xf:label mediatype="text/markdown"&gt;{$n/@label/text()}&lt;/xf:label&gt;
+     else ()}
+    {if ($n/@hint ne '')
+     then &lt;xf:hint mediatype="text/markdown"&gt;{$n/@hint/text()}&lt;/xf:hint&gt; 
+     else ()}
   &lt;/xf:input&gt;
 }
 let $templates := map {
   'group': function($n, $m, $i, $r) {
-      &lt;xf:group ref="{'/' + string-join(($r, (reverse($n/ancestor-or-self::*[@name]) ! string(@name))), '/')}"&gt;
+      &lt;xf:group ref="{'/' + string-join(($r,
+                     (reverse($n/ancestor-or-self::*[@name]) !
+                      string(@name))), '/')}"&gt;
         {$n/@appearance}
-        {if ($n/@label ne '') then &lt;xf:label mediatype="text/markdown"&gt;{$n/@label/text()}&lt;/xf:label&gt; else ()}
-        {$n/* ! (if ($m?(name(current()))) then $m?(name(current()))(current(), $m, $i, $r) else $i(current(), $r))}
+        {if ($n/@label ne '')
+         then &lt;xf:label mediatype="text/markdown"&gt;{$n/@label/text()}&lt;/xf:label&gt;
+         else ()}
+        {$n/* ! (if ($m?(name(current()))) 
+                 then $m?(name(current()))(current(), $m, $i, $r)
+                 else $i(current(), $r))}
       &lt;/xf:group&gt;
     },
   'note': function($n, $m, $i, $r) {
-      &lt;xf:output ref="{'/' + string-join(($r, (reverse($n/ancestor-or-self::*[@name]) ! string(@name))), '/')}"&gt;
+      &lt;xf:output ref="{'/' + string-join(($r, 
+                       (reverse($n/ancestor-or-self::*[@name]) !
+                        string(@name))), '/')}"&gt;
         {$n/@appearance}
-        {if ($n/@label ne '') then &lt;xf:label mediatype="text/markdown"&gt;{$n/@label/text()}&lt;/xf:label&gt; else ()}
-        {if ($n/@hint ne '') then &lt;xf:hint&gt;{$n/@hint/text()}&lt;/xf:hint&gt; else ()}
+        {if ($n/@label ne '') 
+         then &lt;xf:label mediatype="text/markdown"&gt;{$n/@label/text()}&lt;/xf:label&gt; 
+         else ()}
+        {if ($n/@hint ne '')
+         then &lt;xf:hint&gt;{$n/@hint/text()}&lt;/xf:hint&gt; 
+         else ()}
       &lt;/xf:output&gt;
     },
   'select_one': function($n, $m, $i, $r) {
-      &lt;xf:select1 ref="{'/' + string-join(($r, (reverse($n/ancestor-or-self::*[@name]) ! string(@name))), '/')}"&gt;
+      &lt;xf:select1 ref="{'/' + string-join(($r, 
+                              (reverse($n/ancestor-or-self::*[@name]) !
+                               string(@name))), '/')}"&gt;
         {$n/@appearance}
-        {if ($n/@label ne '') then &lt;xf:label mediatype="text/markdown"&gt;{$n/@label/text()}&lt;/xf:label&gt; else ()}
-        {if ($n/@hint ne '') then &lt;xf:hint&gt;{$n/@hint/text()}&lt;/xf:hint&gt; else ()}
+        {if ($n/@label ne '')
+         then &lt;xf:label mediatype="text/markdown"&gt;{$n/@label/text()}&lt;/xf:label&gt;
+         else ()}
+        {if ($n/@hint ne '') 
+         then &lt;xf:hint&gt;{$n/@hint/text()}&lt;/xf:hint&gt; 
+         else ()}
         {$n/ancestor::xlsform/choices/choice[string(@list_name) eq string($n/@choices)] !
           &lt;xf:item&gt;
             &lt;xf:label&gt;{@label/text()}&lt;/xf:label&gt;
@@ -664,11 +710,18 @@ let $templates := map {
       &lt;/xf:select1&gt;
     },
   'select_multiple': function($n, $m, $i, $r) {
-      &lt;xf:select ref="{'/' + string-join(($r, (reverse($n/ancestor-or-self::*[@name]) ! string(@name))), '/')}"&gt;
+      &lt;xf:select ref="{'/' + string-join(($r, 
+                       (reverse($n/ancestor-or-self::*[@name]) !
+                        string(@name))), '/')}"&gt;
         {$n/@appearance}
-        {if ($n/@label ne '') then &lt;xf:label mediatype="text/markdown"&gt;{$n/@label/text()}&lt;/xf:label&gt; else ()}
-        {if ($n/@hint ne '') then &lt;xf:hint mediatype="text/markdown"&gt;{$n/@hint/text()}&lt;/xf:hint&gt; else ()}
-        {$n/ancestor::xlsform/choices/choice[string(@list_name) eq string($n/@choices)] !
+        {if ($n/@label ne '')
+         then &lt;xf:label mediatype="text/markdown"&gt;{$n/@label/text()}&lt;/xf:label&gt;
+         else ()}
+        {if ($n/@hint ne '')
+         then &lt;xf:hint mediatype="text/markdown"&gt;{$n/@hint/text()}&lt;/xf:hint&gt;
+         else ()}
+        {$n/ancestor::xlsform/choices/choice[string(@list_name) eq
+                      string($n/@choices)] !
           &lt;xf:item&gt;
             &lt;xf:label&gt;{@label/text()}&lt;/xf:label&gt;
             &lt;xf:value&gt;{@name/text()}&lt;/xf:value&gt;
@@ -677,13 +730,20 @@ let $templates := map {
       &lt;/xf:select&gt;
     }
 }
-let $view := $doc/xlsform/survey/* ! (if ($templates?(name(current()))) then
-   $templates?(name(current()))(current(), $templates, $input, $root) else $input(current(), $root))
-let $form := document {(processing-instruction xml-stylesheet {'href="xsl/xsltforms.xsl" type="text/xsl"'},
+let $view := $doc/xlsform/survey/* ! 
+             (if ($templates?(name(current())))
+              then $templates?(name(current()))(current(), $templates, $input, $root)
+              else $input(current(), $root))
+let $form := document {(processing-instruction
+               xml-stylesheet {'href="xsl/xsltforms.xsl" type="text/xsl"'},
   &lt;html
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:xf="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
-    &lt;head&gt;&lt;title&gt;{data($doc/xlsform/settings/setting/@form_title)}&lt;/title&gt;{$model}&lt;/head&gt;
+    xmlns:xf="http://www.w3.org/2002/xforms"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+    &lt;head&gt;
+       &lt;title&gt;{data($doc/xlsform/settings/setting/@form_title)}&lt;/title&gt;
+              {$model}
+    &lt;/head&gt;
     &lt;body&gt;{$view}&lt;/body&gt;&lt;/html&gt;)}
 let $result := parse-xml(serialize($form, map{'indent': 'yes'}))
 return $result</programlisting>
@@ -712,14 +772,21 @@ let $step := (
   let $login := doc('login.json')
   let $result := map {
     for $switch in $switches
-    let $m := fn:doc('http://' || xs:string($switch?ip) || ':80/rest/v3/login-sessions',
-                map {'method': 'json', 'http-verb': 'POST', 'timeout': '3000'},
-                map {'userName': xs:string($login?user), 'password': xs:string($login?password)})
+    let $m := fn:doc('http://' || xs:string($switch?ip) ||
+                     ':80/rest/v3/login-sessions',
+                map {'method': 'json', 'http-verb': 'POST',
+                     'timeout': '3000'},
+                map {'userName': xs:string($login?user),
+                     'password': xs:string($login?password)})
     return (if ($m?cookie) then (
-      let $sessionId := map {'method': 'json', 'http-verb': 'GET', 'http-cookie': xs:string($m?cookie)}
-      let $vps := doc('http://' || xs:string($switch?ip) || ':80/rest/v3/vlans-ports', $sessionId)?vlan_port_element?*
-      let $macs := doc('http://' || xs:string($switch?ip) || ':80/rest/v3/mac-table', $sessionId)?mac_table_entry_element?*
-      let $trk := $vps[?port_mode eq 'POM_TAGGED_STATIC' and ?vlan_id ne 5] ! xs:string(?port_id)
+      let $sessionId := map {'method': 'json', 'http-verb': 'GET',
+                             'http-cookie': xs:string($m?cookie)}
+      let $vps := doc('http://' || xs:string($switch?ip) ||
+                      ':80/rest/v3/vlans-ports', $sessionId)?vlan_port_element?*
+      let $macs := doc('http://' || xs:string($switch?ip) || 
+                       ':80/rest/v3/mac-table', $sessionId)?mac_table_entry_element?*
+      let $trk := $vps[?port_mode eq 'POM_TAGGED_STATIC' and ?vlan_id ne 5] !
+                       xs:string(?port_id)
       for $port in $vps[not(?port_id = $trk)] ! ?port_id
       for $vlanid in $vps[?port_id eq $port] ! ?vlan_id
       let $portmacs := $macs[?port_id eq $port] ! ietf:mac(?mac_address)
@@ -727,16 +794,20 @@ let $step := (
         for $portmac in $portmacs
         let $pcname := local-name(head($pcs[ietf:mac(?mac) eq $portmac]))
         let $ename := (if ($pcname) then $pcname else '#' || xs:string($portmac))
-        return entry {$ename} {map{'switch': local-name($switch), 'port': xs:string($port), 'vlan': xs:string($vlanid)} }
+        return entry {$ename} {map{'switch': local-name($switch), 
+                      'port': xs:string($port), 'vlan': xs:string($vlanid)} }
       ) else ()) else 
       trace((), local-name($switch) || ': Connection refused. '))
   }
   let $t := (if (exists($result?*)) then (
     trace((),
-      xs:string(current-dateTime()) || '    ' || count(http:send-request(&lt;http:request method='post'/&gt;,
-      'http://switchmanager:5000/batchcollect.xqy', $result)[2]/node()?*) || ' MAC entries found. ')
+      xs:string(current-dateTime()) || '    ' || 
+                count(http:send-request(&lt;http:request method='post'/&gt;,
+      'http://switchmanager:5000/batchcollect.xqy', $result)[2]/node()?*) ||
+      ' MAC entries found. ')
     ) else 
-      trace((), xs:string(current-dateTime()) || '    ' || 'No entry. '))
+      trace((), xs:string(current-dateTime()) ||
+           '    ' || 'No entry. '))
   let $pause := prof:sleep(1000 * 60 * 3)
   return ()
 )
@@ -748,7 +819,8 @@ return ()</programlisting>
   let $update := (
     for $item in $batch?*
     return (if ($m?(local-name($item))) then
-        replace node $m?(local-name($item))/node() with map:merge(($item/node(), $m?(local-name($item))/node()))
+        replace node $m?(local-name($item))/node() with 
+          map:merge(($item/node(), $m?(local-name($item))/node()))
       else
         insert node entry {local-name($item)} {$item/node()} into $m))
   let $write := file:write($path, $doc, map {"indent" : "yes"})
