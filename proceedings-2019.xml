@@ -46,7 +46,8 @@
     <!-- diff3 - Robin and Nigel -->
     <!-- V1 replaced by V2, 7 June -->
     <!--<xi:include href="papers-2019/robin/MarkupUK2019/markupuk-laf04.xml"/>-->
-    <xi:include href="papers-2019/robin/MarkupUK2019-submitted2/markupuk-laf05.xml"/>
+    <!--<xi:include href="papers-2019/robin/MarkupUK2019-submitted2/markupuk-laf05.xml"/>-->
+    <xi:include href="papers-2019/robin/MarkupUK2019-submitted2/markupuk-laf06-after-editing-04.xml"/>
     
     <!-- railways - John -->
     <xi:include href="papers-2019/john/BranchLine.xml"/>

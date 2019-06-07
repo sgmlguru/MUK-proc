@@ -222,37 +222,46 @@
                         <tbody>
                             <row>
                                 <entry>
-                                    <programlisting>&lt;p>This is a long paragraph 
-where &lt;strong>most of it has 
+                                    <programlisting>&lt;p>This is a 
+long paragraph 
+where &lt;strong>most 
+of it has 
 been made either bold or
 italic, but the rest of 
 the paragraph remains 
 unchanged - there is no 
 change to the text so
 we do not want it 
-duplicated&lt;/strong>. &lt;/p></programlisting>
+duplicated&lt;/strong>. 
+&lt;/p></programlisting>
                                 </entry>
                                 <entry>
-                                    <programlisting>&lt;p>This is a long paragraph 
-where most of it has 
+                                    <programlisting>&lt;p>This is a
+long paragraph 
+where most
+of it has 
 been made either bold or
 italic, but the rest of 
 the paragraph remains 
 unchanged - there is no 
 change to the text so
 we do not want it 
-duplicated. &lt;/p></programlisting>
+duplicated. 
+&lt;/p></programlisting>
                                 </entry>
                                 <entry>
-                                    <programlisting>&lt;p>This is a long paragraph 
-where &lt;italic>most of it has 
+                                    <programlisting>&lt;p>This is a 
+long paragraph 
+where &lt;italic>most 
+of it has 
 been made either bold or
 italic, but the rest of 
 the paragraph remains 
 unchanged - there is no 
 change to the text so
 we do not want it 
-duplicated&lt;/italic>. &lt;/p></programlisting>
+duplicated&lt;/italic>. 
+&lt;/p></programlisting>
                                 </entry>
                             </row>
                         </tbody>
@@ -385,9 +394,18 @@ duplicated
                         </thead>
                         <tbody>
                             <row>
-                                <entry><programlisting>&lt;span class="two" dir="rtr" id="23"></programlisting></entry>
-                                <entry><programlisting>&lt;span class="one" id="23" dir="TBA"></programlisting></entry>
-                                <entry><programlisting>&lt;span id="23" class="three" dir="ltr"></programlisting></entry>
+                                <entry><programlisting>&lt;span 
+  class="two" 
+  dir="rtr" 
+  id="23"></programlisting></entry>
+                                <entry><programlisting>&lt;span 
+  class="one" 
+  id="23" 
+  dir="TBA"></programlisting></entry>
+                                <entry><programlisting>&lt;span 
+  id="23" 
+  class="three" 
+  dir="ltr"></programlisting></entry>
                             </row>
                         </tbody>
                     </tgroup>
@@ -674,17 +692,21 @@ ws = *(
 4
 5
 2
-&lt;d:change>&lt;d:content origin="A.txt">
+&lt;d:change>
+&lt;d:content origin="A.txt">
 3
-&lt;/d:content>&lt;d:content origin="O.txt">
+&lt;/d:content>
+&lt;d:content origin="O.txt">
 3
 4
 5
-&lt;/d:content>&lt;d:content origin="B.txt">
+&lt;/d:content>
+&lt;d:content origin="B.txt">
 4
 5
 3
-&lt;/d:content>&lt;/d:change>
+&lt;/d:content>
+&lt;/d:change>
 6
 &lt;/d:diff3></programlisting>
               </entry>

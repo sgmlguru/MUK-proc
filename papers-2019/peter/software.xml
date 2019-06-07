@@ -77,24 +77,7 @@
 	still ways to <phrase>shorten the distance between the
 	  bricks</phrase> that are not otherwise provided for.</para>
     </abstract>
-    <revhistory>
-      <revision>
-	<date YYYY-MM-DD="2019-05-05">5 May 2019</date>
-	<revremark>Started writing</revremark>
-      </revision>
-      <revision>
-	<date YYYY-MM-DD="2019-05-09">9 May 2019</date>
-	<revremark>Added software</revremark>
-      </revision>
-      <revision>
-	<date YYYY-MM-DD="2019-05-17">17 May 2019</date>
-	<revremark>Started testing</revremark>
-      </revision>
-      <revision>
-	<date YYYY-MM-DD="2019-05-29">29 May 2019</date>
-	<revremark>Finished testing</revremark>
-      </revision>
-    </revhistory>
+    <!--<revhistory><revision><date YYYY-MM-DD="2019-05-05">5 May 2019</date><revremark>Started writing</revremark></revision><revision><date YYYY-MM-DD="2019-05-09">9 May 2019</date><revremark>Added software</revremark></revision><revision><date YYYY-MM-DD="2019-05-17">17 May 2019</date><revremark>Started testing</revremark></revision><revision><date YYYY-MM-DD="2019-05-29">29 May 2019</date><revremark>Finished testing</revremark></revision></revhistory>-->
   </info>
   <acknowledgements>
     <para>I am grateful to the numerous people in University College
