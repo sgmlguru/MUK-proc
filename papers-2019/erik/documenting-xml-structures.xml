@@ -90,7 +90,7 @@
             <title>An excerpt from the documentation of XSLT</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/xslt-book-excerpt.png"/>
+                <imagedata fileref="figures/xslt-book-excerpt.png" width="100%"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -108,7 +108,7 @@
             <title>An excerpt from the documentation of Maven POM files</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/maven-pom-excerpt.png"/>
+                <imagedata fileref="figures/maven-pom-excerpt.png" width="100%"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -125,7 +125,7 @@
             <title>An excerpt from the documentation of Ant</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/ant-excerpt.png"/>
+                <imagedata fileref="figures/ant-excerpt.png" width="100%"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -144,7 +144,7 @@
             <title>An excerpt from the documentation of HL7 CDA</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/HL7-CDA-excerpt.png"/>
+                <imagedata fileref="figures/HL7-CDA-excerpt.png" width="100%"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -162,7 +162,7 @@
             <title>An excerpt from the documentation of eXist-db's <filename>conf.xml</filename></title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/exist-conf-excerpt.png"/>
+                <imagedata fileref="figures/exist-conf-excerpt.png" width="100%"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -259,7 +259,7 @@
         <title>An example of (a part of) generated schema documentation by oXygen</title>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="figures/schema-doc.png"/>
+            <imagedata fileref="figures/schema-doc.png" width="100%"/>
           </imageobject>
         </mediaobject>
       </figure>
@@ -363,7 +363,7 @@
                 <title>The <code>&lt;p:choose&gt;</code> in the standard</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/p-choose-1.png"/>
+                    <imagedata fileref="figures/p-choose-1.png" width="75%"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -378,7 +378,7 @@
                 <title>The <code>&lt;p:choose&gt;</code> in the XProc book</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/p-choose-2.png"/>
+                    <imagedata fileref="figures/p-choose-2.png" width="75%"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -404,7 +404,7 @@
                 <title>An attribute with a discrete value list</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/declare-step.png"/>
+                    <imagedata fileref="figures/declare-step.png" width="100%"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -491,7 +491,7 @@
             <title>Example of an XML element documentation diagram</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/diagram-example-2.png"/>
+                <imagedata fileref="figures/diagram-example-2.png" width="100%"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -503,7 +503,7 @@
             <title>My XML element documentation diagram</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/diagram-example-3.png"/>
+                <imagedata fileref="figures/diagram-example-3.png" width="100%"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -523,7 +523,7 @@
             <title>Example of a table explaining attributes</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/table-1.png"/>
+                <imagedata fileref="figures/table-1.png" width="100%"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -532,7 +532,7 @@
             <title>Example of a table explaining child elements</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/table-2.png"/>
+                <imagedata fileref="figures/table-2.png" width="100%"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -566,7 +566,7 @@
         <title>My tool-chain for the XProc book</title>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="figures/figures.jpg"/>
+            <imagedata fileref="figures/figures.jpg" width="100%"/>
           </imageobject>
         </mediaobject>
       </figure>
