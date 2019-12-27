@@ -43,6 +43,14 @@
 <property name="oxygen.frameworks.dir"
 	  value="${oxygenInstallDir}/frameworks"/>
 
+<!-- XML file of really local overrides of properties determining or
+     describing local configuration. -->
+<property
+    name="properties.local.xml"
+    location="${pwd}/properties.local.xml"/>
+<property
+    file="${properties.local.xml}"/>
+
 <!-- XML file of properties determining or describing local
      configuration. -->
 <property
@@ -106,14 +114,18 @@
 </condition>
 <property name="saxon6.jar" value="${saxon6.jar.unix}" />
 
-<!-- XSL processor location depends on OS. -->
-<condition property="xsl.processor" value="${xsl.processor.windows}">
+<!-- AH Formatter location depends on OS. -->
+<condition property="ahformatter" value="${ahformatter.windows}">
   <os family="windows" />
 </condition>
-<condition property="xsl.processor" value="${xsl.processor.mac}">
+<condition property="ahformatter" value="${ahformatter.mac}">
   <os family="mac" />
 </condition>
-<property name="xsl.processor" value="${xsl.processor.unix}" />
+<property name="ahformatter" value="${ahformatter.unix}" />
+
+<!-- PDF version to generate. -->
+<property name="pdf.version" value="PDF1.5" />
+
 
 <property environment="env"/>
 
@@ -244,6 +256,26 @@
 	   expression="file:///${xslthl.config}" />
     <param name="keep.relative.image.uris" expression="0" />
   </xslt>
+</target>
+
+
+<target name="pdf.single"
+	depends="fo.single">
+  <exec executable="${ahformatter}"
+	dir="${basedir.converted}">
+    <arg value="-x" />
+    <arg value="3" />
+    <arg value="-peb" />
+    <arg value="1" />
+    <arg value="-prr" if:set="is.windows" />
+    <arg value="200" if:set="is.windows" />
+    <arg value="-pdfver" />
+    <arg value="${pdf.version}" />
+    <arg value="-o" />
+    <arg value="${basedir.converted}/xsl/${single.basename}.pdf" />
+    <arg value="-d" />
+    <arg value="${basedir.converted}/xsl/${single.basename}.fo" />
+  </exec>
 </target>
 
 <!-- Utility targets. -->
