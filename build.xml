@@ -40,8 +40,6 @@
 <property name="pd" value="."/>
 <!-- Current file folder as file path. -->
 <property name="pwd" value="${user.dir}"/>
-<property name="oxygen.frameworks.dir"
-	  value="${oxygenInstallDir}/frameworks"/>
 
 <!-- XML file of really local overrides of properties determining or
      describing local configuration. -->
@@ -69,6 +67,8 @@
 	  value="${muk.basedir.converted}/xsl" />
 <property name="docbook.xsl.dir"
 	  value="${xsl.dir}/docbook-xsl-1.79.1" />
+<property name="xslthl.config"
+	  value="${docbook.xsl.dir}/highlighting/xslthl-config.xml" />
 
 <!-- oxygenInstallDir location depends on if run from oXygen or on OS. -->
 <condition property="oxygenInstallDir"
@@ -104,6 +104,8 @@
 	  value="${oxygenInstallDir}/lib/xml-apis.jar" />
 <property name="oxygen-basic-utilities.jar"
 	  value="${oxygenInstallDir}/lib/oxygen-basic-utilities.jar" />
+<property name="xslthl.jar"
+	  value="${oxygenInstallDir}/frameworks/dita/DITA-OT3.x/plugins/com.oxygenxml.highlight/lib/xslthl-2.1.1.jar" />
 
 <!-- saxon.jar location depends on if run from oXygen or on OS. -->
 <condition property="saxon.jar"
@@ -201,9 +203,9 @@
 	key="org.apache.xerces.xni.parser.XMLParserConfiguration"
 	value="org.apache.xerces.parsers.XIncludeParserConfiguration" />
     <arg value="-o" />
-    <arg value="${basedir.converted}/xsl/${single.basename}-nons.xml" />
+    <arg value="${xsl.dir}/${single.basename}-nons.xml" />
     <arg value="${basedir.converted}/${single}" />
-    <arg value="${basedir.converted}/xsl/nons.xsl" />
+    <arg value="${xsl.dir}/nons.xsl" />
   </java>
 </target>
 
@@ -217,12 +219,14 @@
 	depends="single.isset">
   <uptodate
       property="fo.single.uptodate"
-      targetfile="${basedir.converted}/xsl/${single.basename}.fo">
+      targetfile="${xsl.dir}/${single.basename}.fo">
     <srcfiles
 	file="${basedir.converted}/${single.basename}.xml" />
     <srcresources>
       <path refid="muk-proceedings-db.path" />
     </srcresources>
+    <srcfiles
+	dir="${docbook.xsl.dir}/highlighting" includes="*.xml" />
   </uptodate>
 </target>
 
@@ -254,8 +258,8 @@
 		 fo.single.uptodate"
 	unless="fo.single.uptodate">
   <xslt in="${basedir.converted}/${single.basename}.xml"
-	out="${basedir.converted}/xsl/${single.basename}.fo"
-	style="${basedir.converted}/xsl/muk-proceedings-db.xsl"
+	out="${xsl.dir}/${single.basename}.fo"
+	style="${xsl.dir}/muk-proceedings-db.xsl"
 	classpath="${xslthl.jar}:${xerces.jar}:${xml-apis.jar}:${oxygen-basic-utilities.jar}:${saxon6.jar}"
 	force="yes">
     <sysproperty
@@ -279,9 +283,19 @@
   </xslt>
 </target>
 
+<target name="pdf.single.uptodate"
+	depends="single.isset">
+  <uptodate
+      property="pdf.single.uptodate"
+      targetfile="${xsl.dir}/${single.basename}.pdf">
+    <srcfiles
+	file="${xsl.dir}/${single.basename}.fo" />
+  </uptodate>
+</target>
 
 <target name="pdf.single"
-	depends="fo.single">
+	depends="fo.single, pdf.single.uptodate"
+	unless="pdf.single.uptodate">
   <exec executable="${ahformatter}"
 	dir="${basedir.converted}">
     <arg value="-x" />
@@ -293,9 +307,9 @@
     <arg value="-pdfver" />
     <arg value="${pdf.version}" />
     <arg value="-o" />
-    <arg value="${basedir.converted}/xsl/${single.basename}.pdf" />
+    <arg value="${xsl.dir}/${single.basename}.pdf" />
     <arg value="-d" />
-    <arg value="${basedir.converted}/xsl/${single.basename}.fo" />
+    <arg value="${xsl.dir}/${single.basename}.fo" />
   </exec>
 </target>
 
