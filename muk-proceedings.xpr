@@ -44,26 +44,11 @@
                             </scenarioAssociation>
                             <scenarioAssociation>
                                 <field name="url">
-                                    <String>xsl/muk-sponsors.xsl</String>
+                                    <String>identity.xsl</String>
                                 </field>
                                 <field name="scenarioIds">
                                     <list>
-                                        <String>muk-proceedings-db-2019</String>
-                                    </list>
-                                </field>
-                                <field name="scenarioTypes">
-                                    <list>
-                                        <String>XML</String>
-                                    </list>
-                                </field>
-                            </scenarioAssociation>
-                            <scenarioAssociation>
-                                <field name="url">
-                                    <String>xsl/docbook-xsl-1.79.1/template/titlepage.xsl</String>
-                                </field>
-                                <field name="scenarioIds">
-                                    <list>
-                                        <String>titlepage</String>
+                                        <String>identity</String>
                                     </list>
                                 </field>
                                 <field name="scenarioTypes">
@@ -198,7 +183,7 @@
                                     <null/>
                                 </field>
                                 <field name="name">
-                                    <String>muk-proceedings-db-2019</String>
+                                    <String>identity</String>
                                 </field>
                                 <field name="baseURL">
                                     <String></String>
@@ -207,7 +192,7 @@
                                     <String></String>
                                 </field>
                                 <field name="fOPMethod">
-                                    <String>pdf</String>
+                                    <String>@PDF</String>
                                 </field>
                                 <field name="fOProcessorName">
                                     <String>Apache FOP</String>
@@ -216,7 +201,7 @@
                                     <String></String>
                                 </field>
                                 <field name="inputXSLURL">
-                                    <String>${pdu}/xsl/muk-proceedings-db.xsl</String>
+                                    <String>${currentFileURL}</String>
                                 </field>
                                 <field name="inputXMLURL">
                                     <String>${pdu}/proceedings-2019.xml</String>
@@ -225,7 +210,7 @@
                                     <Boolean>false</Boolean>
                                 </field>
                                 <field name="isFOPPerforming">
-                                    <Boolean>true</Boolean>
+                                    <Boolean>false</Boolean>
                                 </field>
                                 <field name="type">
                                     <String>XML</String>
@@ -237,7 +222,7 @@
                                     <Boolean>false</Boolean>
                                 </field>
                                 <field name="outputResource">
-                                    <String>${pd}/Markup-UK-2019-proceedings.pdf</String>
+                                    <String>${pdu}/proceedings-2019-full.xml</String>
                                 </field>
                                 <field name="openOtherLocationInBrowser">
                                     <Boolean>false</Boolean>
@@ -252,7 +237,7 @@
                                     <Boolean>false</Boolean>
                                 </field>
                                 <field name="showInXMLPane">
-                                    <Boolean>false</Boolean>
+                                    <Boolean>true</Boolean>
                                 </field>
                                 <field name="showInSVGPane">
                                     <Boolean>false</Boolean>
@@ -356,7 +341,7 @@
                                     <null/>
                                 </field>
                                 <field name="name">
-                                    <String>titlepage</String>
+                                    <String>muk-proceedings-db-2019</String>
                                 </field>
                                 <field name="baseURL">
                                     <String></String>
@@ -374,16 +359,16 @@
                                     <String></String>
                                 </field>
                                 <field name="inputXSLURL">
-                                    <String>file:/home/ari/Documents/MUK-proceedings/xsl/docbook-xsl-1.79.1/template/titlepage.xsl</String>
+                                    <String>${pdu}/xsl/muk-proceedings-db.xsl</String>
                                 </field>
                                 <field name="inputXMLURL">
-                                    <String>file:/home/ari/Documents/MUK-proceedings/xsl/titlepage.templates.muk.xml</String>
+                                    <String>${pdu}/proceedings-2019-full.xml</String>
                                 </field>
                                 <field name="defaultScenario">
                                     <Boolean>false</Boolean>
                                 </field>
                                 <field name="isFOPPerforming">
-                                    <Boolean>false</Boolean>
+                                    <Boolean>true</Boolean>
                                 </field>
                                 <field name="type">
                                     <String>XML</String>
