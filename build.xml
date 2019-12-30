@@ -70,12 +70,20 @@
 <property name="docbook.xsl.dir"
 	  value="${xsl.dir}/docbook-xsl-1.79.1" />
 
+<!-- oxygenInstallDir location depends on if run from oXygen or on OS. -->
 <condition property="oxygenInstallDir"
 	   value="${ant.home.converted}/../../">
   <contains string="${ant.home.converted}"
 	    substring="oxygen"
 	    casesensitive="false" />
 </condition>
+<condition property="oxygenInstallDir" value="${oxygenInstallDir.windows}">
+  <os family="windows" />
+</condition>
+<condition property="oxygenInstallDir" value="${oxygenInstallDir.mac}">
+  <os family="mac" />
+</condition>
+<property name="oxygenInstallDir" value="${oxygenInstallDir.unix}" />
 
 <property name="oxygen-basic-utilities.jar"
 	  value="${oxygenInstallDir}/lib/oxygen-basic-utilities.jar"/>
@@ -88,10 +96,21 @@
   <os family="windows" />
 </condition>
 
+<!-- When you have <oXygen/> installed, it's the easiest place to find
+     the jars you need. -->
+<property name="xerces.jar"
+	  value="${oxygenInstallDir}/lib/oxygen-patched-xerces.jar" />
+<property name="xml-apis.jar"
+	  value="${oxygenInstallDir}/lib/xml-apis.jar" />
+<property name="oxygen-basic-utilities.jar"
+	  value="${oxygenInstallDir}/lib/oxygen-basic-utilities.jar" />
+
 <!-- saxon.jar location depends on if run from oXygen or on OS. -->
 <condition property="saxon.jar"
-	   value="${ant.home.converted}/../../lib/oxygen-patched-saxon-9.jar">
-  <contains string="${ant.home.converted}" substring="oxygen" casesensitive="false" />
+	   value="${oxygenInstallDir}/lib/oxygen-patched-saxon-9.jar">
+  <resourceexists>
+    <file file="${oxygenInstallDir}/lib/oxygen-patched-saxon-9.jar" />
+  </resourceexists>
 </condition>
 <condition property="saxon.jar" value="${saxon.jar.windows}">
   <os family="windows" />
@@ -103,8 +122,10 @@
 
 <!-- saxon6.jar location depends on if run from oXygen or on OS. -->
 <condition property="saxon6.jar"
-	   value="${ant.home.converted}/../../lib/oxygen-patched-saxon-6.jar">
-  <contains string="${ant.home.converted}" substring="oxygen" casesensitive="false" />
+	   value="${oxygenInstallDir}/lib/oxygen-patched-saxon-6.jar">
+  <resourceexists>
+    <file file="${oxygenInstallDir}/lib/oxygen-patched-saxon-6.jar" />
+  </resourceexists>
 </condition>
 <condition property="saxon6.jar" value="${saxon6.jar.windows}">
   <os family="windows" />
@@ -136,7 +157,7 @@
       out="build-paths.xml"
       style="${xsl.dir}/ant-paths.xsl"
       basedir="${basedir.converted}"
-      classpath="${saxon.jar}"
+      classpath="${saxon.jar};${oxygen-basic-utilities.jar}"
       force="true">
   <factory name="net.sf.saxon.TransformerFactoryImpl">
     <attribute
