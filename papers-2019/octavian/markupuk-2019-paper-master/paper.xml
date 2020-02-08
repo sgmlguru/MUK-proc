@@ -113,7 +113,7 @@
                 text or tags specified in the quick fix operation, or can be generated dynamically
                 depending on the current node content or depending on the other nodes from the
                 document. To generate dynamic content, you can use XPath expressions in the value of
-                the <emphasis>@select</emphasis>" attribute for the <emphasis>sqf:add</emphasis>,
+                the <emphasis>@select</emphasis> attribute for the <emphasis>sqf:add</emphasis>,
                     <emphasis>sqf:replace</emphasis>, or <emphasis>sqf:stringReplace</emphasis>
                 operations.</para>
             <para>By using XPath expressions, you can perform complex operations and generate
