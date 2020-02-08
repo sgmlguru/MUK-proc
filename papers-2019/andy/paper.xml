@@ -439,7 +439,7 @@ map {
 					<citation>XPARSE</citation>. It can parse a number of XQuery versions and
 				dialects.</para>
 			<para>The rendering code
-				is:<programlisting>      for $render in $global
+				is:<programlisting>for $render in $global
       let $doc:= apply($render?function,[$model,$opts])
       return map{"document": $doc, 
                  "uri": $render?uri, 
