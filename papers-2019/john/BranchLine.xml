@@ -171,7 +171,7 @@
             sequence of elements, such as:</para>
         <example>
             <title>A simple layout</title>
-            <programlisting>&lt;layout name="simple">
+            <programlisting language="xml">&lt;layout name="simple">
    &lt;start x="400" y="400" orient="30"/>
    &lt;straight name="section1" length="1000"/>
    &lt;curve r="1500" angle="-45"/>
@@ -208,7 +208,7 @@
                 line</quote></emphasis>:</para>
         <example>
             <title>A simple branch line</title>
-            <programlisting>&lt;layout name="simplePoint" start="section1">
+            <programlisting language="xml">&lt;layout name="simplePoint" start="section1">
    &lt;start x="400" y="400" orient="30"/>
    &lt;straight name="section1" length="1000"/>
    &lt;point id="P1" radius="small" turn="left">
@@ -241,7 +241,7 @@
             such as:</para>
         <example>
             <title>A layout with two points</title>
-            <programlisting>&lt;layout name="twoPoints" start="section1">
+            <programlisting language="xml">&lt;layout name="twoPoints" start="section1">
    &lt;start x="400" y="400" orient="30"/>
    &lt;straight name="section1" length="1000"/>
    &lt;point id="P1" radius="small" turn="left">
@@ -343,7 +343,7 @@
                     <quote>self-pointers</quote> by adding a specific link directive</para>
             <example>
                 <title>Describing a graph linkage</title>
-                <programlisting>&lt;layout name="oval" start="A">
+                <programlisting language="xml">&lt;layout name="oval" start="A">
     &lt;start x="2000" y="1000" orient="20"/>
     &lt;straight name="A" length="2000"/>
     &lt;curve r="1000" angle="180"/>
@@ -362,7 +362,7 @@
                 co-incidence that such a link may be required, but sometimes the geometry isn't quite accurate enough. Here is a passing loop:</para>
             <example>
                 <title>A passing loop</title>
-                <programlisting>&lt;layout name="passingLoop" start="main-line1">
+                <programlisting language="xml">&lt;layout name="passingLoop" start="main-line1">
     &lt;start x="400" y="400" orient="30"/>
     &lt;straight name="main-line1" length="500"/>
     &lt;point id="passing1" radius="small" turn="left">
@@ -396,7 +396,7 @@
                     <emphasis>section2</emphasis> and <emphasis>branch3</emphasis> is joinable, and we specifically add a link declaration:</para>
             <example>
                 <title>Linking arbitrary branches</title>
-                <programlisting> &lt;layout name="twoPointsLinked" start="section1">
+                <programlisting language="xml">&lt;layout name="twoPointsLinked" start="section1">
     &lt;start x="400" y="400" orient="30"/>
     ...
     &lt;point id="P1" radius="small" turn="left">
@@ -443,7 +443,7 @@
                         assume that gradients will never be steep enough to make significant effects on planar (<code>x,y</code>) positions. </para>
                 </footnote>, and the <code>xsl:iterate</code> instruction processing the track component sequences through template application as the
                 track is <quote>constructed</quote>. For example here is the code to process a <code>straight</code> element:</para>
-            <programlisting>&lt;xsl:template match="straight" as="map(*)" mode="makeTrack">
+            <programlisting language="xml">&lt;xsl:template match="straight" as="map(*)" mode="makeTrack">
    &lt;xsl:param name="start" as="map(*)"/>
    &lt;xsl:param name="options" as="map(*)" select="map{}" tunnel="true"/>
    &lt;xsl:variable name="length" select="@length" as="xs:double"/>
@@ -492,7 +492,7 @@
                 generate something suitable in the absence of a specific <code>@name</code> value.</para>
             <para>This template is executed from an <code>xsl:iterate</code> instruction processing the children of a <code>layout</code> or a
                     <code>spur</code>:</para>
-            <programlisting>&lt;xsl:template match="rail|spur|layout" as="map(*)*" mode="makeTrack">
+            <programlisting language="xml">&lt;xsl:template match="rail|spur|layout" as="map(*)*" mode="makeTrack">
    &lt;xsl:param name="start" as="map(*)">
       &lt;xsl:apply-templates select="start" mode="#current"/>
    &lt;/xsl:param>
@@ -539,7 +539,7 @@
         </figure>
         <para>In this case the track is generated from a sequence of <quote>rail-and-sleeper</quote> subsection definitions, displayed via SVG's
                 <code>use</code> directive: </para>
-        <programlisting>&lt;g xmlns="http://www.w3.org/2000/svg" class="way" 
+        <programlisting language="xml">&lt;g xmlns="http://www.w3.org/2000/svg" class="way" 
     transform="translate(3769.549241302635,2599) rotate(30)">
     &lt;use href="#track10" x="0" y="0"/>
     &lt;rect class="ballast" x="360" y="-36" width="140" height="72"/>
@@ -569,7 +569,7 @@
             <para>I could perhaps have looked at using a full 3D modelling package which was capable of generating SVG outputs, but my needs were
                 modest and could perhaps be handled by a simple declarative model, processed completely with XSLT to generate suitable SVG. The
                 building is defined by a simple XML structure of boxes and a cylinder:</para>
-            <programlisting>&lt;buildings>
+            <programlisting language="xml">&lt;buildings>
   &lt;resources> …. &lt;/resources>
   &lt;group x="1000" y="1000" 
      fill="url(#brickWall)" stroke-width="10" stroke="black">
@@ -621,7 +621,7 @@
                 interpolations of XSLT variables. This ability to style and add content to the named <emphasis>faces</emphasis> of the component parts
                 is important . For example, adding the <quote>smokebox handle</quote> to the boiler front of <emphasis>Lady Anne</emphasis> merely
                 requires:</para>
-            <programlisting>&lt;cylinder class="boilerFront" x="151" z="80" axis="x" 
+            <programlisting language="xml">&lt;cylinder class="boilerFront" x="151" z="80" axis="x" 
   radius="27" length="45">
     &lt;end class="boilerEnd">
        &lt;svg:g class="silver" stroke="silver" stroke-width="5">
@@ -650,7 +650,7 @@
                 <tbody>
                     <tr>
                         <td>
-                            <programlisting>&lt;div name="show">
+                            <programlisting language="xml">&lt;div name="show">
     &lt;title>Show&lt;/title>
     &lt;option default="">photos&lt;/option>
     &lt;option>survey&lt;/option>
@@ -676,7 +676,7 @@
         <para>declares a group of controls, from which a group of labels and checkboxes are generated, some of which are preset and whose rendering is
             shown above. Control of display is performed by a generic XSLT template, which fields change events on the generated <code>input</code>
             checkboxes, all of which are class-labelled as <emphasis>show</emphasis>: </para>
-        <programlisting>&lt;xsl:template match="input[@class eq 'show']" mode="ixsl:onchange">
+        <programlisting language="xml">&lt;xsl:template match="input[@class eq 'show']" mode="ixsl:onchange">
    &lt;ixsl:set-style name="display"  object="id(@value)"
       select="if(ixsl:get(.,'checked')) then 'inline' else 'none'"/>
 &lt;/xsl:template></programlisting>
@@ -694,7 +694,7 @@
                 <emphasis>switched</emphasis> or <emphasis>unSwitched</emphasis> classes. CSS styling ensures that the appropriate components for the
             given state are displayed. Sometimes determining which control effects which point can be problematic. A solution to this is to support
             clicking on the (SVG) points themselves, or an adjacent lever. This is achieved by the templates:</para>
-        <programlisting>&lt;xsl:template match="*[contains-token(@class, 'pointLever')]" 
+        <programlisting language="xml">&lt;xsl:template match="*[contains-token(@class, 'pointLever')]" 
     mode="ixsl:onclick">
    &lt;xsl:variable name="point" 
        select="ancestor::*:g[contains-token(@class, 'point')][1]"/>
@@ -746,9 +746,9 @@
         </figure>
         <para>Assuming we wish our <quote>train</quote> to run at 100mm/s (a scale speed of ~ 7km/hr, i.e. a brisk walking pace), then the animation
             should take 42.5 seconds. This is achieved by forming up an <code>svg:animateMotion</code> definition element:</para>
-        <programlisting>&lt;animateMotion xmlns="http://www.w3.org/2000/svg"
-   id="train.animation" xlink:href="#train"<co xml:id="animation.target"/>
-   begin="indefinite"  fill="freeze" repeatCount="1"<co xml:id="animation.start"/>
+        <programlisting language="xml">&lt;animateMotion xmlns="http://www.w3.org/2000/svg"
+   id="train.animation" xlink:href="#train" <co xml:id="animation.target"/>
+   begin="indefinite"  fill="freeze" repeatCount="1" <co xml:id="animation.start"/>
    calcMode="linear" keyTimes="0;1" keyPoints="0;1"<co xml:id="animation.times"/>
    rotate="auto"<co xml:id="animation.rotate"/> 
    dur="42.5" onend="eventEnded('train;section2.trail')<co xml:id="animation.end"/>>
@@ -794,9 +794,9 @@
         </figure>
         <para>When the animation finishes, the <code>onend</code> statement is invoked, which is fielded by the global JavaScript function
                 <code>eventEnded()</code>. </para>
-        <programlisting>var ignoreEvent = false;
+        <programlisting language="javascript">var ignoreEvent = false;
 function eventEnded(e) { 
-   if(!ignoreEvent) {<co xml:id="event.ignore"/>
+   if(!ignoreEvent) { <co xml:id="event.ignore"/>
       var event = new Event("change",{"bubbles":true});
       var store = this.document.getElementById("event");<co xml:id="event.store"/>
       store.value = e; 
@@ -813,12 +813,12 @@ function eventEnded(e) {
                     property.</para>
             </callout>
             <callout arearefs="event.dispatch">
-                <para>Propogating an event that the value of the event information store has changed.</para>
+                <para>Propagating an event that the value of the event information store has changed.</para>
             </callout>
         </calloutlist>
         <para>After this function has executed, the checkbox <code>id('event')</code> receives a <emphasis>change</emphasis> event which is caught by
             an XSLT template:</para>
-        <programlisting>&lt;xsl:template match="*:input[@id eq 'event']" mode="ixsl:onchange"> 
+        <programlisting language="xml">&lt;xsl:template match="*:input[@id eq 'event']" mode="ixsl:onchange"> 
    &lt;xsl:variable name="layout" as="map(*)"
       select="$layouts(f:radioValue('layouts', .))"/> <co xml:id="event.layout"/>
    &lt;xsl:variable name="parts" select="tokenize(@value, ';')"/> <co xml:id="event.orders"/>
@@ -881,7 +881,7 @@ function eventEnded(e) {
                             </inlinemediaobject>
                         </td>
                         <td>
-                            <programlisting>&lt;div id="Arrow.cab" class="cab arrow">
+                            <programlisting language="xml">&lt;div id="Arrow.cab" class="cab arrow">
   &lt;div class="toggler">
     &lt;input class="run" type="checkbox"
        value="Arrow" />
@@ -915,7 +915,7 @@ function eventEnded(e) {
         </figure>
         <para>Apart from selecting a locomotive to run, the only current action is to <emphasis>change its speed or direction of travel.</emphasis> A
             number of XSLT templates detect changes in the cab input controls such as:</para>
-        <programlisting>&lt;xsl:template match="input[contains-token(@class, 'speed')]" 
+        <programlisting language="xml">&lt;xsl:template match="input[contains-token(@class, 'speed')]" 
    mode="ixsl:onchange">
    &lt;xsl:variable name="cab" 
       select="ancestor::div[contains-token(@class, 'cab')]"/>
@@ -945,7 +945,7 @@ function eventEnded(e) {
         <para>The key idea here is to determine <emphasis>how far the current animation has progressed</emphasis>, from which the remaining distance
             to travel can be determined. This is computed by a global JavaScript function with the animation object <emphasis>a</emphasis> as
             argument:</para>
-        <programlisting>function animProgress(a) {
+        <programlisting language="javascript">function animProgress(a) {
   if(a.getAttribute("dur")==0 ||
      a.getAttribute("dur")=="indefinite") {
     return 0;
@@ -980,7 +980,7 @@ function eventEnded(e) {
                 direction</emphasis> flag is inverted and it passes on to the following section.</para>
         <para>A small number off other animation effects have been added. Firstly locomotives have wheels, which can be animated to rotate at a rate
             and direction suitable for their diameter and the locomotive's speed, using the animation element: </para>
-        <programlisting>&lt;animateTransform type="rotate" begin="indefinite" 
+        <programlisting language="xml">&lt;animateTransform type="rotate" begin="indefinite" 
    attributeName="transform" from="0" to="360" 
    dur="…." attributeType="XML" repeatCount="indefinite"/></programlisting>
         <para>Secondly, locomotives can be given running sound effects by invoking <code>play()</code> method on an <code>audio</code> element when
@@ -1163,7 +1163,7 @@ function eventEnded(e) {
                     </personname>
                 </author>
             </authorgroup>
-            <title>Saxon-JS: XSLT 3.0 in the Browser.</title>
+            <title>Saxon-JS: XSLT 3.0 in the Browser</title>
             <publishername>Balisage: The Markup Conference </publishername>
             <date>2016</date>
             <biblioid class="uri"> https://doi.org/10.4242/BalisageVol17.Lockett01</biblioid>
