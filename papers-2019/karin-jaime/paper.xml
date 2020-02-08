@@ -2,8 +2,8 @@
 <?xml-stylesheet type="text/css" href="resources/css/paper.css"?>
 <article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0">
 	<info>
-		<title><emphasis role="bold">Beyond the brick, for the past in the future, you find the
-				archive!</emphasis></title>
+		<title>Beyond the brick, for the past in the future, you find the
+			archive!</title>
 		<author>
 			<personname>Karin Bredenberg</personname>
 			<email>karin.bredenberg@riksarkivet.se</email>
@@ -23,7 +23,7 @@
 			</affiliation>
 		</author>
 		<author>
-			<personname><emphasis role="bold">Jaime Kaminski</emphasis></personname>
+			<personname>Jaime Kaminski</personname>
 			<email>j.kaminski@brighton.ac.uk</email>
 			<uri><link xlink:href="https://orcid.org/0000-0003-2907-0128"
 					xmlns:xlink="http://www.w3.org/1999/xlink"/></uri>
