@@ -3,7 +3,7 @@
 <article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0">
 	<info>
 
-      <title><emphasis role="italic">sub</emphasis>check Article MarkupUK London</title>
+      <title><emphasis role="italic">sub</emphasis>check</title>
 
 		<author>
 			<personname>Andreas Tai</personname>
@@ -262,8 +262,7 @@
         <para> The implementation assumption is that more than one specification needs be tested.
           These specifications need to be defined first. To keep the XML samples in the paper short
           we later use only one specification. </para>
-        <programlisting language="xml">
-&lt;Specifications&gt;
+        <programlisting language="xml">&lt;Specifications&gt;
     &lt;Specification ID=&quot;<emphasis role="bold">ID-Aeto-Conditions</emphasis>&quot;&gt;
         &lt;Name&gt;Conditions Aeto&lt;/Name&gt;
         &lt;Acronym&gt;C-Aeto&lt;/Acronym&gt;
@@ -278,8 +277,7 @@
 </programlisting>
         <para> After that, the constraints can be documented with the necessary level of detail and
           linked back to the specification. </para>
-        <programlisting language="xml">
-&lt;Constraint ID=&quot;c1&quot;&gt;
+        <programlisting language="xml">&lt;Constraint ID=&quot;c1&quot;&gt;
     &lt;ShortName&gt;
       Cabin Bag Max. Weight 8kg
     &lt;/ShortName&gt;
@@ -324,8 +322,7 @@
         <para> The rule is implemented in Schematron as defined by the Schematron standard <biblioref linkend="ISOSCHEMA"/>. In
           addition, the <literal>@see</literal> attribute is used for linking the Schematron rule
           back to the documented constraint. </para>
-        <programlisting language="xml">
-&lt;sch:rule context=&quot;cabin-bag/weight&quot;&gt;
+        <programlisting language="xml">&lt;sch:rule context=&quot;cabin-bag/weight&quot;&gt;
     &lt;sch:let 
       name=&quot;bag-weight&quot; 
       value=&quot;xs:float(.)&quot;/&gt;
@@ -342,8 +339,7 @@
 &lt;/sch:rule&gt;
 </programlisting>
         <para> More context information is given by using Schematron’s diagnostic element. </para>
-        <programlisting language="xml">
-&lt;sch:diagnostic id=&quot;diag-weight-8&quot;&gt;
+        <programlisting language="xml">&lt;sch:diagnostic id=&quot;diag-weight-8&quot;&gt;
   The cabin luggage of 
   &lt;sch:value-of select=&quot;$passenger-name&quot;/&gt;
   exceeded the maximum weight allowance by 
@@ -374,8 +370,7 @@
           </listitem>
         </orderedlist>
         <para> Given the the following XML file…</para>
-        <programlisting language="xml">
-&lt;passenger&gt;
+        <programlisting language="xml">&lt;passenger&gt;
     &lt;name&gt;Jane Grant&lt;/name&gt;
     &lt;cabin-bag&gt;
         &lt;weight&gt;11&lt;/weight&gt;
@@ -386,8 +381,7 @@
           …the target output of the compiled Schematron XSLT is an XML document that follows
           the structure of the Schematron Validation Report Language. A failed Schematron assert would
           result in the following SVRL: </para>
-        <programlisting language="xml">
-&lt;svrl:failed-assert 
+        <programlisting language="xml">&lt;svrl:failed-assert 
   test=&quot;$bag-weight le 8&quot;
   id=&quot;assert-c1-1&quot;
   see=&quot;http://www.cabin-bag.info/c1&quot;
@@ -415,8 +409,7 @@
           provided to the end user product that integrates the validation. The XML structure of the
           report is the agreed API between validation engine and post-processing system. </para>
         <para> The output is grouped by constraint in the report. </para>
-        <programlisting language="xml">
-&lt;errorCategory&gt;
+        <programlisting language="xml">&lt;errorCategory&gt;
     &lt;constraintID&gt;
       c1
     &lt;/constraintID&gt;
@@ -509,13 +502,11 @@
     <para>
       In practice, a request looks like the following:
     </para>
-    <programlisting language="bash">
-$ cat luggage.xml | http POST http://subecheck/validate
+    <programlisting language="bash">$ cat luggage.xml | http POST http://subecheck/validate
 ###################################################
 &gt; Content-Type: application/xml; charset=UTF-8
 </programlisting>
-    <programlisting language="xml">
-  &lt;report&gt;
+    <programlisting language="xml">  &lt;report&gt;
     &lt;errors&gt;
     &lt;constraintID&gt;c1&lt;/constraintID&gt;
     &lt;title&gt;
@@ -528,13 +519,11 @@ $ cat luggage.xml | http POST http://subecheck/validate
   &lt;/report></programlisting>
     <para> Via REST, users can also request a report in JSON format by specifying a different
         <literal>Accept</literal>-Header: </para>
-    <programlisting language="bash">
-$ cat luggage.xml | http POST http://subecheck/validate Accept:application/json
+    <programlisting language="bash">$ cat luggage.xml | http POST http://subecheck/validate Accept:application/json
 ###########################################################################
 &gt; Content-Type: application/json; charset=UTF-8
 </programlisting>
-    <programlisting language="json">
-{
+    <programlisting language="json">{
   &quot;filename&quot;: &quot;luggage.xml&quot;,
   &quot;filesize&quot;: &quot;2 KB&quot;,
   &quot;report&quot;: [{
@@ -765,7 +754,7 @@ $ cat luggage.xml | http POST http://subecheck/validate Accept:application/json
 	</bibliography>
 
   <appendix>
-    <title>Appendix A - Subcheck artifacts with TTML examples</title>
+    <title>Subcheck artifacts with TTML examples</title>
     <para> Example of TTML specification listing in the constraints.xml:
       <programlisting language="xml">&lt;Specifications>
   &lt;Specification ID="spec-imsc1.1">
