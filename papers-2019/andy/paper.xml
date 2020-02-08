@@ -162,7 +162,7 @@ function page:hello($who) {
 : viewing or dynamic links for real-time viewing.
 : @return XHTML.
 :)
-define 
+declare 
 function print-module($uri as xs:string, $local as xs:boolean) as element()* 
 </programlisting></para>
 			
