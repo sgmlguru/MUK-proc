@@ -2,7 +2,7 @@
 <!--<?xml-stylesheet type="text/css" href="resources/css/paper.css"?>-->
 <article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0">
 	<info>
-		<title><emphasis role="bold">Generating documents from XQuery annotations</emphasis></title>
+		<title>Generating documents from XQuery annotations</title>
 		<author>
 			<personname>Andy Bunce</personname>
 			<email>bunce.andy@gmail.com</email>
