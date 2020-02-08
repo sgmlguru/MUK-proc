@@ -322,7 +322,7 @@
             </example>
             <example>
                 <title>Serialized as XML:</title>
-                <programlisting><![CDATA[<travel id="t1">
+                <programlisting language="xml"><![CDATA[<travel id="t1">
    <date>2019-05-15</date>
    <reason>Customer meeting in Oslo</reason>
    <employee id="e1">
@@ -540,7 +540,7 @@
                     output file so far was 43 GB.</para>
                 <example>
                     <title>XML data using the relational model - from DBUnit:</title>
-                    <programlisting><![CDATA[<table name="employee">
+                    <programlisting language="xml"><![CDATA[<table name="employee">
     <column>employee-id</column>
     <column>first-name</column>
     <column>second-name</column>
@@ -604,7 +604,7 @@
                         as text, into XML with column names used as element names.</para>
                     <example>
                         <title>XML data using the relational model - better semantics:</title>
-                        <programlisting><![CDATA[<employee>
+                        <programlisting language="xml"><![CDATA[<employee>
     <row>
         <employee-id>e1</employee-id>
         <first-name>Ola</first-name>
@@ -637,7 +637,7 @@
                     searched and used.</para>
                 <example>
                     <title>Aggregated records in hierarchical XML:</title>
-                    <programlisting><![CDATA[<travels>
+                    <programlisting language="xml"><![CDATA[<travels>
     <travel id="t1">
         <date>2019-05-15</date>
         <reason>Customer meeting in Oslo</reason>
