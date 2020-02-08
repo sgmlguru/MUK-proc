@@ -447,7 +447,7 @@ class="three" dir="ltr"
                         <row>
                             <entry>
                                 <figure xml:id="vscode-screen">
-                                    <title>Attribute example in Visual Studio code</title>
+                                    <title>Attribute example in Visual Studio Code</title>
                                     <mediaobject>
                                         <imageobject>
                                             <imagedata fileref="vscode-screen.png"/>
@@ -460,7 +460,7 @@ class="three" dir="ltr"
                 </tgroup>
             </informaltable>
             <para>In <xref linkend="vscode-screen"/>, we see how this can be displayed and managed
-                in Microsoft Visual Studio code.</para>
+                in Microsoft Visual Studio Code.</para>
             <para>The above will produce syntactically correct results, though it is not ideal
                 because it would be more natural to choose the attributes separately rather than as
                 a pair. This separation can be achieved by inserting additional white space so that
