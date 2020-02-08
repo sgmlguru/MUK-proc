@@ -55,7 +55,7 @@
     <section>
         <title>Introduction and Background</title>
         <para>This paper is focused on the diff3 format rather than the diff3 executable
-            application. In this paper, we will consider the diff3 format from GNU diffutils [<xref
+            application. In this paper, we will consider the diff3 format from GNU diffutils [<biblioref
                 linkend="diffutils"/>]. There are many possible outputs from diff3, but the one we
             are interested in is the one that provides a merged file result with conflicts marked
             up, i.e., the '-m' option on the command line. </para>
@@ -78,7 +78,7 @@
             canonical form. </para>
         <para>It is possible to do a better job of comparison for XML and JSON if the comparison
             engine is aware of the tree structure. The issue then is how to represent the change in
-            a way that is suitable for other systems, for example, Visual Studio Code [<xref
+            a way that is suitable for other systems, for example, Visual Studio Code [<biblioref
                 linkend="vscode"/>], which understands the diff3 format. With some ingenuity,
             certain changes can be represented so that accepting or rejecting the change results in
             a well-formed output. However, such a representation is not always possible when, for
@@ -93,8 +93,7 @@
     </section>
     <section>
         <title>How diff3 Delimits the Extent of Changes and Conflicts</title>
-        <para>The example is based on this paper, "A Formal Investigation of Diff3" [<xref
-                linkend="FormalDiff3"/>]. It explains how the two two-way diffs are aligned. It is
+        <para>The example is based on this paper, "A Formal Investigation of Diff3" [<biblioref linkend="FormalDiff3"/>]. It explains how the two two-way diffs are aligned. It is
             useful to understand this in order to see how it might affect tree-structured
             data.</para>
         <para>The example consists of three text files with numbers on each line, A, B and the 'old'
@@ -197,8 +196,7 @@
             the corresponding end tag; unless these insertions are done as a single choice, the
             result will not be well-formed. This problem can always be overcome by duplicating some
             of the data, and the argument here is very similar to that presented at this conference
-            last year regarding change to both content and structure [<xref linkend="Overlapping"
-            />]. Duplication can work well when the span of the change is small because very little
+            last year regarding change to both content and structure [<biblioref linkend="Overlapping"/>]. Duplication can work well when the span of the change is small because very little
             data needs to be duplicated, but when the span is larger, more data needs to be
             duplicated and the nature of the change is lost in this duplication. In the extreme,
             duplication of the entire contents of an XML file will always yield a choice between
@@ -408,19 +406,19 @@ duplicated
                         <tbody>
                             <row>
                                 <entry>
-                                    <programlisting>&lt;span 
+                                    <programlisting language="xml">&lt;span 
     class="two" 
     dir="rtr" 
     id="23"></programlisting>
                                 </entry>
                                 <entry>
-                                    <programlisting>&lt;span 
+                                    <programlisting language="xml">&lt;span 
     class="one" 
     id="23" 
     dir="TBA"></programlisting>
                                 </entry>
                                 <entry>
-                                    <programlisting>&lt;span 
+                                    <programlisting language="xml">&lt;span 
     id="23" 
     class="three" 
     dir="ltr"></programlisting>
@@ -431,7 +429,7 @@ duplicated
                 </table>This could be represented as shown below. Note here that we are not showing
                 the result of running 'diff3 -m' but rather we have run an XML-aware comparison
                 yielding results that we want to express in the diff3 format.
-                <programlisting>&lt;span id="23"
+                <programlisting language="xml">&lt;span id="23"
 &lt;&lt;&lt;&lt;&lt;&lt;&lt; A.txt
 class="two" dir="rtr"
 ||||||| O.txt
@@ -465,7 +463,7 @@ class="three" dir="ltr"
                 because it would be more natural to choose the attributes separately rather than as
                 a pair. This separation can be achieved by inserting additional white space so that
                 we get two choices as shown
-                below.<programlisting>&lt;span id="23"
+                below.<programlisting language="xml">&lt;span id="23"
 &lt;&lt;&lt;&lt;&lt;&lt;&lt; A.txt
 class="two"
 ||||||| O.txt
@@ -915,7 +913,7 @@ ws = *(
                 <tbody>
                     <row>
                         <entry colname="c1">
-                            <programlisting><![CDATA[<author>
+                            <programlisting language="xml"><![CDATA[<author>
   <personname>
     <firstname>Nigel
         </firstname>
@@ -935,7 +933,7 @@ ws = *(
 </author>]]></programlisting>
                         </entry>
                         <entry colname="c2">
-                            <programlisting><![CDATA[<author>
+                            <programlisting language="xml"><![CDATA[<author>
   <personname>
     <firstname>Nigel
         </firstname>
@@ -954,7 +952,7 @@ ws = *(
 </author>]]></programlisting>
                         </entry>
                         <entry colname="c3">
-                            <programlisting><![CDATA[<author>
+                            <programlisting language="xml"><![CDATA[<author>
   <personname>
     <firstname>Nigel
     </firstname>
@@ -979,7 +977,7 @@ ws = *(
                 <code>phone</code> number.</para>
         <para>Let us now consider how this could be represented using the proposed XML format
             presented in the previous section:</para>
-        <programlisting><![CDATA[<d:diff3>
+        <programlisting language="xml"><![CDATA[<d:diff3>
 <author>
   <personname>
     <firstname>Nigel</firstname>
@@ -1087,7 +1085,7 @@ ws = *(
             conflict markers? This implies that the actual syntax used to represent the changes and
             conflicts is less important than it used to be, and there is less need to try to
             preserve it.</para>
-    <para>In our recent paper [<xref linkend="git-prague"/>], we identified some issues in version
+       <para>In our recent paper [<biblioref linkend="git-prague"/>], we identified some issues in version
             control systems that caused inconsistency and confusion to users. One solution to those
             issues relies on separating the merge driver from subsequent conflict resolution
             tools or 'merge tools'. In pursuit of the best way forward, we have further explored
