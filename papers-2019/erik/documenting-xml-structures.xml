@@ -193,7 +193,7 @@
       <listitem>
         <para>The format should be easy to interpret. Meaning should almost pop-up from the page by just looking at it. This means judicious use of
           all the lay-out tools we have: sections, tables, colors, fonts, whatever. An <emphasis>attractive</emphasis> look is almost a necessity (you
-          don't get a second chance for a fist impression).</para>
+          don't get a second chance for a first impression).</para>
       </listitem>
     </itemizedlist>
 
@@ -229,9 +229,9 @@
           only for the reader, but also for yourself. Documenting structures by following some format is really much easier than just typing along and
           making things up on the fly. But which one? Sigh…</para>
       </listitem>
-      <listitem>
+      <!--<listitem>
         <para/>
-      </listitem>
+      </listitem>-->
       <listitem>
         <para>Once you have it, you're obliged to <emphasis>maintain</emphasis> it. This means that changes in the software now also require you to
           revisit the documentation. This can lead to all the phenomena we know from maintaining software: from just a few keystrokes to extensive
