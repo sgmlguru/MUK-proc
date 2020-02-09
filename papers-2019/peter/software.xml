@@ -50,7 +50,7 @@
     </author>
     <confgroup>
       <conftitle>MarkupUK</conftitle>
-      <confdates YYYY-MM-DD="2019-06-08">8–9 June 2019</confdates>
+      <confdates>8–9 June 2019</confdates>
       <address>
 	<otheraddr>King’s College</otheraddr>
 	<street>Bush House</street>
@@ -411,8 +411,8 @@
     </orderedlist>
     <sect2 xml:id="parsers">
       <title>Parsers and validators</title>
-      <para>Three of the products listed in <xref
-	  linkend="parserlist"/> were tested.</para>
+      <para>Three of the products listed in <link
+	  linkend="parserlist">this list</link> were tested.</para>
       <sect3 xml:id="arcsgml">
 	<title><productname>ARC SGML</productname>  ◯</title>
 	<para>This software was installed from the copy distributed on
@@ -474,9 +474,7 @@
 	  editor for validation. The 32–bit Windows binaries used in
 	  this test were installed from the <acronym>SGML’97</acronym>
 	  <acronym>CD-ROM</acronym>.</para>
-	<programlisting>
-C:\SGMLS\> sgmls -s sgml.dec recipe.sgml
-	</programlisting>
+	<programlisting>C:\SGMLS\> sgmls -s sgml.dec recipe.sgml</programlisting>
 	<para>In the case of this, and most command-line parsers, a
 	  null return means no errors were found in the
 	  <acronym>DTD</acronym> or document.</para>
@@ -487,8 +485,7 @@ C:\SGMLS\> sgmls -s sgml.dec recipe.sgml
 	  Declaration on what end-tags may be omitted and if
 	  attributes may be minimized (and much else). In this case
 	  the following output was obtained:</para>
-	<programlisting><![CDATA[
-C:\Documents\> sgmlnorm sgml.dec recipe.sgml
+	<programlisting><![CDATA[C:\Documents\> sgmlnorm sgml.dec recipe.sgml
 <RECIPE>
 <TITLE>Chocolate fudge</TITLE>
 <COMMENT>My mother's recipe</COMMENT>
@@ -527,7 +524,7 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
     </sect2>
     <sect2>
       <title>Editors</title>
-      <para>Of the editors in <xref linkend="editorlist"/>,
+      <para>Of the editors in <link linkend="editorlist">this list</link>,
 	<productname>Document Generator</productname>,
 	<productname>SGML Tagger</productname>, <productname>Euromath
 	  Editor</productname>, and
@@ -987,7 +984,7 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
     </sect2>
     <sect2 xml:id="proc">
       <title>Processors</title>
-      <para>Of the systems in <xref linkend="processorlist"/>,
+      <para>Of the systems in <link linkend="processorlist">this list</link>,
 	<productname>Jade</productname> is not covered here.</para>
       <sect3 xml:id="balise">
 	<title><productname>Balise</productname>  ✗</title>
@@ -1093,8 +1090,7 @@ C:\Documents\> sgmlnorm sgml.dec recipe.sgml
 	<figure xml:id="omex" floatstyle="h">
 	  <title>Fragment of <productname>Omnimark</productname> code
 	    showing transformation to LaTeX</title>
-	<programlisting>
-down-translate
+	<programlisting>down-translate
 
 global stream temp
 
@@ -1160,7 +1156,7 @@ element ACRONYM
     </sect2>
     <sect2 xml:id="format">
       <title>Formatters, including browsers and servers</title>
-      <para>Of the items in <xref linkend="formatterlist"/>,
+      <para>Of the items in <link linkend="formatterlist">this list</link>,
 	<productname>3B2</productname> and Arbortext
 	<productname>Publisher</productname> are not covered
 	here.</para>
@@ -1183,8 +1179,7 @@ element ACRONYM
 	  Formal Public Identifier in the document’s
 	  <code>DOCTYPE</code> declaration to a downloadable
 	  <acronym>DTD</acronym> in the normal way of catalogs:</para>
-	<programlisting>
-PUBLIC "+//Silmaril//DTD Recipes//EN" "../recipe.dtd"
+	<programlisting>PUBLIC "+//Silmaril//DTD Recipes//EN" "../recipe.dtd"
 	</programlisting>
 	<para>This allows <productname>Panorama</productname> to
 	  download the <acronym>DTD</acronym>. The
@@ -1192,16 +1187,14 @@ PUBLIC "+//Silmaril//DTD Recipes//EN" "../recipe.dtd"
 	  the <acronym>FPI</acronym>s in the
 	  <filename>catalog</filename> and providing the names of the
 	  stylesheet[s] and navigator[s].</para>
-	<programlisting>
-PUBLIC "+//Silmaril//DTD Recipes//EN" 
+	<programlisting>PUBLIC "+//Silmaril//DTD Recipes//EN" 
   DOCTITLE "recipe,title"
   STYLESPEC "Standard" "recipes.ssh"
   NAVIGATOR "Contents" "recipes.nav"
 	</programlisting>
 	<para>Per-document variants of the stylesheets and navigators
 	can be specified in the instance by using Processing Instructions:</para>
-	<programlisting><![CDATA[
-<?STYLESHEET "NewStyle" "cookbook.ssh">
+	<programlisting><![CDATA[<?STYLESHEET "NewStyle" "cookbook.ssh">
 <?NAVIGATOR "WebVersion" "webrecipes.nav">
 	]]></programlisting>
 	<figure floatstyle="h" xml:id="panosty">
@@ -1528,8 +1521,8 @@ PUBLIC "+//Silmaril//DTD Recipes//EN"
 	    from scratch rather than adopting or adapting a
 	    close-match common vocabulary and structure — while at the
 	    same time extolling the virtues of modularity and
-	    extensibility <biblioref linkend="maler customdtd
-	      docgram"/>.</para>
+	    extensibility <biblioref linkend="maler"/><biblioref linkend="customdtd"/><biblioref
+	      linkend="docgram"/>.</para>
 	</listitem>
       </orderedlist>
     </sect2>
@@ -1613,8 +1606,7 @@ PUBLIC "+//Silmaril//DTD Recipes//EN"
   <appendix xml:id="sampledoc">
     <title>Sample SGML document</title>
     <para>This was file <filename>recipe.sgml</filename>.</para>
-    <programlisting><![CDATA[
-<!doctype recipe system "recipe.dtd">
+    <programlisting><![CDATA[<!doctype recipe system "recipe.dtd">
 <recipe>
   <title>Chocolate fudge</title>
   <comment>My mother's recipe</comment>
@@ -1638,8 +1630,7 @@ PUBLIC "+//Silmaril//DTD Recipes//EN"
     <section>
       <title>The DTD used in the sample document</title>
       <para>This was file <filename>recipe.dtd</filename>.</para>
-      <programlisting><![CDATA[
-<!ELEMENT recipe - - (title,comment?,ingredients,method,source?)>
+      <programlisting><![CDATA[<!ELEMENT recipe - - (title,comment?,ingredients,method,source?)>
 <!ELEMENT title - - (#PCDATA)>
 <!ELEMENT comment - - (#PCDATA)>
 <!ELEMENT source - - (#PCDATA)>
@@ -1658,8 +1649,7 @@ PUBLIC "+//Silmaril//DTD Recipes//EN"
     <section>
       <title>The SGML Declaration used for the sample document</title>
       <para>This was file <filename>sgml.dec</filename>.</para>
-      <programlisting><![CDATA[
-<!SGML  "ISO 8879:1986"
+      <programlisting><![CDATA[<!SGML  "ISO 8879:1986"
 --
         Document Type Definition for the HyperText Markup Language 
         as used by the World Wide Web application (HTML DTD).
@@ -1990,7 +1980,7 @@ FEATURES
 	  </personname>
 	</author>
       </authorgroup>
-      <date YYYY-MM-DD="1987-01-01">1987</date>
+      <date>1987</date>
       <publisher>
 	<publishername>Addison-Wesley</publishername>
 	<address>Reading, MA</address>
@@ -2010,9 +2000,9 @@ FEATURES
 	<publishername>International Organization for Standardization</publishername>
 	<address>Geneva</address>
       </publisher>
-      <biblioid otherclass="standard" class="pubsnumber">ISO
+      <biblioid otherclass="standard" class="other">ISO
 	10744</biblioid>
-      <date YYYY-MM-DD="1992-01-01">1992</date>
+      <date>1992</date>
     </biblioentry>
     <biblioentry xreflabel="article" xml:id="asp">
       <biblioset relation="article">
@@ -2034,7 +2024,7 @@ FEATURES
       </biblioset>
       <biblioset relation="journal">
 	<title>Electronic Publishing</title>
-	<date YYYY-MM-DD="1989-07-01">July 1989</date>
+	<date>July 1989</date>
 	<volumenum>2</volumenum>
 	<issuenum>2</issuenum>
 	<pagenums>65–90</pagenums>
@@ -2054,9 +2044,9 @@ FEATURES
 	  Standardization</publishername>
 	<address>Geneva</address>
       </publisher>
-      <biblioid otherclass="standard" class="pubsnumber">ISO
+      <biblioid otherclass="standard" class="other">ISO
 	8879</biblioid>
-      <date YYYY-MM-DD="1985-12-31">1985</date>
+      <date>1985</date>
     </biblioentry>
     <biblioentry xreflabel="book" xml:id="sgmltools">
       <author>
@@ -2072,7 +2062,7 @@ FEATURES
 	<address>Boston</address>
       </publisher>
       <biblioid class="isbn">0792381696</biblioid>
-      <date YYYY-MM-DD="1998-05-01">May 1985</date>
+      <date>May 1985</date>
     </biblioentry>
     <biblioentry xreflabel="incollection" xml:id="snee">
       <biblioset relation="article">
@@ -2084,7 +2074,7 @@ FEATURES
       <bibliomset relation="journal">
 	<title><acronym>DBMS</acronym> Support of
 	  <acronym>SGML</acronym> Files</title>
-	<date YYYY-MM-DD="1996-10-03">3 October 1996</date>
+	<date>3 October 1996</date>
 	<publisher>
 	  <publishername>Bob DuCharme</publishername>
 	  <address>snee.com</address>
@@ -2116,9 +2106,9 @@ FEATURES
 	<publishername>	World Wide Web Consortium</publishername>
 	<address>Cambridge, MA</address>
       </publisher>
-      <date YYYY-MM-DD="1998-02-10">10 February 1998</date>
+      <date>10 February 1998</date>
       <edition>2</edition>
-      <biblioid otherclass="standard" class="pubsnumber">REC-xml-19980210</biblioid>
+      <biblioid otherclass="standard" class="other">REC-xml-19980210</biblioid>
       <biblioid class="uri">https://www.w3.org/TR/1998/REC-xml-19980210</biblioid>
     </biblioentry>
     <biblioentry xml:id="maler" xreflabel="book">
@@ -2143,7 +2133,7 @@ FEATURES
 	<publishername>Prentice-Hall</publishername>
 	<address>Upper Saddle River, NJ</address>
       </publisher>
-      <date YYYY-MM-DD="1999-12-31">1999</date>
+      <date>1999</date>
       <biblioid class="isbn">0-13-309881-8</biblioid>
     </biblioentry>
     <biblioentry xreflabel="article" xml:id="customdtd">
@@ -2157,7 +2147,7 @@ FEATURES
       </biblioset>
       <biblioset relation="journal">
 	<title>A List Apart</title>
-	<date YYYY-MM-DD="2005-05-17">17 May 2005</date>
+	<date>17 May 2005</date>
 	<biblioid class="issn">1534-0295</biblioid>
       </biblioset>
     </biblioentry>
@@ -2177,7 +2167,7 @@ FEATURES
 	<title>Balisage</title>
 	<confgroup>
 	  <conftitle>Balisage 2017</conftitle>
-	  <confdates YYYY-MM-DD="2017-08-01">2017</confdates>
+	  <confdates>2017</confdates>
 	  <address>Rockville, MD</address>
 	</confgroup>
 	<publisher>
@@ -2213,7 +2203,7 @@ FEATURES
 	<publishername>Prentice Hall PTR</publishername>
 	<address>Upper Saddle River, NJ</address>
       </publisher>
-      <date YYYY-MM-DD="1998-12-31">1988</date>
+      <date>1988</date>
       <biblioid class="isbn">0136815111</biblioid>
     </biblioentry>
   </bibliography>
