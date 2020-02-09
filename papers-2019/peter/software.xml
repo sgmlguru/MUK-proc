@@ -512,8 +512,7 @@
 </LIST>
 </METHOD>
 <SOURCE>Adapted from the Good Housekeepings cookbook</SOURCE>
-</RECIPE>
-	  ]]></programlisting>
+</RECIPE>]]></programlisting>
 	<para>Note that by default, <acronym>SGML</acronym> is
 	  case-<emphasis>in</emphasis>sensitive, and that the
 	  pretty-print indentation of the original document means that
@@ -1102,8 +1101,7 @@ element ACRONYM
         output "%g(temp)\index{M}{%g(temp)}"
             when attribute remap isnt specified
         output "\acro{%g(temp)}{%v(remap)}"
-            when attribute remap is specified
-	  </programlisting>
+            when attribute remap is specified</programlisting>
 	</figure>
 	<para>In the example in <xref linkend="omex"/>, the
 	  <code>%c</code> emits the element content (equivalent to
@@ -1179,8 +1177,7 @@ element ACRONYM
 	  Formal Public Identifier in the document’s
 	  <code>DOCTYPE</code> declaration to a downloadable
 	  <acronym>DTD</acronym> in the normal way of catalogs:</para>
-	<programlisting>PUBLIC "+//Silmaril//DTD Recipes//EN" "../recipe.dtd"
-	</programlisting>
+	<programlisting>PUBLIC "+//Silmaril//DTD Recipes//EN" "../recipe.dtd"</programlisting>
 	<para>This allows <productname>Panorama</productname> to
 	  download the <acronym>DTD</acronym>. The
 	  <filename>entityrc</filename> file contains entries matching
@@ -1190,13 +1187,11 @@ element ACRONYM
 	<programlisting>PUBLIC "+//Silmaril//DTD Recipes//EN" 
   DOCTITLE "recipe,title"
   STYLESPEC "Standard" "recipes.ssh"
-  NAVIGATOR "Contents" "recipes.nav"
-	</programlisting>
+  NAVIGATOR "Contents" "recipes.nav"</programlisting>
 	<para>Per-document variants of the stylesheets and navigators
 	can be specified in the instance by using Processing Instructions:</para>
 	<programlisting><![CDATA[<?STYLESHEET "NewStyle" "cookbook.ssh">
-<?NAVIGATOR "WebVersion" "webrecipes.nav">
-	]]></programlisting>
+<?NAVIGATOR "WebVersion" "webrecipes.nav">]]></programlisting>
 	<figure floatstyle="h" xml:id="panosty">
 	  <title><productname>Panorama Publisher</productname>
 	    creating styles for a document</title>
@@ -1369,7 +1364,7 @@ element ACRONYM
 	  <acronym>KTH</acronym> in Stockholm is perhaps not strictly
 	  a native <acronym>SGML</acronym> database, but provides some
 	search and extraction facilities. The system was installed
-	from two 3½" floppy disks
+	from two 3½&#x2033; floppy disks
 	without problems.</para>
 	<figure floatstyle="h" xml:id="darcpic">
 	  <title><acronym>SGML</acronym>
@@ -1625,8 +1620,7 @@ element ACRONYM
     </list>
   </method>
   <source>Adapted from the Good Housekeepings cookbook</source>
-</recipe>
-    ]]></programlisting>
+</recipe>]]></programlisting>
     <section>
       <title>The DTD used in the sample document</title>
       <para>This was file <filename>recipe.dtd</filename>.</para>
@@ -1643,8 +1637,7 @@ element ACRONYM
 <!ELEMENT list - - (item+)>
 <!ELEMENT item - o (#PCDATA)>
 <!ENTITY deg CDATA "&#176;">
-<!ENTITY frac12 CDATA "&#189;">
-      ]]></programlisting>
+<!ENTITY frac12 CDATA "&#189;">]]></programlisting>
     </section>
     <section>
       <title>The SGML Declaration used for the sample document</title>
@@ -1724,8 +1717,7 @@ FEATURES
     SUBDOC   NO
     FORMAL   YES
   APPINFO    NONE
->
-      ]]></programlisting>
+>]]></programlisting>
     </section>
   </appendix>
   <appendix xml:id="dox2go">
@@ -1741,7 +1733,7 @@ FEATURES
       <listitem>
 	<para>Arbortext <productname>ADEPT</productname> and
 	  <productname>Document Architect</productname>, 5.4.1
-	  3½" diskettes and docs, trial licence</para>
+	  3½&#x2033; diskettes and docs, trial licence</para>
       </listitem>
       <listitem>
 	<para>SoftQuad <productname>Author/Editor</productname> 3.5 with
@@ -1751,7 +1743,7 @@ FEATURES
       <listitem>
 	<para><acronym>AIS</acronym> Software <productname>Balise</productname> 3.1 Reference
 	Manual, Installation Note (2), Tutorial (2), Programmer’s
-	Guide, 3×3½" diskettes, parallel-port dongle (required)</para>
+	Guide, 3×3½&#x2033; diskettes, parallel-port dongle (required)</para>
       </listitem>
       <listitem>
 	<para><acronym>DFN</acronym> <productname>DAPHNE</productname> User Manual 3.0 (in
@@ -1760,7 +1752,7 @@ FEATURES
       </listitem>
       <listitem>
 	<para><acronym>KTH</acronym> <acronym>SGML</acronym> <productname>DARC</productname>
-	on 2×3½" diskettes, experimental version with manual</para>
+	on 2×3½&#x2033; diskettes, experimental version with manual</para>
       </listitem>
       <listitem>
 	<para>Arbortext <productname>EPIC</productname>, boxed,
@@ -1784,10 +1776,10 @@ FEATURES
 	product name.</para>
       </listitem>
       <listitem>
-	<para><productname>GriF</productname> manuals and 3½" diskettes</para>
+	<para><productname>GriF</productname> manuals and 3½&#x2033; diskettes</para>
       </listitem>
       <listitem>
-	<para>InContext <productname>InContext</productname> 3½" installation
+	<para>InContext <productname>InContext</productname> 3½&#x2033; installation
 	evaluation disk only, no licence key</para>
       </listitem>
       <listitem>
@@ -1795,21 +1787,21 @@ FEATURES
       </listitem>
       <listitem>
 	<para>Microstar <productname>Near&amp;Far Author</productname> 2.0 on
-	  3½" diskettes (needs <productname>Word</productname> 6 or 7
+	  3½&#x2033; diskettes (needs <productname>Word</productname> 6 or 7
 	  <emphasis>only</emphasis>)</para>
       </listitem>
       <listitem>
 	<para>Microstar <productname>Near&amp;Far Designer</productname> on
-	  3½" diskettes for Windows 3.1 or 95/XP</para>
+	  3½&#x2033; diskettes for Windows 3.1 or 95/XP</para>
       </listitem>
       <listitem>
 	<para><productname>Omnimark</productname>
-	  <acronym>MS-DOS</acronym> V2R5 manuals and 3½" diskettes</para> 
+	  <acronym>MS-DOS</acronym> V2R5 manuals and 3½&#x2033; diskettes</para> 
       </listitem>
       <listitem>
 	<para>SoftQuad <productname>Panorama</productname>
 	  <productname>Viewer</productname> and 
-	  <productname>Publisher</productname> manuals, 3½" diskettes
+	  <productname>Publisher</productname> manuals, 3½&#x2033; diskettes
 	  and <acronym>CD</acronym></para>
       </listitem>
       <listitem>
@@ -1832,11 +1824,11 @@ FEATURES
       </listitem>
       <listitem>
 	<para>Microsoft <productname>SGML Author for Word</productname> documentation
-	and 3½" diskettes</para>
+	and 3½&#x2033; diskettes</para>
       </listitem>
       <listitem>
 	<para>OUP <productname>SGML Tagger</productname> documentation
-	and 3½" diskette</para>
+	and 3½&#x2033; diskette</para>
       </listitem>
       <listitem>
 	<para><productname>WordPerfect</productname> 8 with SGML, box
