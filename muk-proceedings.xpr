@@ -33,7 +33,7 @@
                                 </field>
                                 <field name="scenarioIds">
                                     <list>
-                                        <String>muk-proceedings-db-2019</String>
+                                        <String>identity</String>
                                     </list>
                                 </field>
                                 <field name="scenarioTypes">
