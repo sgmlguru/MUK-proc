@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="muk" default="fo.single" basedir="."
+<project name="muk" default="pdf.single" basedir="."
 	 xmlns:if="ant:if"
 	 xmlns:unless="ant:unless">
 <description>Tasks for running Markup UK proceedings.</description>
