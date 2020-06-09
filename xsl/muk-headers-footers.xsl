@@ -1,11 +1,21 @@
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:db="http://docbook.org/ns/docbook" xmlns:ng="http://docbook.org/docbook-ng" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:date="http://exslt.org/dates-and-times" xmlns:exsl="http://exslt.org/common" extension-element-prefixes="date" exclude-result-prefixes="db ng exsl" version="1.0">
+<xsl:stylesheet
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    version="1.0"
+    xmlns:db="http://docbook.org/ns/docbook"
+    xmlns:ng="http://docbook.org/docbook-ng"
+    xmlns:fo="http://www.w3.org/1999/XSL/Format"
+    xmlns:date="http://exslt.org/dates-and-times"
+    xmlns:exsl="http://exslt.org/common"
+    extension-element-prefixes="date"
+    exclude-result-prefixes="db ng exsl">
 
     <!-- Header and Footer Customizations for muk DocBook -->
     
-    
+   <xsl:template name="head.sep.rule" /> 
+   <xsl:template name="foot.sep.rule" /> 
     
     <!-- Header image -->
-    <xsl:param name="header.image.filename" select="'img/MarkupUK.svg.png'"/>
+    <xsl:param name="header.image.filename" select="'img/MarkupUK-2.svg'"/>
     
     
     
@@ -80,7 +90,7 @@
                 
                 <xsl:when test="$position='right' and $sequence='first'">
                     <xsl:call-template name="draft.text"/>
-                    <xsl:call-template name="muk-logo"/>
+                    <!--<xsl:call-template name="muk-logo"/>-->
                 </xsl:when>
                 
                 <xsl:when test="$position='left' and $sequence='odd'">
@@ -100,9 +110,13 @@
                     </xsl:if>
                 </xsl:when>
                 
-                <!--<xsl:when test="$sequence = 'first'">
-                    <xsl:call-template name="muk-logo"/>
-                </xsl:when>-->
+                <xsl:when test="$sequence = 'first'">
+                  <xsl:attribute name="margin-left">-16mm</xsl:attribute>
+                  <xsl:call-template name="muk-logo">
+                    <xsl:with-param name="content-height"
+                                    select="'30mm'" />
+                  </xsl:call-template>
+                </xsl:when>
                 
                 <xsl:when test="$sequence = 'blank'">
                     <xsl:call-template name="muk-logo"/>
@@ -113,7 +127,10 @@
     
     
     <xsl:template name="muk-logo">
-        <fo:external-graphic content-height="8mm" scaling="uniform" width="100%" content-width="scale-to-fit">
+      <xsl:param name="content-height" select="'8mm'" />
+      <fo:external-graphic content-height="{$content-height}"
+                           scaling="uniform" width="100%"
+                           content-width="scale-to-fit">
             <xsl:attribute name="src">
                 <xsl:call-template name="fo-external-image">
                     <xsl:with-param name="filename" select="$header.image.filename"/>

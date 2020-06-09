@@ -43,9 +43,6 @@
   <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="articleinfo/legalnotice"/>
   <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="artheader/legalnotice"/>
   <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="info/legalnotice"/>
-  <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="articleinfo/pubdate"/>
-  <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="artheader/pubdate"/>
-  <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="info/pubdate"/>
   <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="articleinfo/revision"/>
   <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="artheader/revision"/>
   <xsl:apply-templates mode="article.titlepage.recto.auto.mode" select="info/revision"/>
@@ -73,7 +70,7 @@
 </xsl:template>
 
 <xsl:template name="article.titlepage">
-  <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" font-family="{$title.fontset}">
+  <fo:block-container xmlns:fo="http://www.w3.org/1999/XSL/Format" span="all" font-family="{$title.fontset}" padding-bottom="1lh">
     <xsl:variable name="recto.content">
       <xsl:call-template name="article.titlepage.before.recto"/>
       <xsl:call-template name="article.titlepage.recto"/>
@@ -87,7 +84,7 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:if test="(normalize-space($recto.content) != '') or ($recto.elements.count &gt; 0)">
-      <fo:block start-indent="0pt" text-align="left"><xsl:copy-of select="$recto.content"/></fo:block>
+      <fo:block-container start-indent="0pt" text-align="left"><xsl:copy-of select="$recto.content"/></fo:block-container>
     </xsl:if>
     <xsl:variable name="verso.content">
       <xsl:call-template name="article.titlepage.before.verso"/>
@@ -102,10 +99,10 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:if test="(normalize-space($verso.content) != '') or ($verso.elements.count &gt; 0)">
-      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+      <fo:block-container><xsl:copy-of select="$verso.content"/></fo:block-container>
     </xsl:if>
     <xsl:call-template name="article.titlepage.separator"/>
-  </fo:block>
+  </fo:block-container>
 </xsl:template>
 
 <xsl:template match="*" mode="article.titlepage.recto.mode">
@@ -121,89 +118,83 @@
 </xsl:template>
 
 <xsl:template match="title" mode="article.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" margin-top="25mm" keep-with-next.within-column="always" font-weight="bold" font-size="24pt">
+<fo:block-container xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:axf="http://www.antennahouse.com/names/XSL/Extensions" xsl:use-attribute-sets="article.titlepage.recto.style" margin-top="20mm" keep-with-next.within-column="always" font-weight="normal" color="{$muk.blue}" font-size="30pt" background-color="{$muk.background}" axf:border-radius="{$muk.border-radius}" margin-left="-150pt" padding-left="150pt" margin-right="0" padding="{$muk.border-radius}" padding-bottom="0.25mm">
 <xsl:call-template name="component.title">
 <xsl:with-param name="node" select="ancestor-or-self::article[1]"/>
 </xsl:call-template>
-</fo:block>
+</fo:block-container>
 </xsl:template>
 
 <xsl:template match="productname" mode="article.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" keep-with-next.within-column="always" font-size="30pt" font-weight="bold">
+<fo:block-container xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" keep-with-next.within-column="always" font-size="30pt" font-weight="bold">
 <xsl:apply-templates select="." mode="article.titlepage.recto.mode"/>
-</fo:block>
+</fo:block-container>
 </xsl:template>
 
 <xsl:template match="corpauthor" mode="article.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em" font-size="12pt">
+<fo:block-container xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em" font-size="{$author.font-size}">
 <xsl:apply-templates select="." mode="article.titlepage.recto.mode"/>
-</fo:block>
+</fo:block-container>
 </xsl:template>
 
 <xsl:template match="authorgroup" mode="article.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em" font-size="12pt">
+<fo:block-container xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em" font-size="{$author.font-size}">
 <xsl:apply-templates select="." mode="article.titlepage.recto.mode"/>
-</fo:block>
+</fo:block-container>
 </xsl:template>
 
 <xsl:template match="author" mode="article.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em" font-size="12pt">
+<fo:block-container xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em" font-size="{$author.font-size}">
 <xsl:apply-templates select="." mode="article.titlepage.recto.mode"/>
-</fo:block>
+</fo:block-container>
 </xsl:template>
 
 <xsl:template match="cover" mode="article.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="10mm">
+<fo:block-container xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="10mm">
 <xsl:apply-templates select="." mode="article.titlepage.recto.mode"/>
-</fo:block>
+</fo:block-container>
 </xsl:template>
 
 <xsl:template match="releaseinfo" mode="article.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em">
+<fo:block-container xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em">
 <xsl:apply-templates select="." mode="article.titlepage.recto.mode"/>
-</fo:block>
+</fo:block-container>
 </xsl:template>
 
 <xsl:template match="copyright" mode="article.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em">
+<fo:block-container xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em">
 <xsl:apply-templates select="." mode="article.titlepage.recto.mode"/>
-</fo:block>
+</fo:block-container>
 </xsl:template>
 
 <xsl:template match="legalnotice" mode="article.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" text-align="start" margin-left="0.5in" margin-right="0.5in" font-family="{$body.fontset}">
+<fo:block-container xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" text-align="start" margin-left="0.5in" margin-right="0.5in" font-family="{$body.fontset}">
 <xsl:apply-templates select="." mode="article.titlepage.recto.mode"/>
-</fo:block>
-</xsl:template>
-
-<xsl:template match="pubdate" mode="article.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em">
-<xsl:apply-templates select="." mode="article.titlepage.recto.mode"/>
-</fo:block>
+</fo:block-container>
 </xsl:template>
 
 <xsl:template match="revision" mode="article.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em">
+<fo:block-container xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em">
 <xsl:apply-templates select="." mode="article.titlepage.recto.mode"/>
-</fo:block>
+</fo:block-container>
 </xsl:template>
 
 <xsl:template match="revhistory" mode="article.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em">
+<fo:block-container xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em">
 <xsl:apply-templates select="." mode="article.titlepage.recto.mode"/>
-</fo:block>
+</fo:block-container>
 </xsl:template>
 
 <xsl:template match="abstract" mode="article.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em" text-align="start" margin-left="0.5in" margin-right="0.5in" font-family="{$body.fontset}">
+<fo:block-container xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style" space-before="0.5em" text-align="start" font-family="{$body.fontset}">
 <xsl:apply-templates select="." mode="article.titlepage.recto.mode"/>
-</fo:block>
+</fo:block-container>
 </xsl:template>
 
 <xsl:template match="itermset" mode="article.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style">
+<fo:block-container xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="article.titlepage.recto.style">
 <xsl:apply-templates select="." mode="article.titlepage.recto.mode"/>
-</fo:block>
+</fo:block-container>
 </xsl:template>
 
 <xsl:template name="set.titlepage.recto">
@@ -372,8 +363,6 @@
 </xsl:template>
 
 <xsl:template name="book.titlepage.recto">
-  <xsl:apply-templates mode="book.titlepage.recto.auto.mode" select="bookinfo/mediaobject"/>
-  <xsl:apply-templates mode="book.titlepage.recto.auto.mode" select="info/mediaobject"/>
   <xsl:choose>
     <xsl:when test="bookinfo/title">
       <xsl:apply-templates mode="book.titlepage.recto.auto.mode" select="bookinfo/title"/>
@@ -405,32 +394,6 @@
 </xsl:template>
 
 <xsl:template name="book.titlepage.verso">
-  <xsl:choose>
-    <xsl:when test="bookinfo/title">
-      <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="bookinfo/title"/>
-    </xsl:when>
-    <xsl:when test="info/title">
-      <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="info/title"/>
-    </xsl:when>
-    <xsl:when test="title">
-      <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="title"/>
-    </xsl:when>
-  </xsl:choose>
-
-  <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="bookinfo/authorgroup"/>
-  <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="info/authorgroup"/>
-  <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="bookinfo/editor[position() = 1]"/>
-  <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="info/editor[position() = 1]"/>
-  <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="bookinfo/releaseinfo"/>
-  <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="info/releaseinfo"/>
-  <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="bookinfo/pubdate"/>
-  <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="info/pubdate"/>
-  <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="bookinfo/copyright"/>
-  <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="info/copyright"/>
-  <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="bookinfo/abstract"/>
-  <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="info/abstract"/>
-  <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="bookinfo/legalnotice"/>
-  <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="info/legalnotice"/>
 </xsl:template>
 
 <xsl:template name="book.titlepage.separator"><fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" break-after="page"/>
@@ -439,7 +402,7 @@
 <xsl:template name="book.titlepage.before.recto">
 </xsl:template>
 
-<xsl:template name="book.titlepage.before.verso"><fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" break-after="page"/>
+<xsl:template name="book.titlepage.before.verso">
 </xsl:template>
 
 <xsl:template name="book.titlepage">
@@ -490,15 +453,9 @@
   <xsl:apply-templates select="." mode="titlepage.mode"/>
 </xsl:template>
 
-<xsl:template match="mediaobject" mode="book.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="book.titlepage.recto.style">
-<xsl:apply-templates select="." mode="book.titlepage.recto.mode"/>
-</fo:block>
-</xsl:template>
-
 <xsl:template match="title" mode="book.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="book.titlepage.recto.style" text-align="left" font-size="28pt" space-before="18.6624pt" font-weight="bold" font-family="{$title.fontset}">
-<xsl:call-template name="division.title">
+<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="book.titlepage.recto.style">
+<xsl:call-template name="muk-proceedings.title">
 <xsl:with-param name="node" select="ancestor-or-self::book[1]"/>
 </xsl:call-template>
 </fo:block>
@@ -519,56 +476,6 @@
 <xsl:template match="itermset" mode="book.titlepage.recto.auto.mode">
 <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="book.titlepage.recto.style">
 <xsl:apply-templates select="." mode="book.titlepage.recto.mode"/>
-</fo:block>
-</xsl:template>
-
-<xsl:template match="title" mode="book.titlepage.verso.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="book.titlepage.verso.style" font-size="14.4pt" font-weight="bold" font-family="{$title.fontset}">
-<xsl:call-template name="book.verso.title">
-</xsl:call-template>
-</fo:block>
-</xsl:template>
-
-<xsl:template match="authorgroup" mode="book.titlepage.verso.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="book.titlepage.verso.style">
-<xsl:call-template name="verso.authorgroup">
-</xsl:call-template>
-</fo:block>
-</xsl:template>
-
-<xsl:template match="editor" mode="book.titlepage.verso.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="book.titlepage.verso.style">
-<xsl:apply-templates select="." mode="book.titlepage.verso.mode"/>
-</fo:block>
-</xsl:template>
-
-<xsl:template match="releaseinfo" mode="book.titlepage.verso.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="book.titlepage.verso.style" space-before="0.5em">
-<xsl:apply-templates select="." mode="book.titlepage.verso.mode"/>
-</fo:block>
-</xsl:template>
-
-<xsl:template match="pubdate" mode="book.titlepage.verso.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="book.titlepage.verso.style" space-before="1em">
-<xsl:apply-templates select="." mode="book.titlepage.verso.mode"/>
-</fo:block>
-</xsl:template>
-
-<xsl:template match="copyright" mode="book.titlepage.verso.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="book.titlepage.verso.style">
-<xsl:apply-templates select="." mode="book.titlepage.verso.mode"/>
-</fo:block>
-</xsl:template>
-
-<xsl:template match="abstract" mode="book.titlepage.verso.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="book.titlepage.verso.style">
-<xsl:apply-templates select="." mode="book.titlepage.verso.mode"/>
-</fo:block>
-</xsl:template>
-
-<xsl:template match="legalnotice" mode="book.titlepage.verso.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="book.titlepage.verso.style" font-size="8pt">
-<xsl:apply-templates select="." mode="book.titlepage.verso.mode"/>
 </fo:block>
 </xsl:template>
 
@@ -2513,7 +2420,7 @@
 </xsl:template>
 
 <xsl:template match="title" mode="section.titlepage.recto.auto.mode">
-<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="section.titlepage.recto.style" margin-left="{$title.margin.left}" font-family="{$title.fontset}">
+<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="section.titlepage.recto.style" margin-left="{$title.margin.left}" font-family="{$title.fontset}" color="{$muk.blue}" font-weight="normal">
 <xsl:apply-templates select="." mode="section.titlepage.recto.mode"/>
 </fo:block>
 </xsl:template>
@@ -3884,8 +3791,8 @@
 </xsl:template>
 
 <xsl:template name="bibliography.titlepage.recto">
-  <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="bibliography.titlepage.recto.style" margin-left="{$title.margin.left}" font-size="16pt" font-family="{$title.fontset}" font-weight="bold">
-<xsl:call-template name="component.title">
+  <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="bibliography.titlepage.recto.style" font-size="16pt" font-family="{$title.fontset}" color="{$muk.blue}">
+<xsl:call-template name="bibliography.title">
 <xsl:with-param name="node" select="ancestor-or-self::bibliography[1]"/>
 </xsl:call-template></fo:block>
   <xsl:choose>
@@ -4909,7 +4816,7 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:if test="(normalize-space($recto.content) != '') or ($recto.elements.count &gt; 0)">
-      <fo:block start-indent="0pt" text-align="center"><xsl:copy-of select="$recto.content"/></fo:block>
+      <fo:block text-align="center"><xsl:copy-of select="$recto.content"/></fo:block>
     </xsl:if>
     <xsl:variable name="verso.content">
       <xsl:call-template name="qandaset.titlepage.before.verso"/>
@@ -5029,10 +4936,6 @@
 </xsl:template>
 
 <xsl:template name="table.of.contents.titlepage.recto">
-  <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="table.of.contents.titlepage.recto.style" space-before.minimum="1em" space-before.optimum="1.5em" space-before.maximum="2em" space-after="0.5em" start-indent="0pt" font-size="17.28pt" font-weight="bold" font-family="{$title.fontset}">
-<xsl:call-template name="gentext">
-<xsl:with-param name="key" select="'TableofContents'"/>
-</xsl:call-template></fo:block>
 </xsl:template>
 
 <xsl:template name="table.of.contents.titlepage.verso">
@@ -5096,7 +4999,7 @@
 </xsl:template>
 
 <xsl:template name="list.of.tables.titlepage.recto">
-  <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="list.of.tables.titlepage.recto.style" space-before.minimum="1em" space-before.optimum="1.5em" space-before.maximum="2em" space-after="0.5em" start-indent="0pt" font-size="17.28pt" font-weight="bold" font-family="{$title.fontset}">
+  <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="list.of.tables.titlepage.recto.style" space-before.minimum="1em" space-before.optimum="1.5em" space-before.maximum="2em" space-after="0.5em" font-size="17.28pt" font-weight="bold" font-family="{$title.fontset}">
 <xsl:call-template name="gentext">
 <xsl:with-param name="key" select="'ListofTables'"/>
 </xsl:call-template></fo:block>
@@ -5163,7 +5066,7 @@
 </xsl:template>
 
 <xsl:template name="list.of.figures.titlepage.recto">
-  <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="list.of.figures.titlepage.recto.style" space-before.minimum="1em" space-before.optimum="1.5em" space-before.maximum="2em" space-after="0.5em" start-indent="0pt" font-size="17.28pt" font-weight="bold" font-family="{$title.fontset}">
+  <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="list.of.figures.titlepage.recto.style" space-before.minimum="1em" space-before.optimum="1.5em" space-before.maximum="2em" space-after="0.5em" font-size="17.28pt" font-weight="bold" font-family="{$title.fontset}">
 <xsl:call-template name="gentext">
 <xsl:with-param name="key" select="'ListofFigures'"/>
 </xsl:call-template></fo:block>
@@ -5230,7 +5133,7 @@
 </xsl:template>
 
 <xsl:template name="list.of.examples.titlepage.recto">
-  <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="list.of.examples.titlepage.recto.style" space-before.minimum="1em" space-before.optimum="1.5em" space-before.maximum="2em" space-after="0.5em" start-indent="0pt" font-size="17.28pt" font-weight="bold" font-family="{$title.fontset}">
+  <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="list.of.examples.titlepage.recto.style" space-before.minimum="1em" space-before.optimum="1.5em" space-before.maximum="2em" space-after="0.5em" font-size="17.28pt" font-weight="bold" font-family="{$title.fontset}">
 <xsl:call-template name="gentext">
 <xsl:with-param name="key" select="'ListofExamples'"/>
 </xsl:call-template></fo:block>
@@ -5297,7 +5200,7 @@
 </xsl:template>
 
 <xsl:template name="list.of.equations.titlepage.recto">
-  <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="list.of.equations.titlepage.recto.style" space-before.minimum="1em" space-before.optimum="1.5em" space-before.maximum="2em" space-after="0.5em" start-indent="0pt" font-size="17.28pt" font-weight="bold" font-family="{$title.fontset}">
+  <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="list.of.equations.titlepage.recto.style" space-before.minimum="1em" space-before.optimum="1.5em" space-before.maximum="2em" space-after="0.5em" font-size="17.28pt" font-weight="bold" font-family="{$title.fontset}">
 <xsl:call-template name="gentext">
 <xsl:with-param name="key" select="'ListofEquations'"/>
 </xsl:call-template></fo:block>
@@ -5364,7 +5267,7 @@
 </xsl:template>
 
 <xsl:template name="list.of.procedures.titlepage.recto">
-  <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="list.of.procedures.titlepage.recto.style" space-before.minimum="1em" space-before.optimum="1.5em" space-before.maximum="2em" space-after="0.5em" start-indent="0pt" font-size="17.28pt" font-weight="bold" font-family="{$title.fontset}">
+  <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="list.of.procedures.titlepage.recto.style" space-before.minimum="1em" space-before.optimum="1.5em" space-before.maximum="2em" space-after="0.5em" font-size="17.28pt" font-weight="bold" font-family="{$title.fontset}">
 <xsl:call-template name="gentext">
 <xsl:with-param name="key" select="'ListofProcedures'"/>
 </xsl:call-template></fo:block>
@@ -5431,7 +5334,7 @@
 </xsl:template>
 
 <xsl:template name="list.of.unknowns.titlepage.recto">
-  <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="list.of.unknowns.titlepage.recto.style" space-before.minimum="1em" space-before.optimum="1.5em" space-before.maximum="2em" space-after="0.5em" start-indent="0pt" font-size="17.28pt" font-weight="bold" font-family="{$title.fontset}">
+  <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" xsl:use-attribute-sets="list.of.unknowns.titlepage.recto.style" space-before.minimum="1em" space-before.optimum="1.5em" space-before.maximum="2em" space-after="0.5em" font-size="17.28pt" font-weight="bold" font-family="{$title.fontset}">
 <xsl:call-template name="gentext">
 <xsl:with-param name="key" select="'ListofUnknown'"/>
 </xsl:call-template></fo:block>
