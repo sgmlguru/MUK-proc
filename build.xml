@@ -275,6 +275,7 @@
 	key="org.apache.xerces.xni.parser.XMLParserConfiguration"
 	value="org.apache.xerces.parsers.XIncludeParserConfiguration" />
     <factory name="com.icl.saxon.TransformerFactoryImpl" />
+    <param name="muk-xsl.dir" expression="file:///${xsl.dir}" />
     <param name="fo.processor" expression="ahf" />
     <param name="highlight.source" expression="1" />
     <param name="highlight.xslthl.config"
