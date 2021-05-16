@@ -456,7 +456,7 @@
 			available on GitHub <biblioref linkend="MUK-xsl" /> for anyone to copy and
 			modify. Comments and pull requests are welcome.</para>
 	</section>
-	<bibliography xml:id="references">
+	<bibliography xml:id="graham-references">
 		<bibliomixed xml:id="docbookxsl"> <abbrev>DOCBOOK-XSL</abbrev> <author>
 			<personname><surname>Stayton</surname><firstname>Bob</firstname></personname>
 		</author>: <title>DocBook XSL: The Complete Guide</title>. <edition>Fourth Edition</edition>, <date>September 2007</date>, <orgname>OASIS</orgname>. <bibliomisc><link

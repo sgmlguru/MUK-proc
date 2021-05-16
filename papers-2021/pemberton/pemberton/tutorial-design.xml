@@ -2,8 +2,7 @@
 <?xml-stylesheet href="docbook.css" type="text/css"?>
 <article xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
 	 xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	 version="5.0" xml:id="helloder"
-	 xsd:schemaLocation="https://www.oasis-open.org/docbook/xml/5.0b1/xsd/docbook.xsd">
+	 version="5.0" xml:id="helloder">
    <title>On the Design of a Self-Referential Tutorial</title>
    <info>
       <abstract>
@@ -50,7 +49,7 @@
 	    <orgname>CWI, Amsterdam</orgname>
 	 </affiliation>
 	 <email>steven.pemberton@cwi.nl</email>
-	 <link>http://www.cwi.nl/~steven/</link>
+	 <uri>http://www.cwi.nl/~steven/</uri>
       </author>
       <keywordset role="author">
 	 <keyword>XForms</keyword>
@@ -184,9 +183,9 @@
       about <literal>instance</literal>.
       <figure>
 	 <title>A simplified partial dependency graph</title>
-        <imageobject>
+        <mediaobject><imageobject>
           <imagedata fileref="dependency.png" />
-        </imageobject>
+        </imageobject></mediaobject>
       </figure>
     </para>
     <para>
@@ -364,9 +363,9 @@
       down, or by navigating from chapter to chapter using the arrows.
       <screenshot>
       <title>Selecting a chapter</title>
-        <imageobject>
+        <mediaobject><imageobject>
           <imagedata fileref="nav1.png" />
-        </imageobject>
+        </imageobject></mediaobject>
       </screenshot>
     </para>
     <para>
@@ -375,9 +374,9 @@
       there is no previous chapter, the trigger will not be displayed.
       <screenshot>
 	 <title>The initial chapter, with no previous</title>
-         <imageobject>
+         <mediaobject><imageobject>
           <imagedata fileref="nav2.png" />
-        </imageobject>
+        </imageobject></mediaobject>
       </screenshot>
     </para>
     <para>
@@ -576,10 +575,8 @@ will output:
        construction of the tutorial.
     </para>
   </section>
-  <section xml:id="references">
-     <title>References</title>
-     <bibliography>
-	<biblioentry>
+  <bibliography xml:id="pemberton-references">
+	<biblioentry xml:id="t1">
 	   <abbrev>t1</abbrev>
 	   <author>
 	      <personname><firstname>Steven</firstname><surname>Pemberton</surname></personname>
@@ -593,7 +590,7 @@ will output:
 	      <link xlink:href="https://homepages.cwi.nl/%7Esteven/Talks/2020/02-13-xforms/">https://homepages.cwi.nl/~steven/Talks/2020/02-13-xforms/</link>
 	   </bibliomisc>
 	</biblioentry>
-	<biblioentry>
+	<biblioentry xml:id="t2">
 	   <abbrev>t2</abbrev>
 	   <author>
 	      <personname><firstname>Steven</firstname><surname>Pemberton</surname></personname>
@@ -607,7 +604,7 @@ will output:
 	      <link xlink:href="https://homepages.cwi.nl/%7Esteven/Talks/2013/05-14-webapps-xforms2/">https://homepages.cwi.nl/~steven/Talks/2013/05-14-webapps-xforms2/</link>
 	   </bibliomisc>
 	</biblioentry>
-    <biblioentry>
+    <biblioentry xml:id="t3">
        <abbrev>t3</abbrev>
        <author>
 	  <personname><firstname>Steven</firstname><surname>Pemberton</surname></personname>
@@ -621,7 +618,7 @@ will output:
 	  <link xlink:href="https://homepages.cwi.nl/%7Esteven/Talks/2020/10-08-tutorial/">https://homepages.cwi.nl/~steven/Talks/2020/10-08-tutorial/</link>
        </bibliomisc>
     </biblioentry>
-    <biblioentry>
+    <biblioentry xml:id="xf1">
        <abbrev>xf1</abbrev>
        <editor>
 	  <personname><firstname>John</firstname><surname>Boyer</surname></personname>
@@ -635,7 +632,7 @@ will output:
 	  <link xlink:href="https://www.w3.org/TR/xforms11">https://www.w3.org/TR/xforms11</link>
        </bibliomisc>
     </biblioentry>
-    <biblioentry>
+    <biblioentry xml:id="xf2">
        <abbrev>xf2</abbrev>
        <editor>
 	  <personname><firstname>Erik</firstname><surname>Bruchez et al. (eds)</surname></personname>
@@ -649,7 +646,7 @@ will output:
 	  <link xlink:href="https://www.w3.org/community/xformsusers/wiki/XForms_2.0">https://www.w3.org/community/xformsusers/wiki/XForms_2.0</link>
        </bibliomisc>
     </biblioentry>
-    <biblioentry>
+    <biblioentry xml:id="put">
        <abbrev>put</abbrev>
        <editor>
 	  <personname><firstname>T.</firstname><surname>Berners-Lee et al.</surname></personname>
@@ -666,7 +663,7 @@ will output:
 	  <link xlink:href="https://tools.ietf.org/html/rfc1945#appendix-D.1.1">https://tools.ietf.org/html/rfc1945#appendix-D.1.1</link>
        </bibliomisc>
     </biblioentry>
-    <biblioentry>
+    <biblioentry xml:id="ts">
        <abbrev>ts</abbrev>
        <author>
 	  <personname><firstname>Steven</firstname><surname>Pemberton</surname></personname>
@@ -680,7 +677,7 @@ will output:
 	  <link xlink:href="https://markupuk.org/2018/webhelp/index.html#ar14.html">https://markupuk.org/2018/webhelp/index.html#ar14.html</link>
        </bibliomisc>
     </biblioentry>
-    <biblioentry>
+    <biblioentry xml:id="xc">
        <abbrev>xc</abbrev>
        <author>
 	  <personname><firstname>Steven</firstname><surname>Pemberton</surname></personname>
@@ -694,7 +691,7 @@ will output:
 	  <link xlink:href="https://homepages.cwi.nl/%7Esteven/xcontents/xcontents.c">https://homepages.cwi.nl/~steven/xcontents/xcontents.c</link>
        </bibliomisc>
     </biblioentry>
-    <biblioentry>
+    <biblioentry xml:id="pd">
        <abbrev>pd</abbrev>
        <author>
 	  <personname><firstname>Frank</firstname><surname>Spillers</surname></personname>
@@ -704,10 +701,9 @@ will output:
           <publishername>The Interaction Design Foundation</publishername>
        </publisher>
        <pubdate>undated</pubdate>
-       <bibliomisc>
+       <bibliomisc xml:id="xf">
 	  <link xlink:href="https://www.interaction-design.org/literature/book/the-glossary-of-human-computer-interaction/progressive-disclosure">https://www.interaction-design.org/literature/book/the-glossary-of-human-computer-interaction/progressive-disclosure</link>
        </bibliomisc>
     </biblioentry>
  </bibliography>
-</section>
 </article>
