@@ -185,7 +185,7 @@ establishes elements and attributes from which tag sets for multiple document ty
 
 <section>
 <title>Diving into the JATS Documentation</title>
-<para>Separate Tag Libraries for JATS Archiving, Publishing, and Authoring   (the three flavors of JATS) are available at [<xref linkend="JATS-Homepage"/>] to use interactively or for download for local interactive use. JATS Tag Libraries are large numbers of linked HTML files. Unlike the old days of tag set documentation, nobody prints this material and nobody writes books interpreting this material. JATS reference happens online through browsers. [Note: If, however a JATS user chooses to print one of the HTML pages (all about one element or an essay), some very nice CSS turns the HTML the user is viewing into better-looking pages for print. All part of the service.]</para>
+<para>Separate Tag Libraries for JATS Archiving, Publishing, and Authoring   (the three flavors of JATS) are available at [<biblioref linkend="JATS-Homepage"/>] to use interactively or for download for local interactive use. JATS Tag Libraries are large numbers of linked HTML files. Unlike the old days of tag set documentation, nobody prints this material and nobody writes books interpreting this material. JATS reference happens online through browsers. [Note: If, however a JATS user chooses to print one of the HTML pages (all about one element or an essay), some very nice CSS turns the HTML the user is viewing into better-looking pages for print. All part of the service.]</para>
 <para>JATS Tag Libraries are listed by name and color-coded to make it easy for users to know which Tag Library they are viewing.</para>
  <figure xml:id="jats-main-green">
     <title>Archiving and Interchange (Green) Tag Library</title>
@@ -695,15 +695,14 @@ to search for a parameter entity</para></listitem>
 </imageobject>
 </mediaobject></figure>
 <para>Samples are maintained as valid XML fragments that are parsed for validity each time the DTD changes. Processing instructions inside the fragments are used to create the bold focus. Some samples are nearly full documents, others are as small as possible:</para>
-<programlisting language="XML">&lt;!DOCTYPE body PUBLIC 
+<programlisting language="xml">&lt;!DOCTYPE body PUBLIC 
 "-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.3d2 20201130//EN" "JATS-journalpublishing1-3d2.dtd">
 &lt;?mtl hellip?>
 &lt;body>&lt;?mtl /hellip?>
 &lt;p>And I can say without fear of contradiction
  &lt;abbrev alt="Wink smile">;)&lt;/abbrev> that this
  political process is without flaw.&lt;/p>
-&lt;?mtl hellip?>&lt;/body>&lt;?mtl /hellip?>
-</programlisting>
+&lt;?mtl hellip?>&lt;/body>&lt;?mtl /hellip?></programlisting>
 </section>
 
 <section>
@@ -745,7 +744,7 @@ to search for a parameter entity</para></listitem>
 <section>
 <title>Common Tagging Practice essays (<emphasis role="ital">almost</emphasis> tutorials)</title>
 <para>The Tag Library has numerous short essays on how to tag various structures and use various attributes, mostly aimed at the experienced user, but suitable for the casual user. These essays are the closest JATS comes to tutorial material in the Tag Library, and, if the were read, they would probably prove helpful.</para>
-<para>JATS is a descriptive not a prescriptive tag set, so the Tag Library does not include long essays on best practice or any Best Practice Recommendations. That type of guidance is provided by outside groups such as JATS4R [<xref linkend="JATS4R"/>]. The “Common Tagging Practice” section describes ways (sometimes many alternatives) that JATS <emphasis role="ital">might be used</emphasis> to tag documents and information on JATS and accessibility.</para>
+<para>JATS is a descriptive not a prescriptive tag set, so the Tag Library does not include long essays on best practice or any Best Practice Recommendations. That type of guidance is provided by outside groups such as JATS4R [<biblioref linkend="JATS4R"/>]. The “Common Tagging Practice” section describes ways (sometimes many alternatives) that JATS <emphasis role="ital">might be used</emphasis> to tag documents and information on JATS and accessibility.</para>
 <figure>
 <title>Subjects covered in Common Tagging Practice</title>
 <mediaobject>
@@ -980,12 +979,12 @@ as small as possible?</para></listitem><listitem><para>Are cookbooks and recipes
 
 <section>
 <title>JATS-List and the Archives of JATS-List</title>
-<para>JATS-List [<xref linkend="JATS-List"/>] is a public email discussion list devoted to JATS and JATS-related topics. JATS users can ask  questions, answer the questions of others, or start discussions on topics of interest. The archives of the JATS-List [<xref linkend="JATS-List-Archives"/>] are publicly available and include all postings to the list since it was started in 2010. (Note: This is an active <emphasis role="ital">friendly</emphasis> list and infinitely patient with newbies.)</para>
+<para>JATS-List [<biblioref linkend="JATS-List"/>] is a public email discussion list devoted to JATS and JATS-related topics. JATS users can ask  questions, answer the questions of others, or start discussions on topics of interest. The archives of the JATS-List [<biblioref linkend="JATS-List-Archives"/>] are publicly available and include all postings to the list since it was started in 2010. (Note: This is an active <emphasis role="ital">friendly</emphasis> list and infinitely patient with newbies.)</para>
 </section>
 
 <section>
 <title>JATS4R (JATS for Reuse)</title>
-<para>JATS4R [<xref linkend="JATS4R"/>] is a NISO working group <quote>devoted to optimizing the reusability of scholarly content by developing best-practice recommendations for tagging content in JATS XML.</quote> - JATS4R website</para>
+<para>JATS4R [<biblioref linkend="JATS4R"/>] is a NISO working group <quote>devoted to optimizing the reusability of scholarly content by developing best-practice recommendations for tagging content in JATS XML.</quote> - JATS4R website</para>
 <section>
 <title>JATS4R Recommendations</title>
 <para>JATS4R publishes recommendations on how to use the JATS Tag Set to optimize reuse and interoperability of JATS documents.</para>
@@ -1038,18 +1037,18 @@ as small as possible?</para></listitem><listitem><para>Are cookbooks and recipes
 
 <section>
 <title>JATS-Con and the JATS-Con Proceedings</title>
-<para>JATS-Con is a (mostly) annual user-level conference [<xref  linkend="JATS-Con-conf"/>] devoted to JATS and the JATS family of specifications (the three  JATS Tag Sets, BITS, NISO STS, etc.). The proceedings of JATS-Con are available in the NLM Bookshelf [<xref linkend="JATS-Con"/>] and include as many of the following as are available for each presentation: a formal paper, the  presentation slides, and video of the presentation.</para>
+<para>JATS-Con is a (mostly) annual user-level conference [<biblioref  linkend="JATS-Con-conf"/>] devoted to JATS and the JATS family of specifications (the three  JATS Tag Sets, BITS, NISO STS, etc.). The proceedings of JATS-Con are available in the NLM Bookshelf [<biblioref linkend="JATS-Con"/>] and include as many of the following as are available for each presentation: a formal paper, the  presentation slides, and video of the presentation.</para>
 </section>
 
 <section>
 <title>NISO site for comments/suggestions</title>
-<para>The NISO website is available for public comment [<xref linkend="JATS-Comments"/>]. All comments are reviewed by the JATS Standing Committee and answers posted on this site.</para>
+<para>The NISO website is available for public comment [<biblioref linkend="JATS-Comments"/>]. All comments are reviewed by the JATS Standing Committee and answers posted on this site.</para>
 </section>
 
 <section>
 <title>Local Guidelines</title>
 <para>Many organizations and services that ingest JATS documents (including libraries, database services, service providers such as web hosts, and tool vendors) provide guidelines on how they want JATS to be structured for their ingest. Some require particular versions and/or impose business rules in addition to the validity to the JATS schemas, for example, that all tables and figures must be referenced from within the text.</para>
-<para>Guidelines can be quite elaborate. For example, the PubMed Central Tagging Guidelines [<xref linkend="PMC-Guidelines"/>], includes comprehensive text explanations, tagged examples, and an online style checker that confirms whether an XML file conforms to PMC Style as defined in the PMC XML Tagging Guidelines.</para>
+<para>Guidelines can be quite elaborate. For example, the PubMed Central Tagging Guidelines [<biblioref linkend="PMC-Guidelines"/>], includes comprehensive text explanations, tagged examples, and an online style checker that confirms whether an XML file conforms to PMC Style as defined in the PMC XML Tagging Guidelines.</para>
 </section>
 </section>
 
