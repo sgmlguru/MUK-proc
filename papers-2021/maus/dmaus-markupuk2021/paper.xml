@@ -2,7 +2,7 @@
 <article xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="en">
   <info>
-    <title>What's in a Schematron?</title>
+    <title>What’s in a Schematron?</title>
     <author>
       <personname>David Maus</personname>
       <email>dmaus@dmaus.name</email>
@@ -37,7 +37,7 @@
       Standard.</para>
     <para>While losing an Open Standard is annoying it gives the opportunity to look at the
       specification as an object of an analytic inquiry. Rather than comparing Schematron with other
-      schema languages we could look at ISO Schematron's concepts and ask what function they serve
+      schema languages we could look at ISO Schematron’s concepts and ask what function they serve
       or which topic they cover. This analytic perspective may help structuring a discussion of
       potential shortcomings or missed opportunities.</para>
   </section>
@@ -320,7 +320,7 @@
           element. Instead of a <tag class="attribute">rule</tag> attribute naming an abstract rule,
           it may use a <tag class="attribute">href</tag> attribute pointing to an external resource.
           If the external resource is the same element as the <tag class="element"
-          >sch:extends</tag>' elements parent, then the child nodes of the referenced element are
+          >sch:extends</tag> element’s parent, then the child nodes of the referenced element are
           inserted in place of the <tag class="element">sch:extends</tag> element. The use of <tag
             class="element">sch:extends</tag> however is still restricted to the <tag
             class="element">sch:rule</tag> element.</para>
