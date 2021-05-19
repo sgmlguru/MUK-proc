@@ -46,22 +46,16 @@ Automated formatting requires Apache Ant and AH Formatter.
 When you have changes that are *not* in the `xsl` subdirectory:
 
 1. Make sure that your repository is up to date with `MarkupUK/MUK-proc`:
-   1. Add `MarkupUK/MUK-proc` as a remote repository:
+   1. View the `muk2019` branch of your repository on GitHub in your browser
+	  (Reload the page if you got there by using the back button)
+   1. If your branch is out of date, there will be an indication of how many commits your branch is behind
+   1. Click on 'Fetch upstream' and then 'Fetch and merge' to merge upstream changes into your fork:
+	  ![](fetch-and-merge.png)
+   1. Pull the upstream changes to your local repository:
       ```
-	  git remote add upstream https://github.com/MarkupUK/MUK-proc.git
+	  git pull origin muk2019
 	  ```
-   1. Check that it worked:
-      ```
-	  git remote -v
-	  ```
-   1. Merge upstream changes into your fork:
-	  ```
-	  git rebase upstream/muk2019
-	  ```
-   1. Push any upstream changes to your fork on GitHub:
-      ```
-	  git push origin muk2019
-	  ```
+	  You may need to use `git stash` and `git stash pop` before and after the `git pull` to save and restore your local changes to avoid conflicts from the merge
 1. Create a new branch for your changes:
    ```
    git checkout -b my-new-branch
