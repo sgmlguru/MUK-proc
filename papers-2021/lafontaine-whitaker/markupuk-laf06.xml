@@ -40,6 +40,7 @@
                     Since founding DeltaXML, he has been addressing the challenges and exploring the
                     opportunities associated with information change in data and documents.</para>
             </personblurb>
+            <affiliation><orgname>DeltaXML</orgname></affiliation>
         </author>
         <author>
             <personname>
@@ -58,6 +59,7 @@
                 <city>Malvern</city>
                 <country>UK</country>
             </address>
+            <affiliation><orgname>DeltaXML</orgname></affiliation>
         </author>
     </info>
     <section>

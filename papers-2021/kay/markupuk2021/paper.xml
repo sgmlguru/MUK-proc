@@ -2,8 +2,7 @@
 <article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0"
   xml:lang="en">
   <info>
-    <title><![CDATA[<transpile from="Java" to="C#" via="XML" with="XSLT"/>]]>
-    </title>
+    <title><![CDATA[<transpile from="Java" to="C#" via="XML" with="XSLT"/>]]></title>
  
 
     <author>
@@ -199,7 +198,7 @@
         return tree.getTypedValueOfElement(this);
     }]]></programlisting>
     <para>And here is the C# code that we generate:</para>
-    <programlisting language="C#"><![CDATA[public override net.sf.saxon.om.AtomicSequence atomize() {
+    <programlisting language="csharp"><![CDATA[public override net.sf.saxon.om.AtomicSequence atomize() {
     return tree.getTypedValueOfElement(this);
 }]]></programlisting>
     <para>Nothing very remarkable there, but it actually requires a fair bit of analysis of the Java code
@@ -221,10 +220,9 @@
         result.put(entry.getKey(), entry.getValue());
     }
     return result;
-}
-]]></programlisting>
+}]]></programlisting>
     <para>In C# this becomes (with abbreviated namespace qualifiers, for readability):</para>
-    <programlisting language="C#"><![CDATA[public S.C.G.IDictionary<string, n.s.s.o.Sequence> getDefaultOptions() {
+    <programlisting language="csharp"><![CDATA[public S.C.G.IDictionary<string, n.s.s.o.Sequence> getDefaultOptions() {
     S.C.G.IDictionary<string, n.s.s.o.Sequence> result = 
             new S.C.G.Dictionary<string, n.s.s.o.Sequence>();
     foreach (S.C.G.KeyValuePair<string, n.s.s.o.Sequence> entry in defaultValues) {
@@ -452,7 +450,7 @@
   a simple mapping of class names. This includes both system classes and Saxon-specific classes.
   Here are a few of them:
 </para>
-      <programlisting language="xslt"><![CDATA[<xsl:variable name="specialTypes" 
+      <programlisting language="xml"><![CDATA[<xsl:variable name="specialTypes" 
         as="map(xs:string, xs:string)" 
         select="map{
   'boolean':           'bool',
@@ -510,9 +508,7 @@
         <code>Singulink.Numerics</code>, <code>S.I.H</code> = <code>Saxon.Impl.Helpers</code>)</para>
 
 
-      <programlisting>
-<![CDATA[
-<xsl:template match="*[@RESOLVED_TYPE = 'java.math.BigDecimal']" 
+      <programlisting language="xml"><![CDATA[<xsl:template match="*[@RESOLVED_TYPE = 'java.math.BigDecimal']" 
       priority="20" mode="methods">
   <xsl:sequence select="f:applyFormat(., map{
      'add#1':       '(%scope%+%args%)',
@@ -546,9 +542,7 @@
      '*':           '%scope%.%Name%(%args%)' 
   })"/>
 
-</xsl:template>
-]]>
-</programlisting>
+</xsl:template>]]></programlisting>
       <para>This is a template rule in mode <code>methods</code>, a mode that is only used 
         to process <code>MethodCall</code> expressions, so we don't need to repeat this in the 
         match pattern. This particular rule handles all calls where the target 
@@ -576,11 +570,10 @@
         In both cases the interface is closely tied up with the ability to write a 
         "for each" loop. If we're going to be able to translate this Java:
 </para>
-      <programlisting language="java">for (Attribute att : attributes) {...}
-</programlisting>
+      <programlisting language="java">for (Attribute att : attributes) {...}</programlisting>
       <para>into this C#:</para>
 
-      <programlisting language="C#">foreach(Attribute att in attributes) {...}</programlisting>
+      <programlisting language="csharp">foreach(Attribute att in attributes) {...}</programlisting>
 
       <para>then the variable <code>attributes</code>, which is an <code>Iterable</code> in Java, had better become 
         an <code>IEnumerable</code> in C#. We can handle that by rewriting class names; and we can also 
@@ -613,10 +606,9 @@
         as Java annotations. For example we might see the following annotation on a method 
         that instantiates an anonymous inner class:
 </para>
-      <programlisting>@CSharpInnerClass(outer=false, 
+      <programlisting language="java">@CSharpInnerClass(outer=false, 
         extra={"net.sf.saxon.expr.XPathContext context", 
-               "net.sf.saxon.om.Function function"})
-</programlisting>
+               "net.sf.saxon.om.Function function"})</programlisting>
       <para>This indicates to the converter that in the generated static inner class, 
         there is no need to pass a reference to the outer <code>this</code> class (because it's not used), 
         but there is a need to pass the values of variables <code>context</code> and <code>function</code> from the outer 
@@ -625,8 +617,7 @@
 </para>
     </section>
     <section>
-      <title>Overriding, Covariance, Contravariance
-</title>
+      <title>Overriding, Covariance, Contravariance</title>
       <para>As we've already mentioned, C# requires any method that is overridden to be 
         declared <code>virtual</code>, and any method that overrides another to be declared 
         with the modifier <code>override</code>. 
@@ -687,7 +678,7 @@
         patterns where the type of the parameter can be inferred, and each of these is 
         represented by a template rule. As we get smarter or discover more cases, we can 
         simply add more template rules. Here's an example of one of the rules:</para>
-      <programlisting language="xslt"><![CDATA[<xsl:template match="*[@nodeType='ReturnStmt']
+      <programlisting language="xml"><![CDATA[<xsl:template match="*[@nodeType='ReturnStmt']
         [ancestor::member[1]/type/@RESOLVED_TYPE]/*">
    <xsl:variable name="type" 
                  select="ancestor::member[1]/type/@RESOLVED_TYPE" 
@@ -707,11 +698,10 @@ converter is just to replace them with <code>&lt;T></code>, which often works. B
 declarations we generate a C# <code>where</code> clause to constrain the type bounds, so 
 </para>
       <programlisting language="java"><![CDATA[public class GroundedValueAsIterable<T extends Item> 
-     implements Iterable<T> {...}]]>
-</programlisting>
+     implements Iterable<T> {...}]]></programlisting>
       <para>becomes</para>
 
-      <programlisting language="C#"><![CDATA[public class GroundedValueAsIterable<T> : IEnumerable<T> 
+      <programlisting language="csharp"><![CDATA[public class GroundedValueAsIterable<T> : IEnumerable<T> 
      where T : Item {...}]]></programlisting>
 
       <para>One issue we face is that the default type <code>Object</code> in Java is less all-embracing 
@@ -792,7 +782,7 @@ declarations we generate a C# <code>where</code> clause to constrain the type bo
 </para>
     <para>It's worth looking a little bit at the nature of the XML we're dealing with. Here's a sample:
 </para>
-    <programlisting>   <![CDATA[<member nodeType="MethodDeclaration">
+    <programlisting language="xml"><![CDATA[<member nodeType="MethodDeclaration">
  <body nodeType="BlockStmt">
   <statements>
    <statement nodeType="ReturnStmt">

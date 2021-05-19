@@ -33,6 +33,7 @@
       </personblurb>
 
       <email>alain.couthures@agencexml.com</email>
+      <affiliation><orgname>agenceXML</orgname></affiliation>
     </author>
   </info>
 
@@ -57,7 +58,7 @@
 
     <para>For example,</para>
 
-    <programlisting><![CDATA[<xf:input ref="PersonGivenName" incremental="true">
+    <programlisting language="xml"><![CDATA[<xf:input ref="PersonGivenName" incremental="true">
  <xf:label>Please enter your first name: </xf:label>
 </xf:input>]]></programlisting>
 
