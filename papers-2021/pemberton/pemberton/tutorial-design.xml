@@ -8,7 +8,7 @@
       <abstract>
 	 <para>
 	    XForms
-	    <link linkend="xf">[XF1</link>][<link linkend="xf2">XF2</link>] is
+	    <link linkend="xf1">[XF1</link>][<link linkend="xf2">XF2</link>] is
 	    a declarative programming language, with a different programming
 	    paradigm compared to traditional programming languages. Since it
 	    requires a new way of thinking about programming, learning
@@ -88,7 +88,7 @@
       <para>
         After attending several hands-on tutorials on other topics, the
         author concluded that in order to optimally use the time
-        available for exercises, attendees shouldn't be required to
+        available for exercises, attendees shouldn’t be required to
         start from scratch, since precious time is lost dealing with
         trivial issues like set up and syntax. Rather, the exercises
         should all require the attendee to make a change to an existing,
@@ -102,7 +102,7 @@
         As a consequence, the tutorial was designed as a rapid-fire
         sequence of exercises, each consisting of 5 minutes of
         presentation, followed by 5 minutes of coding. This has the
-        added advantage of maximising the attendees' concentration,
+        added advantage of maximising the attendees’ concentration,
         thanks to the recurrent switching of activities. The exercises
         themselves are mostly not stand-alone, but cumulative, each one
         building on an earlier one, so that at the end the attendee has
@@ -128,8 +128,7 @@
       structured XML document listing those topics, and their relative
       structure was created as part of this process:
     </para>
-    <programlisting>
-&lt;learn title=&quot;What you will learn&quot;&gt;
+    <programlisting language="xml">&lt;learn title=&quot;What you will learn&quot;&gt;
    &lt;topic name=&quot;Structure of an XForm&quot;&gt;
       &lt;topic done=&quot;&quot; name=&quot;&amp;lt;model&gt;&quot;/&gt;
       &lt;topic done=&quot;&quot; name=&quot;content&quot;/&gt;
@@ -147,8 +146,7 @@
      &lt;topic done=&quot;&quot; name=&quot;@constraint&quot;/&gt;
       &lt;/topic&gt;
    &lt;/topic&gt;
-   ...
-</programlisting>
+   ...</programlisting>
     <para>
       In fact this one document ended up being used in three ways:
       firstly and primarily as the list of topics that needed to be
@@ -184,7 +182,7 @@
       <figure>
 	 <title>A simplified partial dependency graph</title>
         <mediaobject><imageobject>
-          <imagedata fileref="dependency.png" />
+          <imagedata fileref="dependency.png" width="100%" scalefit="1" contentdepth="100%" />
         </imageobject></mediaobject>
       </figure>
     </para>
@@ -234,8 +232,7 @@
       title, filename, concepts covered, name of the exercise file, and
       name of the example answer file:
     </para>
-    <programlisting>
-&lt;tutorial&gt;
+    <programlisting language="xml">&lt;tutorial&gt;
    &lt;entry&gt;
       &lt;title&gt;Introduction&lt;/title&gt;
       &lt;file&gt;intro.xhtml&lt;/file&gt;
@@ -284,8 +281,7 @@
       &lt;concept&gt;XPath / @ *&lt;/concept&gt;
       &lt;concept&gt;count() function&lt;/concept&gt;
    &lt;/entry&gt;
-   ...
-</programlisting>
+   ...</programlisting>
   </section>
   <section xml:id="navigation">
     <title>Navigation</title>
@@ -318,8 +314,7 @@
         </para>
       </listitem>
     </orderedlist>
-    <programlisting>
-&lt;instance id=&quot;nav&quot;&gt;
+    <programlisting language="xml">&lt;instance id=&quot;nav&quot;&gt;
    &lt;nav xmlns=&quot;&quot;&gt;
       &lt;base&gt;chapters/&lt;/base&gt;
       &lt;file/&gt;
@@ -334,8 +329,7 @@
       title of the chapter, and the value is the file name of that
       chapter:
     </para>
-    <programlisting>
-&lt;select1 ref=&quot;instance('nav')/file&quot;&gt;
+    <programlisting language="xml">&lt;select1 ref=&quot;instance('nav')/file&quot;&gt;
    &lt;itemset ref=&quot;instance('tut')/entry&quot;&gt;
        &lt;label ref=&quot;title&quot;/&gt;
        &lt;value value=&quot;file&quot;/&gt;
@@ -348,8 +342,7 @@
       <literal>preceding-sibling</literal> and
       <literal>following-sibling</literal>):
     </para>
-    <programlisting>
-&lt;trigger 
+    <programlisting language="xml">&lt;trigger 
       ref=&quot;instance('tut')/entry[file=instance('nav')/file]/preceding-sibling::entry[1]&quot;&gt;
    &lt;label&gt;←&lt;/label&gt;
    &lt;hint&gt;&lt;output ref=&quot;title&quot;/&gt;&lt;/hint&gt;
@@ -364,7 +357,7 @@
       <screenshot>
       <title>Selecting a chapter</title>
         <mediaobject><imageobject>
-          <imagedata fileref="nav1.png" />
+          <imagedata fileref="nav1.png" width="100%" scalefit="1" contentdepth="100%" />
         </imageobject></mediaobject>
       </screenshot>
     </para>
@@ -375,15 +368,14 @@
       <screenshot>
 	 <title>The initial chapter, with no previous</title>
          <mediaobject><imageobject>
-          <imagedata fileref="nav2.png" />
+          <imagedata fileref="nav2.png" width="100%" scalefit="1" contentdepth="100%" />
         </imageobject></mediaobject>
       </screenshot>
     </para>
     <para>
       To display the content of the chapter, an html iframe is used:
     </para>
-    <programlisting>
-&lt;html:iframe id=&quot;chapter&quot; src=&quot;{instance('nav')/url}&quot;&gt;&lt;/html:iframe&gt;
+    <programlisting language="xml">&lt;html:iframe id=&quot;chapter&quot; src=&quot;{instance('nav')/url}&quot;&gt;&lt;/html:iframe&gt;
 </programlisting>
     <para>
       Thanks to how XForms works, whenever the <literal>file</literal>
@@ -391,7 +383,7 @@
       gets updated, and so the new chapter is displayed.
     </para>
     <para>
-      The upshot of all this is that the tutorial instance doesn't
+      The upshot of all this is that the tutorial instance doesn’t
       <emphasis>describe</emphasis> the structure of the tutorial but
       actually <emphasis>defines</emphasis> it. If a chapter needs to be
       moved, you just move it in the tutorial instance; if a new chapter
@@ -416,21 +408,17 @@
         By default, outputs directly after each other will abut. If a is
         3, and b is 4, then
       </para>
-      <programlisting>
-&lt;output ref=&quot;a&quot;/&gt;&lt;output ref=&quot;b&quot;/&gt;
+      <programlisting language="xml">&lt;output ref=&quot;a&quot;/&gt;&lt;output ref=&quot;b&quot;/&gt;
 </programlisting>
       <para>
         will output:
       </para>
-      <programlisting>
-34
-</programlisting>
+      <programlisting language="xml">34</programlisting>
     </informalexample>
     <para>
       the underlying code is:
     </para>
-    <programlisting>
-By default, outputs directly after each other will abut.
+    <programlisting language="xml">By default, outputs directly after each other will abut.
 If a is &lt;output  ref=&quot;a&quot;/&gt;, and b is &lt;output ref=&quot;b&quot;/&gt;, then
 &lt;group class=&quot;pre&quot;&gt;
    &amp;lt;output ref=&quot;a&quot;/&gt;&amp;lt;output ref=&quot;b&quot;/&gt;
@@ -455,7 +443,7 @@ will output:
     <title>Exercises</title>
     <para>
       The exercises are based on 5 example applications: a short initial
-      'toy' one covering two exercises introducing the basic concepts
+      ‘toy’ one covering two exercises introducing the basic concepts
       such as instances, types, input and output, and then two large
       ones each covering 10 exercises, both broken in the middle by two
       small examples. The large examples helped with ordering the
@@ -505,7 +493,7 @@ will output:
       user have access to an HTTP server, and furthermore, one that
       supports the PUT method [<link linkend="put">put</link>], since
       several of the exercises use it. For reasons that are not entirely
-      clear, most HTTP servers available don't support PUT at all, or
+      clear, most HTTP servers available don’t support PUT at all, or
       otherwise only with a lot of extra work. So the options for the
       tutorial apparently are: require the attendees to locate and
       install an existing server that accepts PUT; run a server and then
@@ -542,7 +530,7 @@ will output:
     <para>
       With only 2 hours allocated, and each exercise being budgeted for
       5 minutes presentation and 5 minutes working, only 12 of the 25
-      sections were handled. Nevertheless, this wasn't seen as a
+      sections were handled. Nevertheless, this wasn’t seen as a
       problem, since the tutorial is also designed for self-study, and
       so the attendees could do the rest of the tutorial at their
       leisure.
