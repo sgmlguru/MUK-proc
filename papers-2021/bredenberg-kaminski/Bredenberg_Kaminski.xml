@@ -6,7 +6,7 @@
   <title>2021 The Future of Distributed Markup Systems or ‘Help my package has become too large!’</title>
 
 <author>
-  <personname>Karin Bredenberg </personname>
+  <personname>Karin Bredenberg</personname>
   <email>karin.bredenberg@sydarkivera.se</email>
   <uri><link xlink:href="https://orcid.org/0000-0003-1627-2361"
     xmlns:xlink="http://www.w3.org/1999/xlink"/></uri>
@@ -21,7 +21,7 @@
 </author>
   <author>
     <personname>Jaime Kaminski</personname>
-    <email>highburyrd.jaime@gmail.com </email>
+    <email>highburyrd.jaime@gmail.com</email>
     <uri><link xlink:href="https://orcid.org/0000-0003-2907-0128"
       xmlns:xlink="http://www.w3.org/1999/xlink"/></uri>
     <personblurb>
@@ -73,11 +73,11 @@
 <section>
   <title>The Building Blocks</title>
   <para>Let’s start with the Connecting Europe Facility <link xl:href="https://ec.europa.eu/inea/en/connecting-europe-facility"><citetitle>CEF</citetitle></link> and its <link xl:href="https://ec.europa.eu/cefdigital/wiki/display/CEFDIGITAL/CEF+Digital+Home"><citetitle>Building Blocks</citetitle></link>; what are they? The European Union realise that the internet and digital technologies are transforming our world. They also see is that the digital landscape is becoming more diverse, creating challenges for cross-border interoperability and intercommunication. Europe is about working together but, Europeans still face barriers when using (cross-border) online tools and services. The implications are considerable. EU citizens can miss out on goods and services, and businesses in the EU miss out on market potential. At the same time, also the different governments in the EU cannot fully benefit from digital technologies. Therefore, the EU has described the Digital Single Market <link xl:href="https://ec.europa.eu/digital-single-market/en"><citetitle>(DSM)</citetitle></link> through which it aims to create a suitable environment for digital networks and services to flourish. The DSM is achieved by setting the right regulatory conditions and providing cross-border digital infrastructures and services. So, to support the DSM, the Connecting Europe Facility (CEF) programme is funding a set of generic and reusable Digital Service Infrastructures (DSI), known as Building Blocks. These Building Blocks offer reusable modular capabilities to enable digital public services across borders and sectors. There are currently nine Building Blocks: Big Data Test Infrastructure, the European Blockchain Services Infrastructure, Context Broker,  eDelivery, eID, eInvoicing, eSignature eTranslation and eArchiving. The main component of the Building Block is a Core Service Platform, provided and maintained by the European Commission. The Core Service Platform can include technical specifications, sample software and support services depending on the specific Building Block. The CEF Building Blocks provide basic capabilities that can be used to facilitate cross-border public service. The foundation of the CEF Building Blocks is interoperability agreements between the member states of the European Union. The objective of the Building Blocks is to facilitate interoperability between IT systems so that citizens, businesses and administrations can benefit from seamless digital public services wherever they may be in Europe.</para>
-  <figure xml:id="f.BBLayers">
+  <figure xml:id="f.BBLayers" pgwide="1">
     <title>The building block layers.</title>
     <mediaobject>
       <imageobject>
-        <imagedata fileref="Images/BuildingBlocks.PNG" scale="40" scalefit="0"/>
+        <imagedata fileref="Images/BuildingBlocks.PNG" width="100%" scalefit="1"/>
       </imageobject>
     </mediaobject>
   </figure>
@@ -105,7 +105,7 @@
     <figure>
       <title>The eArchiving building block and its services and specifications.</title>
       <mediaobject>
-        <imageobject><imagedata fileref="Images/eArchiving%20services%20v2%20-%20with%20CS%20IP%20and%20CS%20CT.png" scale="50" scalefit="0"/>
+        <imageobject><imagedata fileref="Images/eArchiving%20services%20v2%20-%20with%20CS%20IP%20and%20CS%20CT.png" scale="40" scalefit="0"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -115,11 +115,11 @@
     <title>Standards, de facto standards, and specifications</title>
     <para>Jenn Riley’s <link xl:href="http://jennriley.com/metadatamap/"><citetitle>Visualisation of the Metadata Universe</citetitle></link> has been around for a while but still gives the best overview of standards used in the cultural sector, archives, libraries and museums. In the image, numerous standards are displayed in the context of their function and where they are used.</para>
     <para>
-      <figure>
+      <figure pgwide="1">
         <title>The visualization of the Metadata Universe by Jenn Riley. (The recommendation is to look on-line)</title>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/seeingstandards.png" scale="60" scalefit="0"/>
+            <imagedata fileref="Images/seeingstandards.png" width="100%" scalefit="1"/>
           </imageobject>
         </mediaobject>
       </figure>
@@ -150,7 +150,7 @@
         <title>The eArchiving building block and the different specifications building up a Information Package (2021)</title>
         <mediaobject>
         <imageobject>
-          <imagedata fileref="Images/EARK_Specifications.png" scale="60" scalefit="0"/>
+          <imagedata fileref="Images/EARK_Specifications.png" width="100%" scalefit="1"/>
         </imageobject>
         </mediaobject>
       </figure>
@@ -204,7 +204,7 @@
         <title>Marisa Merino Hernandes illustrated the eHealth1 specification in the following way.</title>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="Images/eHealth1_https_twitter.com_MarisaMerinoH.jpg" scale="100" scalefit="0"/>
+            <imagedata fileref="Images/eHealth1_https_twitter.com_MarisaMerinoH.jpg" scale="80" scalefit="0"/>
           </imageobject>
         </mediaobject>
       </figure>
