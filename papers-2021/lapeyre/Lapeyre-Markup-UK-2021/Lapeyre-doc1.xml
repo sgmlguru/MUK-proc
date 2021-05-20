@@ -258,7 +258,7 @@ establishes elements and attributes from which tag sets for multiple document ty
 <listitem><para>Parameter Entity (PE)  references are the name of the PE, prefaced by a percent sign and closed with a semicolon (%list.class;). These link directly to the parameter entity page.</para></listitem>
 <listitem><para>References to narrative sections of the Tag Library are preceded by the word <quote>See</quote>, and link to sections in the narrative text. <mediaobject>
 <imageobject>
-<imagedata fileref="images/reference-text-section.png" format="png"  />
+<imagedata fileref="images/reference-text-section.png" format="png" width="60%" />
 </imageobject>
 </mediaobject></para></listitem>
 </itemizedlist>
@@ -351,7 +351,7 @@ establishes elements and attributes from which tag sets for multiple document ty
 <figure>
 <title>Where may &lt;abstract> be used?</title><mediaobject>
 <imageobject>
-<imagedata fileref="images/abstract-contained-in.png" format="png" />
+<imagedata fileref="images/abstract-contained-in.png" format="png" width="60%"/>
 </imageobject>
 </mediaobject>
 </figure>
@@ -405,14 +405,16 @@ establishes elements and attributes from which tag sets for multiple document ty
 <title>Attribute Pages</title>
 <para>There is one element page for each element in the Tag Set. Each attribute page begins with the attribute name used in the XML files, a longer descriptive name, and a description, , all information that is shared with the JATS Standard. Descriptions are <emphasis role="ital">not</emphasis> dictionary definitions, but narrative text describing the attribute, as the name implies.</para>   
 <para>A “Usage and Remarks” section often provides additional information on how to use the attribute, sometimes including “Best Practice” suggestions.</para>
-<figure>
+<!--
+    DocBook WebHelp rendering fails on image not found:
+    <figure>
 <title>Attribute page for @object-id</title>
 <mediaobject>
 <imageobject>
 <imagedata fileref="images/AttrRemarks.png" format="png" />
 </imageobject>
 </mediaobject>
-</figure>
+</figure>-->
 
 <figure>
 <title>Attribute values for @assigning-authority</title>
@@ -497,14 +499,14 @@ establishes elements and attributes from which tag sets for multiple document ty
 <title>Context Table entry for &lt;disp-quote></title>
 <mediaobject>
 <imageobject>
-<imagedata fileref="images/context-disp-quote.png" format="png" />
+<imagedata fileref="images/context-disp-quote.png" format="png" width="60%"/>
 </imageobject>
 </mediaobject></figure>
 <figure>
 <title>Context Table entry for &lt;boxed-text> and &lt;break></title>
 <mediaobject>
 <imageobject>
-<imagedata fileref="images/context-boxed-text-break.png" format="png" />
+<imagedata fileref="images/context-boxed-text-break.png" format="png" width="60%"/>
 </imageobject>
 </mediaobject></figure>
 <para>Now that seems odd, why is &lt;break> allowed in so few places? If we look at the element page for &lt;break> we find out, as part of the Best Practice information:</para>
@@ -603,7 +605,7 @@ to search for a parameter entity</para></listitem>
 <title>Getting Started Section</title>
 <mediaobject> 
 <imageobject>
-<imagedata fileref="Getting-Started.png" width="50%" format="png"/>
+<imagedata fileref="images/Getting-Started.png" width="50%" format="png"/>
 </imageobject>
 </mediaobject></figure>
 
@@ -691,7 +693,7 @@ to search for a parameter entity</para></listitem>
 <title>Samples for &lt;institution-id></title>
 <mediaobject>
 <imageobject>
-<imagedata fileref="images/samples-institution-wrap.png" format="png" />
+<imagedata fileref="images/samples-institution-wrap.png" format="png" width="60%"/>
 </imageobject>
 </mediaobject></figure>
 <para>Samples are maintained as valid XML fragments that are parsed for validity each time the DTD changes. Processing instructions inside the fragments are used to create the bold focus. Some samples are nearly full documents, others are as small as possible:</para>
@@ -712,7 +714,7 @@ to search for a parameter entity</para></listitem>
 <title>The Full Article Sample section</title>
 <mediaobject>
 <imageobject>
-<imagedata fileref="images/full-sample-page.png"  format="png" />
+<imagedata fileref="images/full-sample-page.png" width="100%" scalefit="1" contentdepth="100%" format="png"/>
 </imageobject>
 </mediaobject></figure>
 <figure>
@@ -822,7 +824,7 @@ Parameter Entities, like elements and attributes, get a page apiece. There are m
 <title>A Parameter Entity Page</title>
 <mediaobject>
 <imageobject>
-<imagedata fileref="images/abstract-model-pe.png" width="40%" format="png" />
+<imagedata fileref="images/abstract-model-pe.png" width="100%" format="png" scalefit="1" contentdepth="100%"/>
 </imageobject>
 </mediaobject>
 </figure>
