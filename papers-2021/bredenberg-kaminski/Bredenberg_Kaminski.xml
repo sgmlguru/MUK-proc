@@ -58,12 +58,12 @@
   </keywordset>
 
 <abstract>
-  <para>This paper expands on the themes developed in “Beyond the brick, for the past in the future, you find the archive!” which was presented by the authors at  MarkUp UK 2019. It explores the development of the European Commission’s eArchiving Building Block from the perspective of the underlying XML-based specifications. It will also look at some of the new specifications that have been developed by the Building block since 2019 and considers some key future challenges.</para>
+  <para>This paper expands on the themes developed in “Beyond the brick, for the past in the future, you find the archive!” which was presented by the authors at  Markup UK 2019. It explores the development of the European Commission’s eArchiving Building Block from the perspective of the underlying XML-based specifications. It will also look at some of the new specifications that have been developed by the Building block since 2019 and considers some key future challenges.</para>
   </abstract>
 </info>
   <section>
     <title>Introduction</title>
-    <para>In 2019 you were introduced to the world of digital archiving and the eArchiving Building Block in a paper titled “Beyond the brick, for the past in the future, you find the archive!”. We explored how common specifications have been used for describing both Information Packages and the Content Information Type Specifications (CITS) that can be placed in an Information Package. This is a new world for some and an old world for others, so let’s recap and introduce you to the challenges that follow.</para>
+    <para>In 2019 you were introduced to the world of digital archiving and the eArchiving Building Block in a paper titled <link xl:href="https://markupuk.org/2019/webhelp/index.html#ar01.html">“Beyond the brick, for the past in the future, you find the archive!”</link>. We explored how common specifications have been used for describing both Information Packages and the Content Information Type Specifications (CITS) that can be placed in an Information Package. This is a new world for some and an old world for others, so let’s recap and introduce you to the challenges that follow.</para>
   </section>
 <section>
   <title>It all started with a declaration</title>
