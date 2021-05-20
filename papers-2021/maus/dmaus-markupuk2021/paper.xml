@@ -444,48 +444,48 @@
   <bibliography>
     <bibliomixed><abbrev>AMER2014</abbrev>Ali, Amer. 2014. <title>Schematron Based Semantic
         Constraints Specification Framework &amp; Validation Rules Engine for JSON</title>.
-      https://raw.githubusercontent.com/amer-ali/jsontron/master/docs/Jsontron-presentation-v1.pdf. </bibliomixed>
+      <link xlink:href="https://raw.githubusercontent.com/amer-ali/jsontron/master/docs/Jsontron-presentation-v1.pdf">https://raw.githubusercontent.com/amer-ali/jsontron/master/docs/Jsontron-presentation-v1.pdf</link>. </bibliomixed>
     <bibliomixed><abbrev>XPATH2</abbrev>Berglund, Anders, Scott Boag, Don Chamberlin, Mary F.
       Fernández, Michael Kay, Jonathan Robie, and Jérôme Siméon, eds. 2010. <title>XML Path Language
         (XPath) 2.0 (Second Edition)</title>. World Wide Web Consortium.
-      http://www.w3.org/TR/2010/REC-xpath20-20101214/.</bibliomixed>
+      <link xlink:href="http://www.w3.org/TR/2010/REC-xpath20-20101214/">http://www.w3.org/TR/2010/REC-xpath20-20101214/</link>.</bibliomixed>
     <bibliomixed><abbrev>XSLT1</abbrev>Clark, James, ed. 1999. <title>XSL Transformations (XSLT)
         Version 1.0</title>. World Wide Web Consortium.
-      http://www.w3.org/TR/1999/REC-xslt-19991116.</bibliomixed>
+      <link xlink:href="http://www.w3.org/TR/1999/REC-xslt-19991116">http://www.w3.org/TR/1999/REC-xslt-19991116</link>.</bibliomixed>
     <bibliomixed><abbrev>JSON</abbrev>Crockford, Douglas. 2017. <title>The JavaScript Object
         Notation (JSON) Data Interchange Format</title>. RFC 8259. Internet Engineering Task Force
-      (IETF). https://tools.ietf.org/pdf/rfc8259.pdf.</bibliomixed>
+      (IETF). <link xlink:href="https://tools.ietf.org/pdf/rfc8259.pdf">https://tools.ietf.org/pdf/rfc8259.pdf</link>.</bibliomixed>
     <bibliomixed><abbrev>DZIURLAJ2021</abbrev>Dziurlaj, John. 2021. <title>Streaming Extensions for
-        Schematron</title>. https://github.com/HiltonRoscoe/streamable-schematron.</bibliomixed>
+      Schematron</title>. <link xlink:href="https://github.com/HiltonRoscoe/streamable-schematron">https://github.com/HiltonRoscoe/streamable-schematron</link>.</bibliomixed>
     <bibliomixed><abbrev>FISCHER2017</abbrev>Fischer, Tobias. 2017. <title>Localization Concept
-        Needs Improvement</title>. https://github.com/Schematron/schematron/issues/40.</bibliomixed>
+      Needs Improvement</title>. <link xlink:href="https://github.com/Schematron/schematron/issues/40">https://github.com/Schematron/schematron/issues/40</link>.</bibliomixed>
     <bibliomixed><abbrev>JELLIFFE1999</abbrev>Jelliffe, Rick. 1999. <title>Schematron: An Interview
         with Rick Jelliffe</title> Interview by Simon St.Laurent.
-      https://web.archive.org/web/20010619150155/http://www.xmlhack.com/read.php?item=121.</bibliomixed>
+      <link xlink:href="https://web.archive.org/web/20010619150155/http://www.xmlhack.com/read.php?item=121">https://web.archive.org/web/20010619150155/http://www.xmlhack.com/read.php?item=121</link>.</bibliomixed>
     <bibliomixed><abbrev>JELLIFFE2002</abbrev>Jelliffe, Rick. 2002. <title>The Schematron Assertion
         Language 1.6</title>.
-      https://web.archive.org/web/20061230150144/http://xml.ascc.net:80/resource/schematron/Schematron2000.html.</bibliomixed>
+      <link xlink:href="https://web.archive.org/web/20061230150144/http://xml.ascc.net:80/resource/schematron/Schematron2000.html">https://web.archive.org/web/20061230150144/http://xml.ascc.net:80/resource/schematron/Schematron2000.html</link>.</bibliomixed>
     <bibliomixed><abbrev>JELLIFFE2003</abbrev>Jelliffe, Rick. 2003. <title>Schematron 1.5 to
         Schematron 1.6 to ISO Schematron</title>. June 21, 2003.
-      http://www.topologi.com/resources/schematronUpgrades.html.</bibliomixed>
+      <link xlink:href="http://www.topologi.com/resources/schematronUpgrades.html">http://www.topologi.com/resources/schematronUpgrades.html</link>.</bibliomixed>
     <bibliomixed><abbrev>KUTSCHERAUER2018</abbrev>Kutscherauer, Nico, and Octavian Nadolu, eds.
       2018. <title>Schematron Quick Fixes Specification</title>. Quick-fix support for XML Community
-      Group. http://schematron-quickfix.github.io/sqf/spec/SQFSpec.html. </bibliomixed>
+      Group. <link xlink:href="http://schematron-quickfix.github.io/sqf/spec/SQFSpec.html">http://schematron-quickfix.github.io/sqf/spec/SQFSpec.html</link>. </bibliomixed>
     <bibliomixed><abbrev>XSLT3</abbrev>Kay, Michael, ed. 2017. <title>XSL Transformations (XSLT)
         Version 3.0</title>. World Wide Web Consortium.
-      https://www.w3.org/TR/2017/REC-xslt-30-20170608/.</bibliomixed>
+      <link xlink:href="https://www.w3.org/TR/2017/REC-xslt-30-20170608/">https://www.w3.org/TR/2017/REC-xslt-30-20170608/</link>.</bibliomixed>
     <bibliomixed><abbrev>XSLT2</abbrev>Kay, Michael, ed. 2021. <title>XSL Transformations (XSLT)
         Version 2.0 (Second Edition)</title>. World Wide Web Consortium.
-      https://www.w3.org/TR/2021/REC-xslt20-20210330/.</bibliomixed>
+      <link xlink:href="https://www.w3.org/TR/2021/REC-xslt20-20210330/">https://www.w3.org/TR/2021/REC-xslt20-20210330/</link>.</bibliomixed>
     <bibliomixed><abbrev>XPATH3</abbrev>Robie, Jonathan, Don Chamberlin, Micheal Dyck, and John
       Snelson, eds. 2014. <title>XML Path Language (XPath) 3.0</title>. World Wide Web Consortium.
-      http://www.w3.org/TR/2014/REC-xpath-30-20140408/.</bibliomixed>
+      <link xlink:href="http://www.w3.org/TR/2014/REC-xpath-30-20140408/">http://www.w3.org/TR/2014/REC-xpath-30-20140408/</link>.</bibliomixed>
     <bibliomixed><abbrev>SCHEMATRON2020</abbrev>
       <title>Information technology — Document Schema Definition Languages (DSDL) — Part 3:
         Rule-based validation, Schematron</title>, second edition, International Standard ISO/IEC
       19757-3:2020, Geneva, Switzerland : ISO</bibliomixed>
     <bibliomixed><abbrev>WALSH2017</abbrev>Walsh, Norman, John Snelson, and Andrew Coleman, eds.
       2017. <title>XQuery and XPath Data Model 3.1</title>. World Wide Web Consortium.
-      https://www.w3.org/TR/2017/REC-xpath-datamodel-31-20170321/. </bibliomixed>
+      <link xlink:href="https://www.w3.org/TR/2017/REC-xpath-datamodel-31-20170321/">https://www.w3.org/TR/2017/REC-xpath-datamodel-31-20170321/</link>. </bibliomixed>
   </bibliography>
 </article>
