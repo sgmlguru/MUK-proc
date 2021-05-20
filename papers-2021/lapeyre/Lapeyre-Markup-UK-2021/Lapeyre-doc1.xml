@@ -403,18 +403,16 @@ establishes elements and attributes from which tag sets for multiple document ty
 
 <section>
 <title>Attribute Pages</title>
-<para>There is one element page for each element in the Tag Set. Each attribute page begins with the attribute name used in the XML files, a longer descriptive name, and a description, , all information that is shared with the JATS Standard. Descriptions are <emphasis role="ital">not</emphasis> dictionary definitions, but narrative text describing the attribute, as the name implies.</para>   
+<para>There is one element page for each element in the Tag Set. Each attribute page begins with the attribute name used in the XML files, a longer descriptive name, and a description, all information that is shared with the JATS Standard. Descriptions are <emphasis role="ital">not</emphasis> dictionary definitions, but narrative text describing the attribute, as the name implies.</para>   
 <para>A “Usage and Remarks” section often provides additional information on how to use the attribute, sometimes including “Best Practice” suggestions.</para>
-<!--
-    DocBook WebHelp rendering fails on image not found:
-    <figure>
+<figure>
 <title>Attribute page for @object-id</title>
 <mediaobject>
 <imageobject>
-<imagedata fileref="images/AttrRemarks.png" format="png" />
+<imagedata fileref="images/AttrRemarks.png" format="png" width="50%"/>
 </imageobject>
 </mediaobject>
-</figure>-->
+</figure>
 
 <figure>
 <title>Attribute values for @assigning-authority</title>
