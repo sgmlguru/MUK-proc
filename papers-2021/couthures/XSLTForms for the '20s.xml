@@ -473,11 +473,11 @@ new XsltForms_input(xsltforms_subform,xsltforms_subform.id + "-input-4_4_2_",2,"
 
     <para>For example,</para>
 
-    <programlisting><![CDATA[fleur("xs:date('2021-05-21') - xs:date('2021-05-10')")]]></programlisting>
+    <programlisting language="javascript"><![CDATA[fleur("xs:date('2021-05-21') - xs:date('2021-05-10')")]]></programlisting>
 
     <para>Returns</para>
 
-    <programlisting><![CDATA["xs:dayTimeDuration('P11D')"]]></programlisting>
+    <programlisting language="javascript"><![CDATA["xs:dayTimeDuration('P11D')"]]></programlisting>
   </section>
 
   <section>
@@ -502,51 +502,51 @@ new XsltForms_input(xsltforms_subform,xsltforms_subform.id + "-input-4_4_2_",2,"
 
     <bibliomixed>
       <abbrev>XSLTForms</abbrev>
-      Couthures, Alain: <title>XSLTForms</title>.<bibliomisc><link xl:href="https://github.com/AlainCouthures/declarative4all/tree/master/public/direct"/></bibliomisc>
+      Couthures, Alain: <title>XSLTForms</title>. <link xl:href="https://github.com/AlainCouthures/declarative4all/tree/master/public/direct"/>
     </bibliomixed>
 
     <bibliomixed>
       <abbrev>Fleur</abbrev>
-      Couthures, Alain: <title>Fleur</title>.<bibliomisc><link xl:href="https://github.com/AlainCouthures/declarative4all/blob/master/build/js/fleur.js"/></bibliomisc>
+      Couthures, Alain: <title>Fleur</title>. <link xl:href="https://github.com/AlainCouthures/declarative4all/blob/master/build/js/fleur.js"/>
     </bibliomixed>
 
     <bibliomixed>
       <abbrev>XQuery</abbrev>
       Robie, Jonathan - 
-      Dyck, Michael (eds.): <title>XQuery 3.1: An XML Query Language</title>. W3C, 2017<bibliomisc><link xl:href="http://www.w3.org/TR/xquery-31/"/></bibliomisc>
+      Dyck, Michael (eds.): <title>XQuery 3.1: An XML Query Language</title>. W3C, 2017. <link xl:href="http://www.w3.org/TR/xquery-31/"/>
     </bibliomixed>
 
     <bibliomixed>
       <abbrev>XPF</abbrev>
-      Kay, Michael (ed.): <title>XPath and XQuery functions and operators 3.1</title>. W3C, 2017<bibliomisc><link xl:href="https://www.w3.org/TR/xpath-functions-31/"/></bibliomisc>
+      Kay, Michael (ed.): <title>XPath and XQuery functions and operators 3.1</title>. W3C, 2017. <link xl:href="https://www.w3.org/TR/xpath-functions-31/"/>
     </bibliomixed>
 
     <bibliomixed>
       <abbrev>XQUF</abbrev>
       Snelson, John -
-      Melton, Jim (eds.): <title>XQuery Update Facility 3.0</title>. W3C, 2015<bibliomisc><link xl:href="http://www.w3.org/TR/xquery-update-30/"/></bibliomisc>
+      Melton, Jim (eds.): <title>XQuery Update Facility 3.0</title>. W3C, 2015. <link xl:href="http://www.w3.org/TR/xquery-update-30/"/>
     </bibliomixed>
 
     <bibliomixed>
       <abbrev>XQueryX</abbrev>
       Melton, Jim - 
-      Spiegel, Josh (eds.): <title>XQueryX 3.1</title>. W3C, 2017<bibliomisc><link xl:href="http://www.w3.org/TR/xquery-31/"/></bibliomisc>
+      Spiegel, Josh (eds.): <title>XQueryX 3.1</title>. W3C, 2017. <link xl:href="http://www.w3.org/TR/xquery-31/"/>
     </bibliomixed>
 
     <bibliomixed>
       <abbrev>XF11</abbrev>
-      Boyer, John M. (ed.): <title>XForms 1.1</title>. W3C, 2009<bibliomisc><link xl:href="https://www.w3.org/TR/2009/REC-xforms-20091020/"/></bibliomisc>
+      Boyer, John M. (ed.): <title>XForms 1.1</title>. W3C, 2009. <link xl:href="https://www.w3.org/TR/2009/REC-xforms-20091020/"/>
     </bibliomixed>
 
     <bibliomixed>
       <abbrev>XF2</abbrev>
       Bruchez, Eric - al. (eds.): <title>XForms
-      2.0</title>. W3C, 2018<bibliomisc><link xl:href="https://www.w3.org/community/xformsusers/wiki/XForms_2.0"/></bibliomisc>
+      2.0</title>. W3C, 2018. <link xl:href="https://www.w3.org/community/xformsusers/wiki/XForms_2.0"/>
     </bibliomixed>
 
     <bibliomixed>
       <abbrev>XFTUT</abbrev>
-      Pemberton, Steven: <title>XForms Hands On Tutorial</title>. 2020<bibliomisc><link xl:href="https://homepages.cwi.nl/~steven/xforms/xforms-hands-on/tutorial.xhtml"/></bibliomisc>
+      Pemberton, Steven: <title>XForms Hands On Tutorial</title>. 2020. <link xl:href="https://homepages.cwi.nl/~steven/xforms/xforms-hands-on/tutorial.xhtml"/>
     </bibliomixed>
   </bibliography>
 </article>
