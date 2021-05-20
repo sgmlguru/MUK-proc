@@ -24,12 +24,12 @@
         
     </info>
     
-    <!-- TODO: usdin -->
+    <xi:include href="papers-2021/usdin/BTU-MarkupUK-2021/BTU-MarkupUK-paper-2021.xml"/>
     <xi:include href="papers-2021/maus/dmaus-markupuk2021/paper.xml"/>
     <xi:include href="papers-2021/couthures/XSLTForms%20for%20the%20%2720s.xml"/>
     <xi:include href="papers-2021/kay/markupuk2021/paper.xml"/>
     <xi:include href="papers-2021/siegel/paper/comprehensible-xml.xml"/>
-    <!-- TODO: lapeyre -->
+    <xi:include href="papers-2021/lapeyre/Lapeyre-Markup-UK-2021/Lapeyre-doc1.xml"/>
     
     <xi:include href="papers-2021/bredenberg-kaminski/Bredenberg_Kaminski.xml"/>
     <xi:include href="papers-2021/lafontaine-whitaker/markupuk-laf06.xml"/>

@@ -182,8 +182,7 @@ div.productlist>h3 {
     &lt;css:rule match="ul.letterindex">
         column-count: 3;
     &lt;/css:rule>
-&lt;/css:media>
-</programlisting>
+&lt;/css:media></programlisting>
     </sect1>
     <sect1>
         <title>The CSS Output</title>

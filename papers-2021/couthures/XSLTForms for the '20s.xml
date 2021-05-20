@@ -64,7 +64,7 @@
 
     <para>Becomes</para>
 
-    <programlisting><![CDATA[<span id="xsltforms-mainform-input-4_4_2_" class="xforms-disabled xforms-control xforms-input xforms-appearance">
+    <programlisting language="xml"><![CDATA[<span id="xsltforms-mainform-input-4_4_2_" class="xforms-disabled xforms-control xforms-input xforms-appearance">
  <span class="focus"> </span>
  <label for="xsltforms-mainform-input-input-4_4_2_" id="xsltforms-mainform-label-2_4_4_2_" class="xforms-label">Please enter your first name: </label>
  <span class="value">
@@ -78,7 +78,7 @@
 
     <para>And</para>
 
-    <programlisting><![CDATA[XsltForms_xpath.create(xsltforms_subform,"PersonGivenName",false,
+    <programlisting language="javascript"><![CDATA[XsltForms_xpath.create(xsltforms_subform,"PersonGivenName",false,
  new XsltForms_locationExpr(false,
   new XsltForms_stepExpr('child',
    new XsltForms_nodeTestName('','PersonGivenName')
@@ -102,7 +102,7 @@ new XsltForms_input(xsltforms_subform,xsltforms_subform.id + "-input-4_4_2_",2,"
 
     <para>Becomes</para>
 
-    <programlisting><![CDATA[new XsltForms_functionCallExpr('http://www.w3.org/2005/xpath-functions concat',
+    <programlisting language="javascript"><![CDATA[new XsltForms_functionCallExpr('http://www.w3.org/2005/xpath-functions concat',
  new XsltForms_cteExpr('Hello '),
  new XsltForms_locationExpr(false,
   new XsltForms_stepExpr('child',
@@ -192,13 +192,13 @@ new XsltForms_input(xsltforms_subform,xsltforms_subform.id + "-input-4_4_2_",2,"
 
     <para>For example,</para>
 
-    <programlisting><![CDATA[<xf:input ref="PersonGivenName" incremental="true">
+    <programlisting language="xml"><![CDATA[<xf:input ref="PersonGivenName" incremental="true">
  <xf:label>Please enter your first name: </xf:label>
 </xf:input>]]></programlisting>
 
     <para>Becomes</para>
 
-    <programlisting><![CDATA[<xforms-input xf-ref="PersonGivenName" xf-incremental="true">
+    <programlisting language="xml"><![CDATA[<xforms-input xf-ref="PersonGivenName" xf-incremental="true">
  <xforms-label>Please enter your first name: </xforms-label>
 </xforms-input>]]></programlisting>
 
@@ -215,7 +215,7 @@ new XsltForms_input(xsltforms_subform,xsltforms_subform.id + "-input-4_4_2_",2,"
 
     <para>For example,</para>
 
-    <programlisting><![CDATA[<xf:instance>
+    <programlisting language="xml"><![CDATA[<xf:instance>
  <data xmlns="">
   <PersonGivenName/>
  </data>
@@ -223,7 +223,7 @@ new XsltForms_input(xsltforms_subform,xsltforms_subform.id + "-input-4_4_2_",2,"
 
     <para>Becomes</para>
 
-    <programlisting><![CDATA[<xforms-instance>
+    <programlisting language="xml"><![CDATA[<xforms-instance>
  <script type="application/xml">&lt;data xmlns=""&gt;&lt;PersonGivenName/&gt;&lt;/data&gt;</script>
 </xforms-instance>]]></programlisting>
 
@@ -252,13 +252,13 @@ new XsltForms_input(xsltforms_subform,xsltforms_subform.id + "-input-4_4_2_",2,"
 
     <para>For example,</para>
 
-    <programlisting><![CDATA[<xforms-input xf-ref="PersonGivenName" xf-incremental="true">
+    <programlisting language="xml"><![CDATA[<xforms-input xf-ref="PersonGivenName" xf-incremental="true">
   <xforms-label>Please enter your first name: </xforms-label>
   </xforms-input>]]></programlisting>
 
     <para>Becomes</para>
 
-    <programlisting><![CDATA[<xforms-input xf-ref="PersonGivenName" xf-incremental="true">
+    <programlisting language="xml"><![CDATA[<xforms-input xf-ref="PersonGivenName" xf-incremental="true">
   <xforms-label>Please enter your first name: </xforms-label>
   <xforms-body>
     <input>
@@ -284,7 +284,7 @@ new XsltForms_input(xsltforms_subform,xsltforms_subform.id + "-input-4_4_2_",2,"
 
     <para>For example,</para>
 
-    <programlisting><![CDATA[xforms-input:not([xf-required])[xf-invalid] > xforms-label::after {
+    <programlisting language="css"><![CDATA[xforms-input:not([xf-required])[xf-invalid] > xforms-label::after {
   content: "\2716";
   color: red;
 }]]></programlisting>
@@ -318,7 +318,7 @@ new XsltForms_input(xsltforms_subform,xsltforms_subform.id + "-input-4_4_2_",2,"
 
     <para>Becomes</para>
 
-    <programlisting><![CDATA[[Fleur.XQueryX.functionCallExpr,[
+    <programlisting language="javascript"><![CDATA[[Fleur.XQueryX.functionCallExpr,[
   [Fleur.XQueryX.functionName,['concat']],
   [Fleur.XQueryX.arguments,[
     [Fleur.XQueryX.stringConstantExpr,[[Fleur.XQueryX.value,['Hello ']]]],
@@ -334,7 +334,7 @@ new XsltForms_input(xsltforms_subform,xsltforms_subform.id + "-input-4_4_2_",2,"
 
     <para>Which can be serialized in XQueryX as</para>
 
-    <programlisting><![CDATA[<xqx:functionCallExpr>
+    <programlisting language="xml"><![CDATA[<xqx:functionCallExpr>
   <xqx:functionName>concat</xqx:functionName>
   <xqx:arguments>
     <xqx:stringConstantExpr>
@@ -369,11 +369,11 @@ new XsltForms_input(xsltforms_subform,xsltforms_subform.id + "-input-4_4_2_",2,"
 
     <para>For example,</para>
 
-    <programlisting><![CDATA[fleur("instance()")]]></programlisting>
+    <programlisting language="javascript"><![CDATA[fleur("instance()")]]></programlisting>
 
     <para>Returns</para>
 
-    <programlisting><![CDATA["<data xmlns=\"\"><PersonGivenName/></data>"]]></programlisting>
+    <programlisting language="javascript"><![CDATA["<data xmlns=\"\"><PersonGivenName/></data>"]]></programlisting>
 
     <para>Because rendering in Javascript console is rather limited, an XForms
     console has been created (accessible with F1 key). Currently limited to
@@ -409,7 +409,7 @@ new XsltForms_input(xsltforms_subform,xsltforms_subform.id + "-input-4_4_2_",2,"
 
     <para>Becomes</para>
 
-    <programlisting><![CDATA[ctx => {
+    <programlisting language="javascript"><![CDATA[ctx => {
   ctx.xqx_stringConstantExpr('Hello ');
   ctx.xqx_pathExpr();
   ctx.xqx_xpathAxis_child();
@@ -430,7 +430,7 @@ new XsltForms_input(xsltforms_subform,xsltforms_subform.id + "-input-4_4_2_",2,"
 
     <para>Becomes</para>
 
-    <programlisting><![CDATA[async ctx => {
+    <programlisting language="javascript"><![CDATA[async ctx => {
   ctx.xqx_pathExpr();
   await ctx.xqx_filterExpr_async(async ctx => {
     ctx.xqx_stringConstantExpr('r2d2.urdf.xml');

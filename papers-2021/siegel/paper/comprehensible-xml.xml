@@ -15,6 +15,11 @@
       <email>erik@xatapult.nl</email>
       <affiliation><orgname>Xatapult</orgname></affiliation>
     </author>
+    <abstract>
+      <para>Writing software, it is all too easy to forget that there is another side to it than just: it works. Most software goes through a life cycle of writing, testing debugging and maintenance. This makes it important that what you write is comprehensible, both for somebody else and yourself in a few months’ time. It reduces the chance of mistakes and bugs and shortens development time.</para>
+      <para>We have probably all seen, heard, or read something about how to write good code. We probably all to try to comply more or less, but given what we see around us, we do not always succeed.</para>
+      <para>This talk will try to provide directions, tips and tricks on how to make (in this case XML related) code more understandable. It will also provide background on why this important and why we should try to comply. How can we do this with minimum effort. It will be a mixture of things from literature and personal experience after 40 years of programming computers.</para>
+    </abstract>
   </info>
 
   <!-- ================================================================== -->
@@ -243,7 +248,7 @@
         <code>15</code> (what the spacing suggests) but <code>7</code>. Or what about this coding
         horror:</para>
 
-      <programlisting xml:space="preserve"><![CDATA[<xsl:function name="local:something">
+      <programlisting xml:space="preserve" language="xml"><![CDATA[<xsl:function name="local:something">
 <…></xsl:function><xsl:function name="local:something-else"><…>  
 </xsl:function>]]></programlisting>
 
@@ -298,7 +303,7 @@
             book.</para>
           <para>I personally prefer using &#x201c;comment lines&#x201d; for this:</para>
 
-          <programlisting xml:space="preserve"><![CDATA[<xsl:template …>
+          <programlisting xml:space="preserve" language="xml"><![CDATA[<xsl:template …>
 …
 </xsl:template>
 
@@ -310,7 +315,7 @@
           <para>And use a &#x201c;heavier&#x201d; line in between sets of templates that belong
             together:</para>
 
-          <programlisting xml:space="preserve"><![CDATA[<!-- ======================================================================= -->]]></programlisting>
+          <programlisting xml:space="preserve" language="xml"><![CDATA[<!-- ======================================================================= -->]]></programlisting>
           <para>And no, it&#x2019;s <emphasis>not</emphasis> awkward to insert (type) these kinds of
             lines all the time, see <xref linkend="sect-debunking"/>. But you can also decide to use
             multiple empty lines. Or whatever works for you.</para>
@@ -381,14 +386,14 @@
         <listitem>
           <para>Use descriptive names. This is the absolute winner in making code self-documenting.
             For instance:</para>
-          <programlisting xml:space="preserve"><![CDATA[<xsl:variable name="f" as="xs:double" select="($c - 32) * 0.5556"/>]]></programlisting>
+          <programlisting  language="xml" xml:space="preserve"><![CDATA[<xsl:variable name="f" as="xs:double" select="($c - 32) * 0.5556"/>]]></programlisting>
           <para>It takes a comment to tell the reader that this converts a temperature in Celsius to
             Fahrenheit. But if the variable names were chosen more wisely this is no longer
             necessary:</para>
-          <programlisting xml:space="preserve"><![CDATA[<xsl:variable name="temperature-in-fahrenheit" as="xs:double"
+          <programlisting language="xml" xml:space="preserve"><![CDATA[<xsl:variable name="temperature-in-fahrenheit" as="xs:double"
   select="($temperature-in-celsius - 32) * 0.5556"/>]]></programlisting>
           <para>Or even better: break out such an expression in a function:</para>
-          <programlisting xml:space="preserve"><![CDATA[<xsl:function name="mod:celsius-to-fahrenheit" as="xs:double">
+          <programlisting language="xml" xml:space="preserve"><![CDATA[<xsl:function name="mod:celsius-to-fahrenheit" as="xs:double">
   <xsl:param name="temperature-in-celsius" as="xs:double"/>
   <xsl:sequence select="($temperature-in-celsius - 32) * 0.5556"/>
 </xsl:function>]]></programlisting>
@@ -429,9 +434,9 @@ return
             to lookup and/or change and prevents bugs caused by mistyping a value. A good name
             clearly communicates the intent of the value.</para>
           <para>Here&#x2019;s a classic example:</para>
-          <programlisting xml:space="preserve"><![CDATA[<xsl:for-each select="1 to 12">]]></programlisting>
+          <programlisting xml:space="preserve" language="xml"><![CDATA[<xsl:for-each select="1 to 12">]]></programlisting>
           <para>Why 12? Ah, this is better:</para>
-          <programlisting xml:space="preserve"><![CDATA[<xsl:for-each select="1 to $months-per-year">]]></programlisting>
+          <programlisting xml:space="preserve" language="xml"><![CDATA[<xsl:for-each select="1 to $months-per-year">]]></programlisting>
           <para>It&#x2019;s not that I expect that the number of months in a year is going to change
             anytime soon. This is about communicating the intent: we&#x2019;re iterating over months
             here…</para>
@@ -512,11 +517,11 @@ declare variable $mod:status-warning as xs:string := 'warning';
         <listitem>
           <para>Do not comment the obvious, comment the <emphasis>intent</emphasis>. This, for
             instance, is completely superfluous:</para>
-          <programlisting xml:space="preserve"><![CDATA[<!-- Store the number of <thing> elements in $things-count: -->
+          <programlisting xml:space="preserve" language="xml"><![CDATA[<!-- Store the number of <thing> elements in $things-count: -->
 <xsl:variable name="things-count" as="xs:integer" select="count(//things)"/>]]></programlisting>
           <para>Both the (well-chosen) variable name as the expression already tell you this. This
             however tells the reader what the intent of the code is:</para>
-          <programlisting xml:space="preserve"><![CDATA[<!-- Add a prompt attribute to every thing for easier reporting later: -->
+          <programlisting xml:space="preserve" language="xml"><![CDATA[<!-- Add a prompt attribute to every thing for easier reporting later: -->
 <xsl:variable name="things-count" as="xs:integer" select="count(//things)"/>
 <xsl:for-each select="//things">
   <xsl:copy>

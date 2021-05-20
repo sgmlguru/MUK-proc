@@ -321,8 +321,7 @@
       &lt;url/&gt;
    &lt;/nav&gt;
 &lt;/instance&gt;
-&lt;bind ref=&quot;instance('nav')/url&quot; calculate=&quot;concat(../base, ../file)&quot;/&gt;
-</programlisting>
+&lt;bind ref=&quot;instance('nav')/url&quot; calculate=&quot;concat(../base, ../file)&quot;/&gt;</programlisting>
     <para>
       To set the filename, a <literal>select1</literal> control is
       populated using the tutorial chapters instance: the labels are the
@@ -334,8 +333,7 @@
        &lt;label ref=&quot;title&quot;/&gt;
        &lt;value value=&quot;file&quot;/&gt;
    &lt;/itemset&gt;
-&lt;/select1&gt;
-</programlisting>
+&lt;/select1&gt;</programlisting>
     <para>
       Either side of this control, are triggers that decrement and
       increment this value (with judicious use of
@@ -349,8 +347,7 @@
    &lt;setvalue ref=&quot;instance('nav')/file&quot;
              value=&quot;context()/file&quot;
              ev:event=&quot;DOMActivate&quot;/&gt;
-&lt;/trigger&gt;
-</programlisting>
+&lt;/trigger&gt;</programlisting>
     <para>
       In this way, the user can select a chapter either from the drop
       down, or by navigating from chapter to chapter using the arrows.
@@ -375,8 +372,7 @@
     <para>
       To display the content of the chapter, an html iframe is used:
     </para>
-    <programlisting language="xml">&lt;html:iframe id=&quot;chapter&quot; src=&quot;{instance('nav')/url}&quot;&gt;&lt;/html:iframe&gt;
-</programlisting>
+    <programlisting language="xml">&lt;html:iframe id=&quot;chapter&quot; src=&quot;{instance('nav')/url}&quot;&gt;&lt;/html:iframe&gt;</programlisting>
     <para>
       Thanks to how XForms works, whenever the <literal>file</literal>
       value gets changed, the <literal>url</literal> value automatically
@@ -408,8 +404,7 @@
         By default, outputs directly after each other will abut. If a is
         3, and b is 4, then
       </para>
-      <programlisting language="xml">&lt;output ref=&quot;a&quot;/&gt;&lt;output ref=&quot;b&quot;/&gt;
-</programlisting>
+      <programlisting language="xml">&lt;output ref=&quot;a&quot;/&gt;&lt;output ref=&quot;b&quot;/&gt;</programlisting>
       <para>
         will output:
       </para>
@@ -426,8 +421,7 @@ If a is &lt;output  ref=&quot;a&quot;/&gt;, and b is &lt;output ref=&quot;b&quot
 will output:
 &lt;group class=&quot;pre&quot;&gt;
    &lt;output ref=&quot;a&quot;/&gt;&lt;output ref=&quot;b&quot;/&gt;
-&lt;/group&gt;
-</programlisting>
+&lt;/group&gt;</programlisting>
     <para>
       In other words a really <emphasis>is</emphasis> 3, and b really
       <emphasis>is</emphasis> 4, and the example output is produced by
