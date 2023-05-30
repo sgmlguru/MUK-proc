@@ -25,6 +25,7 @@
     </info>
     
     <xi:include href="papers-2023/siegel/XProc%20as%20a%20command-line%20application%20engine.xml"/>
+    <xi:include href="papers-2023/graham-quality/paper.xml"/>
     
 
 </book>
