@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/css" href="resources/css/paper.css"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0">
+	<info>
+		<title>Quality in Formatted Documents</title>
+		<author>
+			<personname>Tony Graham</personname>
+			<email>tgraham@antenna.co.jp</email>
+			<uri>https://www.antennahouse.com</uri>
+			<personblurb>
+				<para>Tony Graham is a Senior Architect with Antenna House, where he works on their XSL-FO and CSS formatter, cloud-based authoring solution, and related products. He also provides XSL-FO and XSLT consulting and training services on behalf of Antenna House.</para>
+				<para>Tony has been working with markup since 1991, with XML since 1996, and with XSLT/XSL-FO since 1998. He was previously an invited expert on the W3C XML Print and Page Layout Working Group (XPPL) defining the XSL-FO specification, as well as an acknowledged expert in XSLT. Tony is the developer of the 'stf' Schematron testing framework and also Antenna House's 'focheck' XSL-FO validation tool, a committer to both the XSpec and Juxy XSLT testing frameworks, the author of "Unicode: A Primer", and a qualified trainer.</para>
+			</personblurb>
+			<affiliation>
+				<jobtitle>Senior Architect</jobtitle>
+				<orgname>Antenna House</orgname>
+				<orgdiv>XML Division</orgdiv>
+			</affiliation>
+		</author>
+		<keywordset>
+			<keyword>XSL-FO</keyword>
+			<keyword>DocBook</keyword>
+		</keywordset>
+		<abstract><para>“Markup quality assurance” is the theme for Markup UK 2023, but what does “quality” mean when the markup is meant to be formatted for human consumption? When that markup is transformed from an original document in a completely different XML vocabulary? This presentation looks at different ways of assessing or assuring the quality of both the markup and the formatted document.</para>
+		</abstract>
+	</info>
+	<section>
+		<title>Markup Quality</title>
+		<section>
+			<title>XSL-FO</title>
+			<para>focheck, available on GitHub and bundled with Oxygen, provides the best available way to check, create, and edit XSL-FO markup.</para>
+			<para>A distinctive feature of XSL-FO is that most of the properties’ values can be expressions that the XSL formatter evaluates when it formats the document. This, of course, stymies grammar-based checking of an XSL-FO document because the datatype of a property value can’t be known until the expression is evaluated.</para>
+			<para>focheck combines a RELAX NG schema for checking the structure of an XSL-FO file with Schematron and a REx-generated parser for evaluating property value expressions. The Schematron also checks relationships between elements that can’t be expressed in a grammar. When used as an Oxygen framework, the included Schematron Quick-Fixes allow interactive fixing of some of the errors common in XSL-FO documents.</para>
+		</section>
+		<section>
+			<title>CSS</title>
+			<para>HTML can, of course, be checked using any number of HTML-aware editors and linters. However, formatting systems typically provide extension properties and functions that aren’t supported by browsers. Some of these ‘extensions’ are properties originally defined in CSS Working Drafts but dropped from later versions.</para>
+			<para>Extensions are, by definition, not universally supported, and the same is true for their editing and validation. The CSS editor in Oxygen, for example, recognises the extensions for Oxygen Chemistry, but not the extensions for other formatters. An Oxygen framework cannot extend the syntax checking of the Oxygen CSS editor, so Antenna House provides a VSCode extension that recognises the Antenna House CSS Formatter extension properties (but not the Oxygen extensions).</para>
+			<para>The VSCode extension supports syntax highlighting of the Antenna House extensions and provides tooltips that show a property’s definition and allowed values plus links to the property’s documentation and code samples.</para>
+		</section>
+	</section>
+	<section>
+		<title>Formatted Quality</title>
+		<section>
+			<title>Regression testing</title>
+			<para>Sometimes the most important quality check that you can make is to ensure that a change that you made does not have any unintended consequences. Regression testing is as important in document formatting as it is in any other software field.</para>
+			<para>When the markup is deeply nested and contains multiple interacting properties, or the properties are defined in separate stylesheets containing rules that cascade in ways that may not be immediately obvious, then checking the formatted output for changes can be better use of your time than looking at diffs of files and trying to imagine the effects.</para>
+				<para>Antenna House developed a visual regression testing system for its own use that was then released as a product. It can compare single raster images, multi-page documents, or directories of documents and produce both summary reports and reports showing the exact visual differences between two pages. The system rasterises its source documents at a user-defined resolution and compares them pixel-by-pixel. As such, the sources do not have to be from Antenna House Formatter and, in fact, could be generated by two disparate sources.</para>
+		</section>
+		<section>
+			<title>Automated analysis</title>
+			<para>Languages, including English, have stylistic conventions for formatted text. The origins of the conventions may be for readability, for aesthetics, for commercial reasons, or for a mix of these. Some are now just considered to be good design without reference to the underlying reason. Books on typography or book design will usually cover a subset of possible problems, but even the reference books differ in what they consider to be a problem, the threshold for a condition becoming a problem, and even the terminology for describing a problem.</para>
+			<para>Automated analysis, introduced in Antenna House Formatter V7.0 and expanded in V7.1, can detect a range of error conditions:</para>
+			<itemizedlist>
+				<listitem>
+					<para>Too many blank pages at the end of the document</para>
+			<para>The printing and binding method used for a book may require that the book is a multiple of 8, 16, 32, or even more pages. Extensions to the force-page-count property make this possible with AH Formatter V7.1. However, the forced page count can result in empty pages at the end of the document just to fulfil the requirement. Empty pages are a cost to the publisher with little or no obvious benefit.</para></listitem>
+			<listitem><para>Too many consecutive lines end with a hyphen</para>
+				<para>Too many consecutive lines that end with a hyphen increase the likelihood that a reader will either skip reading a line or read the same line twice. Both the Chicago Manual of Style (17th edition) and Elements of Typographic Style recommend a maximum of three consecutive lines that end with a hyphen.</para></listitem>
+				<listitem><para>Too many consecutive lines that all start or all end with the same word</para>
+			<para>This is similar to the problem with multiple consecutive lines that end on a hyphen. Multiple consecutive lines that start with the same word or multiple lines that end with the same word can result in a reader either skipping a line of text or rereading a line. The Chicago Manual of Style (17th edition) recommends a maximum of three lines that either start or end with the same word. Book Typography warns against multiple lines that end with the same word but does not provide a limit and does not mention lines that start with the same word.</para></listitem>
+				<listitem><para>Lines before or after current block</para>
+			<para>When a chapter does not start on a new page, there can be a requirement for a minimum number of lines either before or after the chapter heading. Book Typography recommends at least three lines above and below the chapter heading. This can usually be enforced using the widows and orphans properties, but not when, for example, the previous chapter ends with short lines of dialogue.</para></listitem>
+				<listitem><para>Page widow</para>
+			<para>A short last line of a block of text that is formatted as the first line on a page or column can affect readability.</para></listitem>
+				<listitem><para>Paragraph widow</para>
+					<para>A short last line of a block of text can affect readability. A secondary consideration is that many paragraph widows can add extra pages, and cost, to a document.</para></listitem>
+				<listitem><para>River</para>
+					<para>A river occurs where spaces on consecutive lines overlap, or nearly overlap. Rivers are more likely to occur in justified text than in text that is aligned to one side or is centred. A large or long river of white-space may interfere with comprehension of the text. People differ in their sensitivity to rivers, but it is often noted as problem for people with certain cognitive disabilities, including dyslexsia.</para></listitem>
+				<listitem><para>Unbalanced spread</para>
+					<para>It can be an aesthetic requirement that text blocks on facing pages are the same length.</para></listitem>
+				<listitem><para>White-space</para>
+					<para>Excessive white-space between words can affect readability.</para></listitem></itemizedlist>
+			<para>The problems found by the automated analysis are reported as log messages. The Antenna House ‘analysis-utility’ project on GitHub provides scripts to process the error log and the document to generate either an analysis report or a copy of the formatted document that is annotated to show the locations of the errors.</para>
+		</section>
+		<section>
+			<title>PDF/UA checking and remediation</title>
+			<para>Tools for checking conformance to the requirements of PDF/UA range from free tools that check a file at a time to utilities that monitor your network and check every PDF file. Similarly, tools for remediating (repairing) PDF/UA files range from free tools to systems that are <quote>price on application</quote>.</para>
+		</section>
+	</section>
+</article>
