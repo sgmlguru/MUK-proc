@@ -581,7 +581,7 @@
 
   </section>
 
-  <bibliography xml:id="references">
+  <bibliography xml:id="marchand-references">
 
     <bibliomixed xml:id="xp-explained">
       <author><personname>Kent Beck</personname></author>: <title>eXtreme Programming explained</title>.

@@ -276,15 +276,15 @@ declare %unit:test function _:process-pattern()
         <para></para>
     </section>-->
     <bibliography>
-        <bibliomixed xml:id="schematron-existdb"><link xlink:href="https://github.com/Schematron/schematron-exist">https://github.com/Schematron/schematron-exist</link></bibliomixed>
-        <bibliomixed xml:id="schematron-basex"><link xlink:href="https://github.com/Schematron/schematron-basex">https://github.com/Schematron/schematron-basex</link></bibliomixed>
-        <bibliomixed xml:id="schematron-ML"><link xlink:href="https://github.com/ndw/ML-Schematron">https://github.com/ndw/ML-Schematron</link></bibliomixed>
-        <bibliomixed xml:id="probatron"><link xlink:href="https://code.google.com/archive/p/probatron/">Probatron</link></bibliomixed>
-        <bibliomixed xml:id="ph-schematron"><link xlink:href="https://phax.github.io/ph-schematron/">ph-schematron</link></bibliomixed>
-        <bibliomixed xml:id="skeleton"><link xlink:href="https://github.com/Schematron/schematron">Skeleton implementation</link>, archived October 2020.</bibliomixed>
-        <bibliomixed xml:id="schxslt"><link xlink:href="https://github.com/schxslt/schxslt">SchXslt</link></bibliomixed>
-        <bibliomixed xml:id="iso-qlbs">ISO/IEC 19757-3:2020, Clause 6.4; Annexes H-M. <link xlink:href="https://www.iso.org/standard/74515.html"></link>.</bibliomixed>
-        <bibliomixed xml:id="meetups">Schematron Users Meetup, at <confgroup><conftitle>XML Prague</conftitle><confdates>2017-20, 2022</confdates></confgroup>, <link xlink:href="https://www.xmlprague.cz/">https://www.xmlprague.cz/</link></bibliomixed>
-        <bibliomixed xml:id="jaxen"><link xlink:href="https://github.com/jaxen-xpath/jaxen">Jaxen</link></bibliomixed>
+        <bibliomixed xml:id="schematron-existdb"><bibliomisc><link xlink:href="https://github.com/Schematron/schematron-exist">https://github.com/Schematron/schematron-exist</link></bibliomisc></bibliomixed>
+        <bibliomixed xml:id="schematron-basex"><bibliomisc><link xlink:href="https://github.com/Schematron/schematron-basex">https://github.com/Schematron/schematron-basex</link></bibliomisc></bibliomixed>
+        <bibliomixed xml:id="schematron-ML"><bibliomisc><link xlink:href="https://github.com/ndw/ML-Schematron">https://github.com/ndw/ML-Schematron</link></bibliomisc></bibliomixed>
+        <bibliomixed xml:id="probatron"><bibliomisc><link xlink:href="https://code.google.com/archive/p/probatron/">Probatron</link></bibliomisc></bibliomixed>
+        <bibliomixed xml:id="ph-schematron"><bibliomisc><link xlink:href="https://phax.github.io/ph-schematron/">ph-schematron</link></bibliomisc></bibliomixed>
+        <bibliomixed xml:id="skeleton"><bibliomisc><link xlink:href="https://github.com/Schematron/schematron">Skeleton implementation</link></bibliomisc>, archived October 2020.</bibliomixed>
+        <bibliomixed xml:id="schxslt"><bibliomisc><link xlink:href="https://github.com/schxslt/schxslt">SchXslt</link></bibliomisc></bibliomixed>
+        <bibliomixed xml:id="iso-qlbs">ISO/IEC 19757-3:2020, Clause 6.4; Annexes H-M. <bibliomisc><link xlink:href="https://www.iso.org/standard/74515.html"></link></bibliomisc>.</bibliomixed>
+        <bibliomixed xml:id="meetups">Schematron Users Meetup, at <confgroup><conftitle>XML Prague</conftitle><confdates>2017-20, 2022</confdates></confgroup>, <bibliomisc><link xlink:href="https://www.xmlprague.cz/">https://www.xmlprague.cz/</link></bibliomisc></bibliomixed>
+        <bibliomixed xml:id="jaxen"><bibliomisc><link xlink:href="https://github.com/jaxen-xpath/jaxen">Jaxen</link></bibliomisc></bibliomixed>
     </bibliography>
 </article>
