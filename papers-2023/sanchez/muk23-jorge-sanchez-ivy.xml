@@ -1,0 +1,745 @@
+<?xml version="1.0" encoding="utf-8"?>
+<article xmlns="http://docbook.org/ns/docbook"
+	 xmlns:xl="http://www.w3.org/1999/xlink"
+	 version="5.0" xml:lang="en">
+<info>
+    <title>A Dependency Management Approach for Document and Data
+        Transformation Projects</title>
+    <author>
+      <personname>Jorge Sánchez</personname>
+      <email>jorge@vionta.net</email>
+      <uri>http://vionta.net</uri>
+      <personblurb>
+        <para>Jorge Sánchez is a software engineering and management professional with more than 20
+          years of experience in development, analysis and management for companies like GFT,
+          Steria, Everis or Entelgy working primarily on J2EE projects for clients like DGT,
+          Deutsche Bank, Inditex, Indra, AENA, RFEF or JWG-it.</para>
+        <para>Regarding Markup, Jorge's areas of interest include the combining document and model
+          based information (SYSML, UML and Xmi) with traditional management sources like
+          Spreadsheets to elaborate the project information better and in a more efficient way.
+          Jorge also contributed to the StratML project with an improvement of the StratML
+          form.</para>
+      </personblurb>
+    </author>
+    <abstract>
+      <para>This talk introduces and evaluates the suitability of Apache Ivy as a dependency manager for document and data transformation projects, which is less common in these projects. 
+        The proposed solution will provide an optimized set of templates based on the development of Arousa and test common scenarios like dealing with local repositories and setting up a shared network repository. 
+      </para><para>
+        The approach has shown that it is suitable for dependency management on XSLT and XProc transformation projects, and the code samples will be shared for future reference. The initial experience with Arousa seems to back the validity of the solution, and the templates provided can help with the added complexity.</para>
+    </abstract>
+  </info>
+
+<section>
+<title>Introduction</title>
+    <para> I decided to prepare Arousa after a few conversations here and in Prague. I remember
+      talking about using Ivy for Xml dependency management but the idea never seemed to catch up. </para>
+    <para><emphasis role="italic">Arousa is both a tool and a set of templates
+        for managing dependencies in document transformation projects using Apache Ant and Apache Ivy.
+        As a tool, Arousa provides a script for managing template
+        projects with a prebuilt integration with
+        Ivy. The provided templates try to serve as a set of examples to ease start with Ivy in this type of projects.</emphasis></para>
+    <para>The purpose of this document is to evaluate Ivy as a suitable dependency manager for
+      document and data transformation projects.</para>
+    <para>I’ll use Arousa to introduce Ivy and as a mean to simplify the adoption. We’ll iterate
+      over Ivy concepts, their possible use cases and check the plausibility. We’ll refer to the
+      prepared examples and at the end we’ll evaluate the results and conclusions.</para>
+
+</section>
+  <section>
+    <title>Introducing Apache Ivy</title>
+    <para> Apache Ivy is the de facto dependency manager for Apache Ant. Apache Ivy is meant to be
+      flexible (can even be used without Ant) and compatible with Maven and other type of file and
+      network based repositories. Ivy is managed with Xml files, just like Ant, content management
+      technologies like Xslt, Xproc and lots of data sets and content documents. </para>
+    <para>Ivy is not restricted to jar or package files, it can handle arbitrary types of artifacts,
+      trace elaborated configuration chains and using multiple repositories.</para>
+  </section>
+  <section>
+    <title>Starting with Arousa</title>
+  <para>
+    Arousa is wrapped as a bundle, with a managing script and a set of ant template projects integrated with Ivy. You can add your templates taking the existing ones as an example. 
+  </para>
+    <para>
+    Arousa helps you during the creation and configuration of the Ant projects and eases certain calls but all the Arousa magic is made by standard Ant and Ivy capabilities. Once the projects are created, they are self contained Ant projects. You can invoke them with Arousa or directly using Ant commands. 
+    </para>
+    <para>
+    The Arousa configuration is done, in a similar way to a JVM or Ant, by setting its HOME installation path and adding the arousa script to the executable path. 
+  </para>
+<programlisting language="bourne">export AROUSA_HOME=&lt;Your_Installaton_path>
+export PATH=$PATH:$AROUSA_HOME</programlisting>
+    <para> Arousa main script require a bash environment (you may use Cygwin on Windows) Apache Ant
+      and Java. Depending on the specific project some internal variables may also need adjustment,
+      like the Xproc engine path for example. </para>
+    <para>After it is configured, you can run the Arousa script and print the list of available
+      options.</para>
+<programlisting language="bourne">$arousa
+ Arousa Dependency Script
+ Syntax : arousa command argument1 argument2 ..
+
+ Arguments :
+
+ - template-project &lt;name> : Builds a new project arguments 
+              &lt;template-project-name(optional)> &lt;project-name>
+
+ - template-project-content : gets the template project content
+
+ - template-project-list : prints a list of the templates
+
+ - update-dependencies : Updates dependencies
+
+ - publish-dependency : Publish the main dependency
+
+ - update-main-dependency : Get the repository version 
+                                        of the main dependency
+
+ - clean-cache : Cleans ivy project dependency cache
+
+ - template-project-for-dependency : Get a template project 
+                                  for the indicated dependency
+
+- update-arousa-configuration : Update arousa configuration files</programlisting>
+
+<para> The following command, for example, prints the available project templates.</para>
+    <programlisting language="bourne">$ arousa template-project-list</programlisting>
+  </section>
+  <section>
+    <title>A bold experiment. How much time/effort does it take?</title>
+    <para>We are going to introduce Ivy and Arousa with a basic example. The purpose is to evaluate how easy it is to work with Arousa and how much effort involve manage dependencies with Ivy.
+    </para>
+    <para>The example will use a pair of external xslts, one that convert the text nodes to bold, and other that wraps the content into html. 
+    </para>
+    <para>We are going to open the bold experiment folder from the Arousa MARKUPUK23 examples and remove the bold-experiment subfolder.
+    </para>
+    <para>You can navigate now to the sample-bold-transformation folder and run:
+    </para>
+    
+    <programlisting language="bourne">$ arousa publish-dependency</programlisting>
+    <para>At this point you probably have published the first ivy dependency. We are going to create now a project, using the default template, and name it “bold-experiment” with the following command.
+    </para>
+    <programlisting language="bourne">$ arousa template-project bold-experiment</programlisting>
+    <para>In this example we need to adjust the path of the repository (in order to use the previously published example dependencies). Modify the “demo.samples.repository.root” value of the conf/arousa-ivy-settings.xml to fit your location of the examples path, it should look similar to this:
+    </para>
+    <programlisting language="xml">&lt;property 
+        name="demo.samples.repository.root"	   
+        value="C:/Users/john/arousaws/arousa-examples/
+                            bold experiment/repository" /></programlisting>
+    <para>Now we are going to add the dependencies to the conf/arousa-ivy.xml file.
+    </para>
+    <programlisting language="xml">&lt;dependency org="org.markupuk.2x023.arousa.samples" 
+              name="sample-bold-transformation" rev="1.0" >
+      &lt;artifact name="sample-bold-transformation" 
+                type="packaged" ext="zip" />
+    &lt;/dependency>
+
+    &lt;dependency org="net.vionta.templates.html" 
+                          name="html-essentials" rev="1.0" >
+      &lt;artifact name="html-essentials" type="packaged" 
+                ext="zip" />
+&lt;/dependency></programlisting>
+   <para>
+      You could instead just copy the file (from the commands notes folder).
+  </para>
+  <programlisting language="bourne">cp commands/arousa-ivy.xml bold-experiment/conf/arousa-ivy.xml</programlisting>
+    <para>
+   After adding the dependencies declaration, and setting the repository path, you can retrieve the dependencies with the following command.
+  </para>
+  <programlisting language="bourne">$ arousa update-dependencies</programlisting>
+<para>
+  
+ You should see on the screen the Ivy report while it is retrieving the dependencies. At this point, the dependencies should show on the deps folder of your project. We are ready to add the Xslt steps to the build target of the build.xml. 
+</para>
+    <programlisting language="xml">&lt;xslt style="deps/sample-bold-transformation/xsl/bold-demo.xsl"
+      basedir="test/data"
+      destdir="build" 
+      includes="*.xml"
+      extension=".xml"
+    />
+    
+&lt;xslt style="deps/html-essentials/xsl/html-report-basic-structure.xsl"
+      basedir="build"
+      destdir="build" 
+      includes="*.xml"
+      extension=".html"
+    /></programlisting>
+    <para>
+      Now we can add some test data to a file.
+        </para>
+    <programlisting language="bourne">$ mkdir -p test/data
+$ echo '&lt;div>This text will be bold&lt;/div>' > test/data/basic_test.xml</programlisting>
+    <para>
+          And finally run the build target. 
+    </para>
+    
+    <programlisting language="bourne">$ ant build</programlisting>
+    <para>
+      
+    And that’s all, we have prepared a small project, configured Ivy, declared and retrieved the dependencies and executed the transformations. 
+    </para>
+    
+  
+  </section>      
+      
+  <section>
+    <title>Introducing the Arousa project structure</title>
+    
+    <para>Arousa creates a project structure with a base build.xml file, source folders, etc. You may have noticed the conf folder. The conf folder contains the usual ivy files prefixed with the “arousa-” key. It creates the arousa-ivy that describe the dependencies, the arousa-ivy-settings that describes the repositories and an arousa-build.xml with the ant tasks used in the dependency management operations. The base build file calls imports and calls the arousa build tasks. 
+  </para>
+    <para>In order to use the same path references to dependencies from the source folders and from the dependency folders we use a folder naming convention. The idea is to have the same depth of folders both source folders and from the dependencies folders. 
+  </para>
+  <programlisting language="bourne">./src/&lt;dependency-type>/xsl   -->     deps/&lt;some_project>/xsl
+./src/&lt;dependency-type>/xproc -->     deps/&lt;some_project>/xproc</programlisting>
+    
+  <para>
+      Doing so you can call some script, like for example a xsl:import on some.xsl with the same path ../../../deps/&lt;project-name>/&lt;file-type>/some.xsl both from the source folder and later on when the xsl is deployed to other projects deps folder.
+  </para>
+  <para>
+    Note that you could avoid this convention, using options, string substitutions, etc. 
+  </para>
+  </section>
+      
+  <section>
+    <title>Ivy abstraction. Introducing artifact types</title>
+    
+    <para>Ivy is a quite abstract tool, in the sense that is focused on its tasks without getting into irrelevant details. This is probably one of its biggest adoption difficulties, as it lacks specific guidelines on some of its elements. 
+    </para>
+    <para>For example, what is a dependency type? What should it be used for? How? Is it related to the file extension?
+    </para>
+    <para>Ivy does not care much about what do you use an artifact type for. As long as something is a type for you, Ivy handles it accordingly. It can be aligned with the file extension or not. We must remark here that Ivy has a specific attribute for the artifact file extensions. That extension attribute take the artifact type value if its not specified explicitly.Ivy does not care much about what do you use an artifact type for. As long as something is a type for you, Ivy handles it accordingly. It can be aligned with the file extension or not. We must remark here that Ivy has a specific attribute for the artifact file extensions. That extension attribute take the artifact type value if its not specified explicitly.
+    </para>    
+    <para>The Arousa template projects package files using zip archives. We use to refer to them as “transformations” because we use it for transformation sources. You are free to refer to it with the name that make more sense for you. The template projects adds the content from the doc folder to the published packages to make some sort of documentation available in the dependent projects. It may be useful for sharing details about some css rules, or maybe how should we call xslts, their names and use cases, etc. 
+    </para>
+    <para>There may be cases where the documentation contents may need to be handled with different delivery cycles. We are going to use this use case to illustrate artifact types. 
+    </para>
+    <para>We have added an example (dita-sources example) where we share several dita source sets chained. If you check for example the dita-sources-1 project you may notice a modification of the arousa build where we pack a doc zip explicitly. 
+    </para>
+
+    <programlisting language="xml">&lt;target name="arousa-package-doc"  if="${doc.folder.present}" >
+ &lt;mkdir dir="temp-doc" />
+ &lt;mkdir dir="temp-doc/doc" />
+ &lt;mkdir dir="temp-doc/doc/${arousa.project.name}" />
+ &lt;copy todir="temp-doc/doc/${arousa.project.name}" >
+ &lt;fileset dir="doc" >
+ &lt;include name="**" /> 
+ &lt;exclude name="deps/**" />
+ &lt;/fileset>
+ &lt;/copy>
+ &lt;!-- .......... Creating temporary doc ........... -->
+ &lt;zip destfile="dist/${arousa.project.name}-doc.zip" >
+ &lt;zipfileset dir="temp-doc"  >
+ &lt;include name="**" /> 
+ &lt;/zipfileset>
+ &lt;/zip>
+ &lt;delete dir="temp-doc" failonerror="false" />
+ &lt;/target></programlisting>
+    <para>We have also added a complementary publication to the conf/arousa-ivy.xml</para>
+    <programlisting language="xml">&lt;publications>
+    &lt;artifact name="dita-sources-1" type="transformations" 
+              ext="zip" conf="default"/>
+    &lt;artifact name="dita-sources-1-doc" type="documentation" 
+              ext="zip" conf="default"/>
+&lt;/publications></programlisting>
+    <para> We’ve also added the type to the repository pattern in the conf/arousa-ivy-settings.xml. </para>
+<programlisting language="xml">&lt;property name="demo-arousa-pattern"
+	    value="[organisation]/[module]/[type]/[revision]/
+                                  [module]-[revision].[ext]"
+	    override="true" /></programlisting>
+    <para> Once the configurations have been adjusted, and some contents have been added to the doc
+      folder, you can pack the contents and publish the examples. We are going to use the ant
+      targets directly with the following command. </para>
+    <para>
+      <programlisting language="bourne">$ ant package dist</programlisting>
+    </para>
+    <para> At this point you can retrieve and use the contents from a second or third project. Take
+      a look at the conf/arousa-ivy.xml second dita-sources project. We have added the dependency
+      with only the documentation artifact.</para>
+    <programlisting language="xml">&lt;dependencies defaultconf="default">
+    &lt;dependency org="org.markupuk.examples.vionta" 
+                        name="dita-sources-1" rev="1.0" >
+    &lt;artifact name="dita-sources-1-doc" type="documentation" 
+                                              ext="zip" />
+&lt;/dependency>
+ ...</programlisting>
+    <para>If you type the following command you should bring the dependency to your project.</para>
+    <programlisting language="bourne">$ arousa update-dependencies</programlisting>
+    <para>This example shows an interesting point about what can and should we use dependency management for. We can use dependency management for software binaries, code, etc. but we can also describe elements, like content, datasets and shared resources. There are several cases where this approach can be used, like for example the legal clauses that may be added to each contract, proposal, books, etc. in a publishing or in a rfp process. Usually interrelated elements that our process depend on and are shared as resources on a timely basis, both managed by different groups or used in different contexts.
+    </para>
+  </section>
+  <section>
+    <title>A Key difference with Maven</title>
+    <para>A key difference between maven and Ivy is that maven nature is intended for a single module output. Ivy is designed instead for multiple output artifacts from the same component.
+    </para>
+    <para>Maven is probably more suitable for the intermediate, most developer centric processes (structured activities) while and Ant is useful in the last steps of delivery, where you may need to add specific tasks, consider configuration and adjustments depending on user needs, client requirements, device configuration, different channels, etc.
+    </para>
+    <para>Obviously there are newer alternatives, but Ant and Ivy, due to the shared Xml format with Xslt, Xproc and content formats like dita, docbook, etc. seems like the natural match for the job.
+    </para>
+  </section>
+  <section>
+    <title>Configuration chains</title>
+    <para> If you had doubts with dependency types, you may have the same doubts with
+      configurations. What should I use Ivy configurations for? </para>
+    <para>In a similar way as artifact types, anything that makes sense for you as configuration,
+      and obviously fit into something that can be managed with artifacts by Ivy, should be a valid
+      configuration for Ivy. </para>
+    <para>Ivy configurations are a powerful concept. Each component can have multiple configurations
+      that can be arranged using inheritance. But Ivy configurations don’t stop here, as each
+      configuration may depend on other configurations that can be adjusted for each artifact. The
+      Ivy capabilities to describe dependency configuration rules is outstanding.</para>
+    <para>We are going to illustrate how can we take advantage of Ivy configurations with a simple
+      example. We are going to take into consideration a report. A report that may have to be sent
+      on a timely basis from a ticketing system like Jira or Redmine. </para>
+    <para>On a functional level it may not be perceived as convenient as both solutions have their
+      own reporting capabilities, but at the end there may be roles that need visibility on the team
+      performance that usually don’t have access or don’t have time to access some platform on a
+      private VPN or DaaS. </para>
+    <para>The example will have the following key components, although there are some other smaller
+      ones not listed here.</para>
+    <para>- A graphical theme, with css files and icons.</para>
+    <para>- A Jira set of transformation stylesheets and utilities.</para>
+    <para>- The current data projects, where we are going to perform the Jira or Redmine issue list
+      analysis.</para>
+    <para>At this point, a question may arise, should our report depend on a specific theme project
+      for each report style/colour set or should we use a specific project with several output
+      configurations? We are going to start with two different theme projects, a red one and a blue
+      one. </para>
+    <para>Both options are fine (one project with two configurations or two project managed with
+      configurations), and you may choose the strategy that best fits or describes your problem. We
+      will try to illustrate both strategies with the Jira report on our examples </para>
+    <para> The configuration-jira-report folder from our examples has two themes the
+      blue-theme-report and the red-report-theme. Both projects contain some graphic resources and
+      css that are used in the usual web folders. </para>
+    <para> The jira report project is going to depend on the theme projects but it’s not going to
+      use them directly. The Jira report project has two different configurations, not surprisingly
+      named red and blue report. We are going to use this project only to develop, test and evolve
+      the Jira Xslts and Xprocs. </para>
+    
+    <programlisting language="xml">&lt;configurations>
+    &lt;conf name="default" />
+    &lt;conf name="red-report" extends="default" />
+    &lt;conf name="blue-report" extends="default" />
+  &lt;/configurations>
+
+  &lt;publications>
+    &lt;artifact name="jira-report" type="transformations" 
+              ext="zip" conf="*"/>
+  &lt;/publications>
+  
+  &lt;dependencies defaultconf="default">
+    &lt;dependency org="org.markupuk.examples.arousa" 
+                name="blue-report-theme" rev="1.0" 
+                      conf="blue-report->default" >
+      &lt;artifact name="blue-report-theme" 
+                type="transformations" ext="zip" />
+    &lt;/dependency>
+    &lt;dependency org="org.markupuk.examples.arousa" 
+                name="red-report-theme" rev="1.0" 
+                conf="red-report->default" >
+      &lt;artifact name="red-report-theme" 
+                type="transformations" ext="zip" />
+    &lt;/dependency>
+    &lt;dependency org="org.markupuk.examples.arousa" 
+                name="html-essentials" rev="1.0" >
+      &lt;artifact name="html-essentials" 
+                type="transformations" ext="zip" />
+    &lt;/dependency>
+  &lt;/dependencies></programlisting>
+    <para> Once we need to build the actual reports, retrieve the issue list from the Jira API,
+      select a part of the data, etc. we are going create a specific project. This type of projects
+      are going to depend on one of the possible configurations (red or blue). </para>
+    <para> We are going to call our example project company-a-report. The following lines show its
+      ivy dependency description file.</para>
+    <programlisting language="xml">&lt;ivy-module version="1.1">
+  &lt;info organisation="org.markupuk.examples.arousa"
+	module="companya-report"/>
+  &lt;configurations>
+    &lt;conf name="default" />
+  &lt;/configurations>
+  &lt;publications>
+    &lt;artifact name="companya-report" type="transformations" 
+              ext="zip" conf="default"/>
+  &lt;/publications>
+  &lt;dependencies defaultconf="default">
+    &lt;dependency org="net.vionta.reports.jira" 
+                name="jira-report" rev="1.0" 
+                conf="default->red-report" >
+      &lt;artifact name="jira-report" type="transformations" 
+                ext="zip" />
+    &lt;/dependency>
+&lt;/dependencies>  
+&lt;/ivy-module></programlisting>
+    <para> You may notice the conf attribute (conf="default->red-report"). This attribute indicates
+      that this project default configuration depends on the jira report “red-report” configuration.
+      If you check on the “jira-report” project dependencies, the red report configuration depends
+      on the red report theme. Also the red report configuration extends the default configuration
+      which brings shared dependencies between both versions.</para>
+    <para> The example is a very simple demonstration of the Ivy configuration capabilities. Ivy can
+      be used to describe and manage really complex configuration interrelations.</para>
+    
+  </section>
+  <section>
+    <title>The Ivy Cycle.</title>
+    <para> Ivy brings the dependencies using a combination of two steps, resolve and
+      retrieve.</para>
+    <para>- The resolve step checks the dependency graph, tries to locate the files on the
+      repositories and brings the artifacts to your cache.</para>
+    <para>- The second one is the actual retrieval, from the local Ivy cache to the project
+      location.</para>
+    <para>It is important to keep this in mind when you publish new versions of the artifacts.
+      Depending on the configurations you may need to clean the cache to force the resolve step
+      again.</para>
+    <para>If you try to retrieve, you expect to get newer artifact versions, and you keep getting
+      the same ones you use the following command. </para>
+    <programlisting language="bourne">$ arousa clean-cache</programlisting>
+  </section>
+  
+  <section>
+    <title>Ivy flexibility (resolvers)</title>
+    <para>Ivy relies on resolvers and resolver chains to locate and retrieve artifacts. The
+      possibility to define several types of repositories in chains, with different setups, makes
+      artifact management really flexible.</para>
+    <para> The approach also eases the possibility to cooperate between groups in a decentralized
+      manner. Exposing repositories to other groups with shared folders, web servers, ftp servers,
+      etc.</para>
+    <para> Repositories and resolvers are configured in the ivy settings file, that within Arousa it
+      is named conf/arousa-ivy-settings.xml. </para>
+    <para>The list of Ivy resolver types is quite extensive, including a ibiblio/maven type. </para>
+    <para>The following are ibiblio repository declarations that can be used to handle java jars. </para>
+    <programlisting language="xml">&lt;ibiblio name="ibiblio" m2compatible="true" /></programlisting>
+    <programlisting language="xml">&lt;ibiblio name="jboss2" m2compatible="true" 
+root="http://repository.jboss.com/maven2/" /></programlisting>
+    <para> In many of our examples, like the bold experiments we have prepared a specific repository
+      only for the test using a folder location.</para><para>
+     <programlisting language="xml">&lt;property name="demo.samples.repository.root" 
+          value="C:/Users/jorges/ws/arousaws/arousa-examples/
+                  repositories" override="false"/>
+ &lt;property name="demo-arousa-pattern"
+	    value="[organisation]/[module]/[revision]/
+                  [module]-[revision].[ext]"
+	    override="true" />	
+   &lt;resolvers>    
+    &lt;chain name="demo">
+      &lt;filesystem name="arousa-demo" m2compatible="true" >
+	&lt;ivy pattern="${demo.samples.repository.root}/
+                                      ${demo-arousa-pattern}"/>
+	&lt;artifact pattern="${demo.samples.repository.root}/
+                                      ${demo-arousa-pattern}"/>
+      &lt;/filesystem>
+    &lt;/chain>
+...</programlisting>
+    </para>
+    <para> Another usual repository type is the http/url one. In the dual resolver example
+      conf/arousa-ivy-settings.xml you can find the following url example.</para><para>
+      <programlisting language="xml">&lt;resolvers>
+  &lt;dual name="dual-example">
+    &lt;filesystem name="ivys">
+      &lt;ivy pattern="${dual-example-repository-path}/
+                            [module]-ivy-[revision].xml"/>
+     &lt;/filesystem>
+     &lt;url name="two-patterns-example">
+	&lt;artifact pattern="http://aiweb.cs.washington.edu/
+                    research/projects/xmltk/xmldata/data/
+                                [module]/[artifact].[ext]"/>
+     &lt;/url>
+   &lt;/dual>
+&lt;/resolvers></programlisting>
+    </para>
+  </section>
+
+  <section>
+    <title>Working with “Others”, the Dual resolvers</title>
+    <para> </para>
+    <para> A dual resolver is one where we can combine two different repositories, one for the
+      artifacts and other for the descriptors (arousa-ivy.xml files).</para>
+    <para>We can use it, for example, when we don’t actually manage the artifact repository (we use
+      an external one) but we need to use It with our own set of references that we can store
+      somewhere else.</para>
+    <para>Dual resolvers open a very interesting possibility, since other teams may not be willing
+      to adopt practices like dependency management but it is easy to adhere to certain shared
+      naming convention between teams when sharing resources.</para>
+    <para>With Dual resolvers, as long as the artifacts are placed using a naming convention in a
+      shared network resource you can arrange the ivy metadata by yourself.</para>
+    <para>We are going to demonstrate this capability using the dual-resolver-data example. In this
+      example we are going to relate three dataset files from an external resource. </para>
+    <para>We are going to take the customer, part and supplier dataset files from: </para>
+    <para><link xmlns:xlink="http://www.w3.org/1999/xlink"
+        xlink:href="http://aiweb.cs.washington.edu/research/projects/xmltk/xmldata/"
+        >http://aiweb.cs.washington.edu/research/projects/xmltk/xmldata/</link></para>
+    <para>In our ivy files we describe the dependency from the customer ivy file to the part and
+      supply ivy file: </para>
+    <para>
+      <programlisting language="xml">&lt;ivy-module version="1.1">
+  &lt;info organisation="edu.washington.cs.aiweb.tpc-h"
+	revision="1.0" module="tpc-h"/>
+  &lt;configurations>
+    &lt;conf name="default" />
+  &lt;/configurations>
+  &lt;publications>
+    &lt;artifact name="customer" type="data" ext="xml" 
+              conf="default" />
+  &lt;/publications>
+  &lt;dependencies defaultconf="default">
+    &lt;dependency org="edu.washington.cs.aiweb.tpc-h" 
+                name="tpc-h" rev="1.0" >
+      &lt;artifact name="part" type="data" ext="xml" />
+    &lt;/dependency>  
+    &lt;dependency org="edu.washington.cs.aiweb.tpc-h" 
+                name="tpc-h" rev="1.0" >
+      &lt;artifact name="supplier" type="data" ext="xml" />
+    &lt;/dependency>
+  &lt;/dependencies>
+&lt;/ivy-module></programlisting>
+    </para>
+    <para> You can verify that we have added to our internal repository the three ivy files. Also
+      we’ve configured the dual resolver pointing to the remote washinton.edu site. </para>
+    <para>
+      <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;ivysettings>
+  &lt;property 
+	name="dual-example-repository-path"
+value="${user.home}/dev/ws/arousaws/arousa-examples/examples/
+                                  dual-resolver-data/repository"  
+       override="true" />
+    &lt;settings defaultResolver="dual-example"/>  
+    &lt;resolvers>
+    &lt;dual name="dual-example">
+      &lt;filesystem name="ivys">
+	&lt;ivy pattern="${dual-example-repository-path}/
+                                  [module]-ivy-[revision].xml"/>
+      &lt;/filesystem>
+      &lt;url name="two-patterns-example">
+	&lt;artifact pattern="http://aiweb.cs.washington.edu/
+     research/projects/xmltk/xmldata/data/[module]/[artifact].[ext]"/>
+      &lt;/url>
+    &lt;/dual>
+  &lt;/resolvers>
+&lt;/ivysettings></programlisting>
+    </para>
+    <para> The first part of the dual resolver points at the ivy descriptors location while the
+      second one points to the artifacts. We call the update dependencies with the following
+      command.</para>
+      <programlisting language="bourne">$ arousa update-dependencies</programlisting>
+      <para>
+        The call does not only resolve the customer dataset described in the project dependencies, but, as in our repository the three files are described as related, Ivy bring us the three necessary files. </para>
+      <para>
+      <programlisting language="xml">&lt;ivy-module version="1.1">
+  &lt;info organisation="org.markupuk.arousa.examples.data-download"
+	module="data-download-test"/>
+  
+  &lt;configurations>
+    &lt;conf name="default" />
+  &lt;/configurations>
+
+  &lt;publications>
+  &lt;/publications>
+   &lt;dependencies defaultconf="default">
+    &lt;dependency org="edu.washington.cs.aiweb.tpc-h" 
+                name="tpc-h" rev="1.0" >
+      &lt;artifact name="customer" type="data" ext="xml" />
+    &lt;/dependency>
+  &lt;/dependencies>
+&lt;/ivy-module></programlisting>
+    </para>
+  </section>
+  <section>
+    <title>A step further</title>
+    <para> It is not common to expose datasets using dependency management. There are obvious
+      reasons to avoid this approach with transactional or frequently updated interrelated data. </para>
+    <para>On the other side, databases tend to become performance bottlenecks on many information
+      systems. The re-utilization of shared optimized datasets seems appropriate when: </para>
+    <para>- The resources are updated on a timely basis using datasets, with different data
+      cycles.</para>
+    <para>- The datasets are shared. They are generated or published by different teams or may be
+      used in different contexts.</para>
+    <para>- We are not interested on a specific the timing. The data can be retrieved periodically,
+      daily or weekly for example. </para>
+    <para>- The volume or the performance of the datasets is not challenging. </para>
+    <para>Take for example a retail company app that handles sales, payments, inventory and
+      delivery. We need to treat the transactional data, like capturing sales and payments
+      information with extreme care. On the other side there are recurring reports like and
+      information that may be shared, reducing CPU cycles and network calls, as a complementary
+      option to ETLs, DataHubs, etc.</para>
+    <para>Another interesting option could be to enrich browser side scripts with preloaded options
+      data, which could reduce the number of network round trips and accelerate load times. </para>
+  </section>
+  <section>
+    <title>An advanced example</title>
+    <para> You may probably be willing to have a simple dependency declaration directly on the Xslts
+      and Xprocs. We didn’t choose that approach because that means that we would have to declare
+      every small dependency between each file. That would also exclude from the artifacts graphic
+      or web resources, specially the binary ones.</para>
+    <para>If you have a very specific context where you work mainly with Xslts and Xprocs we could
+      adjust the solution to manage dependencies directly.</para>
+    <para>In the advanced-configuration example we have added two projects, one that publishes an
+      xslt and other that depends on it. We have added a namespace alias (“arimp”) to identify the
+      dependency declarations in both xslts. The “build-tasks-report.xsl” has an element that
+      indicates that the xslt should be published. </para>
+    <programlisting language="xml">&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;xsl:stylesheet
+    version="3.0" 
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:arimp="http://www.vionta.net/schemas/arousa-import/
+                                      v1.0/arousa-import.xsd"
+    exclude-result-prefixes="arimp"
+>
+ <emphasis role="bold">&lt;arimp:publication artifact-name="build-tasks-report"   /></emphasis>
+  &lt;xsl:template match="/">
+...</programlisting>
+    <para>On the target project the actual report file has a similar declaration indicating the
+      dependency.</para>
+    <programlisting language="xml">&lt;xsl:stylesheet
+    version="3.0" 
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:arimp="http://www.vionta.net/schemas/arousa-import/
+                                      v1.0/arousa-import.xsd"
+    exclude-result-prefixes="arimp"
+    >
+  &lt;arimp:dependency
+      component="lineal-fods" org="net.vionta.
+                                  transformation.spreadsheet"
+      rev="1.0" artifact="build-tasks-report" />
+  &lt;xsl:template match="/">
+...</programlisting>
+    <para> Both projects are Xproc capable and include an xproc on the conf folder called
+      generate-ivy-dependency-file.xpl. </para>
+    <programlisting language="xml">&lt;p:declare-step 
+    xmlns:p="http://www.w3.org/ns/xproc"  
+    version="3.0">
+
+ &lt;p:input port="source" primary="true" > &lt;p:inline> &lt;documento/> 
+                                          &lt;/p:inline> &lt;/p:input>
+ &lt;p:output port="result" primary="true" pipe="result@final-list" />
+ &lt;p:load name="load-ivy-file"  >
+   &lt;p:with-option name="href" select="'./arousa-ivy.xml'" />
+ &lt;/p:load>
+ &lt;p:directory-list name="xslt-directory-list"
+       include-filter=".xsl"  exclude-filter=".xsl~" >
+   &lt;p:with-option name="path" select="'../src/xsl/'" />
+ &lt;/p:directory-list>
+
+ &lt;p:for-each name="xsl-files" >
+   &lt;p:with-input select="//*:file[@*:name]"  />
+   &lt;p:load name="load-file-content"  >
+     &lt;p:with-option name="href" 
+          select="concat('../src/xsl/', .//@*:name)" />
+   &lt;/p:load>
+ &lt;/p:for-each>
+ &lt;p:wrap-sequence name="xslt-imports" wrapper="xsl-files" >
+ &lt;/p:wrap-sequence>
+ &lt;p:insert name="merge" position="first-child" >
+   &lt;p:with-input port="insertion"  pipe="result@load-ivy-file" />
+ &lt;/p:insert>
+  
+  &lt;p:xslt name="final-list">  
+      &lt;p:with-input port="stylesheet" 
+            href="./extract-import-elements.xsl"/>
+  &lt;/p:xslt>
+
+   &lt;p:store name="final-serialization" >
+     &lt;p:with-option name="href" select="'./arousa-ivy.xml'" />
+   &lt;/p:store>
+ &lt;/p:declare-step></programlisting>
+    <para> As you can see, the Xproc lists the xslts from the src/xsl folder and wraps them with the
+      current arousa-ivy file. The xslt merges the organization and configuration options from the
+      existing ivy file with the imports extracted from the xslts.</para>
+    <para> As a result, the script populates the Ivy dependency file with the dependency relations. </para>
+    <programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?>
+&lt;ivy-module version="1.1">
+ &lt;info organisation="org.markupuk.examples.arousa"
+       module="sample-fods-report"/>
+  &lt;dependencies defaultconf="default">
+      &lt;dependency org="net.vionta.transformation.spreadsheet"
+                  name="lineal-fods" rev="1.0">
+         &lt;artifact name="build-tasks-report"
+                   type="transformation" ext="xsl"/>
+      &lt;/dependency>
+   &lt;/dependencies>
+&lt;/ivy-module></programlisting>
+    <para> Both the xsl publishing and retrieval works with the same commands as the rest of
+      examples (publish-dependency and update-dependencies). </para>
+    
+  </section>
+  <section>
+    <title>Conclusions</title>
+    <para> Ivy fits naturally with Ant, Xslt, Xprocs, and can handle easily graphic resource
+      packages. Our experience reinforces the perception that it blends well in this context. </para>
+    <para>It certainly adds a some complexity to the build process, as we need to manage additional
+      files and configurations. In some cases, where the number of files or components is small it
+      may not be worth it. There may be cases, where shared resources managed with discipline may be
+      more than enough.</para>
+    <para>The solution has a learning curve, and the number of training materials are limited. </para>
+    <para>Even thought, the point where the benefits overcome the initial difficulties can be
+      reached easily. The dependency management helps to maintain the code well structured and
+      organized. Also, since each functionality can be managed in an isolated project, with test
+      data, the code can be easily organized and maintained.</para>
+    <para>As an advice it is better to consider the adoption design in advance on environments with
+      certain complexity. It is better than make corrections once there are several dependencies and
+      developed projects. </para>
+    <para>In general, the number of dependencies managed and the benefits from the practice exceeded
+      our initial expectations. It helps to avoid non DRY practices and there’s the tendency to
+      segregate the functionalities. In general, after some initial training it is fairly easy to
+      add more components.</para>
+    <para>We have increased the initial folder depth (from two levels to three), adding the project
+      name to the exploded folder, as the number of dependencies started to make difficult to trace
+      which file came from which component. </para>
+    <para>Ivy flexibility is remarkable, we’ve looked for potential problems in during the
+      preparation of the examples or flaws that made this approach not appropriate. All the proposed
+      examples and capabilities worked fine and the integration were easier and faster than
+      expected. </para>
+  </section>
+  
+  <bibliography xml:id="references">
+    
+    <bibliomixed>
+      <abbrev>SAMPLES</abbrev> 
+      <title>Demo Exapmles</title>. The demo examples described in this talk are placed at: <bibliomisc><link
+          xl:href="https://github.com/vionta/MarkupUK2023"/></bibliomisc>
+    </bibliomixed>
+        
+    <bibliomixed>
+      <abbrev>ANT</abbrev> 
+      <title>Apache Ant</title>.  <bibliomisc><link
+        xl:href="https://ant.apache.org"/></bibliomisc>
+    </bibliomixed>
+    
+    <bibliomixed>
+      <abbrev>IVY</abbrev> 
+      <title>Apache Ivy</title>.  <bibliomisc><link
+        xl:href="https://ant.apache.org/ivy"/></bibliomisc>
+    </bibliomixed>
+    
+    <bibliomixed>
+      <abbrev>Xslt</abbrev>
+      <title>Xslt Standard</title>. <bibliomisc><link xl:href="https://www.w3.org/Style/XSL"
+        /></bibliomisc>
+    </bibliomixed>
+    
+    <bibliomixed>
+      <abbrev>Saxon</abbrev>
+      <title>Saxonica Xslt</title>. <bibliomisc><link xl:href="https://www.saxonica.com"
+      /></bibliomisc>
+    </bibliomixed>
+    
+    <bibliomixed>
+      <abbrev>Xproc</abbrev> 
+      <title>Xproc Standard</title>.  <bibliomisc><link
+        xl:href="https://www.w3.org/TR/xproc"/></bibliomisc>
+    </bibliomixed>
+    
+    <bibliomixed>
+      <abbrev>Morgana</abbrev> 
+      <title>Morgana Xproc</title>.  <bibliomisc><link
+        xl:href="https://www.xml-project.com/morganaxproc-iiise.html"/></bibliomisc>
+    </bibliomixed>
+    
+    <bibliomixed>
+      <abbrev>Aiweb</abbrev> 
+      <title>Sample dataset catalogs</title> (Aiweb.cs.washinton.edu)  <bibliomisc><link
+        xl:href="http://aiweb.cs.washington.edu/research/projects/xmltk/xmldata/"/></bibliomisc>
+    </bibliomixed>
+
+</bibliography>
+
+</article>

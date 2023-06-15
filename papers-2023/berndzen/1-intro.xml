@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section version="5.0" xmlns="http://docbook.org/ns/docbook">
+	<title>Introduction and background</title>
+
+	<section>
+		<title>About <orgname>Thieme Compliance GmbH</orgname> and patient education leaflets</title>
+
+		<para><orgname>Thieme Compliance GmbH</orgname>, based in Erlangen, Germany, is a company that specialises in providing patient education solutions for healthcare facilities. These solutions include, among other things, information materials that educate patients about their illnesses, treatment options and possible risks. Patient education is an important aspect of healthcare as it helps patients make informed decisions about their health. It is also an important legal and ethical principle in medicine.</para>
+
+		<para><orgname>Thieme Compliance GmbH</orgname> supports healthcare facilities in implementing this principle by providing customised information materials tailored to the specific needs of patients. The materials are developed in close cooperation with more than 400&#x00A0;experts from the medical community and tested for their comprehensibility and usefulness. Furthermore, a team of legal advisors ensures that the patient education content always corresponds to current case law. Professional societies and associations recommend the patient education leaflets from <orgname>Thieme Compliance</orgname>. In total, more than 2,000&#x00A0;patient education leaflets from more than 30&#x00A0;speciality areas are available in up to 31&#x00A0;languages. They are available in digital form as well as various print formats.</para>
+
+		<figure xml:id="patient-education-leaflet">
+			<title>Patient education leaflet<!-- &#x201C;Anaesthesia in Adults and Adolescents (A&#x00A0;1-6)&#x201D;--></title>
+			<mediaobject>
+				<imageobject>
+					<!--<imagedata fileref="presentation/A01-06_en-GB_Seite_1.png" width="50%" />-->
+					<imagedata fileref="graphics/Aufklaerungsboegen_Diomed.png" width="100%" scalefit="1" contentdepth="100%" />
+				</imageobject>
+			</mediaobject>
+		</figure>
+
+		<para>The aim is to help ensure that patients are better informed and educated so that they can make decisions about their health in close cooperation with their doctors. Clinics and practices are supported in meeting legal requirements and minimising liability risks by using patient education leaflets. Under certain conditions, the clinics and practices can even receive a reduced insurance premium if they use the patient education leaflets from <orgname>Thieme Compliance GmbH</orgname>, as the risk of being sued by a patient is reduced.</para>
+
+		<para>The educational content is made available to clinics and practices via the self-developed software <productname>E-ConsentPro</productname>. <productname>E-ConsentPro</productname> is installed on-premise in clinics and practices and offers interfaces to, or is even embedded in, clinical information systems. It ships with <productname>Saxon-EE</productname>, <productname>Antenna House Formatter</productname>, <acronym>XSLT</acronym> as well as <acronym>XSL-FO</acronym> stylesheets, fonts, etc. and can thus be used to generate various media forms of the patient education leaflets, supplemented and personalised with data from the clinical information system.</para>
+
+		<figure xml:id="Anamnese-mobil">
+			<title>&#x201C;Anamnese mobil&#x201D; app from <productname>E-ConsentPro</productname></title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="graphics/E-ConsentPro_mobile.png" width="100%" scalefit="1" contentdepth="100%" />
+				</imageobject>
+			</mediaobject>
+		</figure>
+
+		<para>For parts of the patient education leaflets, such as the medical history, HL7's FHIR (<productname>Fast Healthcare Interoperability Resources</productname>) questionnaire resource is used for syntactic healthcare interoperability. The <productname>HL7&#x00A0;FHIR</productname> standard is based on a RESTful API architecture. This is an emerging standard for exchanging medical data between different systems and institutions and will replace the established <productname>HL7&#x00A0;V2</productname> standard in the future. To ensure semantic healthcare interoperability as well, the questionnaire resource contains coding from <productname>SNOMED&#x00A0;CT</productname> (<productname>Systematized Nomenclature of Medicine and Clinical Terms</productname>) or <productname>LOINC</productname> (<productname>Logical Observation Identifiers Names and Codes</productname>):</para>
+
+		<!--<?hard-pagebreak?>-->
+
+		<!--<?dbfo-need height="2in"?>-->
+
+		<!-- 
+			Oh man I hate doing things like this...
+		-->
+		<!--<para>&#x00A0;</para>
+		<para>&#x00A0;</para>
+		<para>&#x00A0;</para>
+		<para>&#x00A0;</para>
+		<para>&#x00A0;</para>
+		<para>&#x00A0;</para>
+		<para>&#x00A0;</para>
+		<para>&#x00A0;</para>-->
+
+		<!--<informaltable orient="land">
+			<mediaobject>
+				<textobject>
+					<programlisting language="xml"><![CDATA[<foo />]]></programlisting>
+				</textobject>
+			</mediaobject>
+		</informaltable>-->
+
+		<programlisting language="xml"><![CDATA[<fhir:item>
+   <fhir:linkId value="MF_Erkrankungen_Familie__Erkrankung_Blutsverwandtschaft" />
+   <fhir:text value="Among your blood relatives, are or were there any diseases or indications of a disease?" />
+   <fhir:type value="open-choice" />
+   <fhir:required value="true" />
+   <fhir:repeats value="true" />
+   <fhir:answerOption id="MF_Erkrankungen_Familie__Erkrankung_Blutsverwandtschaft__nein">
+      <fhir:extension url="http://hl7.org/fhir/StructureDefinition/questionnaire-optionExclusive">
+         <fhir:valueBoolean value="true" />
+      </fhir:extension>
+      <fhir:valueCoding>
+         <fhir:system value="http://snomed.info/sct" />
+         <fhir:version value="http://snomed.info/sct/900000000000207008/version/20220430" />
+         <fhir:code value="160266009" />
+         <fhir:display value="No family history of clinical finding (situation)" />
+      </fhir:valueCoding>
+   </fhir:answerOption>
+   <fhir:answerOption id="MF_Erkrankungen_Familie__Erkrankung_Blutsverwandtschaft__Krebs">
+      <fhir:valueCoding>
+         <fhir:system value="http://snomed.info/sct" />
+         <fhir:version value="http://snomed.info/sct/900000000000207008/version/20210131" />
+         <fhir:code value="275937001" />
+         <fhir:display value="Family history of cancer (situation)" />
+      </fhir:valueCoding>
+   </fhir:answerOption>
+   <!-- ... -->
+   <fhir:answerOption id="MF_Erkrankungen_Familie__Erkrankung_Blutsverwandtschaft__Erbkrankheiten">
+      <fhir:valueCoding>
+         <fhir:system value="http://snomed.info/sct" />
+         <fhir:version value="http://snomed.info/sct/900000000000207008/version/20220430" />
+         <fhir:code value="429962007" />
+         <fhir:display value="Family history of hereditary disease (situation)" />
+      </fhir:valueCoding>
+   </fhir:answerOption>
+</fhir:item>]]></programlisting>
+
+		<para>The patient education content is created and managed using the component content management system <productname>Content Lifecycle System (CLS)</productname> from <orgname>Empolis Solutions GmbH</orgname>. It consists of <!--single-source-capable--> <acronym>XML</acronym> files with single-source-capability, modularised using XInclude. Because of the rich semantics, a self-developed data structure <productname>T<subscript>0</subscript> XSD</productname> is used.</para>
+
+		<para>The patient education leaflets are published in various media formats such as <acronym>PDF</acronym>, <acronym>XHTML</acronym>, HTML5, WordML, SpreadsheetML, among others. To facilitate the data exchange, especially with partners, the content is converted into a variety of XML dialects as well as <acronym>JSON</acronym> formats. Therefore, fully or at least highly automated publishing pipelines are being developed and maintained.</para>
+	</section>
+
+
+
+	<section>
+		<title>About <orgname>&lt;xml-project /&gt;</orgname> and <productname>XProc</productname></title>
+
+		<para><productname>XProc&#x00A0;3.0</productname> is a pipeline language with an <acronym>XML</acronym> syntax. It is based on <productname>XProc</productname>&#x00A0;(1.0), which became a <orgname>W3C</orgname> recommendation in 2010. Based on user experience, a group of volunteers have worked together since 2017 as an <orgname>W3C</orgname> community group to improve and expand the original language. In September 2022, a community report on the core language specifications and the standard step library was published. While additional step libraries, e.g. for file processing, document validation, and paged media creation, are technically still under construction, we consider them to be very mature and in their final state. In fact, the project presented here relies heavily steps from the additional libraries, and they proved to be very useful and robust.</para>
+
+		<para>For those familiar with the original <productname>XProc</productname>, it might be interesting to mention some of the changes made for <productname>XProc&#x00A0;3.0</productname>. The most visible change is the expansion of the basic document model from <acronym>XML</acronym> only to a more realistic model for the latest processing: &#x201C;Native&#x201D; documents in <productname>XProc&#x00A0;3.0</productname> are now <acronym>XML</acronym>, <acronym>HTML</acronym>, <acronym>JSON</acronym>, as well as text documents and binary documents (such as images or <acronym>PDF</acronym>s). The newly supported document types are accompanied by corresponding steps so that they can be used effectively in the pipelines. Further highlights of <productname>XProc&#x00A0;3.0</productname> are the move to <productname>XPath&#x00A0;3.1</productname> as the underlying processing language, <productname>XDM</productname> typing for options and variables along with a number of minor syntax tweaks that greatly improve the coding and debugging experience from the original <productname>XProc</productname>.</para>
+
+		<para>For those not familiar with <productname>XProc</productname>&#x00A0;1.0, or those who want to start over with <productname>XProc&#x00A0;3.0</productname>, there is now an improved learning base. Foremost, there is <personname>Erik Siegel</personname>'s excellent book <citation>Siegel:2020</citation>. Erik also published a series of articles introducing <productname>XProc&#x00A0;3.0</productname> on <orgname>XML.com</orgname> (<citation>Siegel:2019</citation>, <citation>Siegel:2020a</citation>, <citation>Siegel:2020b</citation>). For those who prefer videos, a series of six talks from <orgname>Markup&#x00A0;UK&#x00A0;2020</orgname> are available on the conference's <orgname>YouTube</orgname> channel. In addition to two talks on the basics of <productname>XProc&#x00A0;3.0</productname>, there are also talks on handling JSON documents, text documents and <!--ZIPs-->Zip archives.</para>
+
+		<para>Currently, two <productname>XProc&#x00A0;3.0</productname> processors are known to be available: <productname>XML&#x00A0;Calabash&#x00A0;3.0</productname> is in its final phase as a successor to the well-known <productname>XML&#x00A0;Calabash</productname>, both developed by <personname>Norman Tovey-Walsh</personname>. This paper is based on <productname>MorganaXProc-III</productname>, which is the successor to the now retired <productname>MorganaXProc</productname>. Also developed by <orgname>&lt;xml-project /&gt;</orgname>, this is a <productname>Java</productname> (or <productname>JVM</productname>) based implementation that, in addition to the core specification and the standard step libraries, also implements the file step library and most of the validation library, while also supporting <productname>Extensible Validation Report Language (XVRL)</productname>. It has been around as a public beta since February&#x00A0;2020, received a lot of useful bug reports from users and was released as version 1.0 in September&#x00A0;2022. Since then, it has received monthly updates with bug fixes and feature enhancements. <productname>MorganaXProc-IIIse</productname> is an open-source product released under GPL&#x00A0;3.0. Coming later this year is a second, commercial edition called <productname>MorganaXProc-IIIee</productname> (Extended Edition). It provides support for almost all optional features of <productname>XProc&#x00A0;3.0</productname>, with complete coverage of the proposed step libraries as well as processor-specific steps such as image processing.</para>
+	</section>
+
+</section>

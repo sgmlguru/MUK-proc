@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section version="5.0" xmlns="http://docbook.org/ns/docbook">
+	<title>New requirements for <!--version next-->next version</title>
+
+	<para>In addition to the pain points mentioned above, there were also some <!--desired-->requested improvements.</para>
+
+
+
+	<section>
+		<title>Future-proof approach and improved maintainability by adding a separate orchestration layer</title>
+
+		<para>As stated above, the existing batches are not only based on <acronym>XSLT</acronym> but also call  other <!--programs-->tools to fulfil different tasks. Using the command line interface of these <!--programs-->tools has the disadvantage of a strong connection between a logical task (e.g. create Zip archives) and a specific software implementation (e.g. call <productname>7-Zip</productname> with the following parameters). Adapting to a new software version with changes in the command line interface <!--results--> involves changes in the batch. Using other software to fulfil the task is often associated with great costs. Languages such as <productname>ANT</productname> etc. introduce an extra level of abstraction that models the logical structure of the task and uncouples it from a specific implementation. Using such a level of abstractions makes workflows more robust against changes in the implementing software. Changing the task's implementation can be as easy as changing one configuration file instead of changing every workflow document that uses the task.</para>
+	</section>
+
+
+
+	<section>
+		<title>Increased quality through validation of XML sources using <productname>T<subscript>0</subscript> XSD</productname> as well as validation of XML results using specific versions of <productname>T<subscript>0</subscript> DTD</productname></title>
+
+		<para>While the existing pipelines validate all <acronym>XML</acronym> source documents, <acronym>XML</acronym> results were not validated. Simply validating the <acronym>XML</acronym> results manually during stylesheet development and subsequently applying correct <acronym>XSLT</acronym> transformations while relying on valid results was sufficient. The nature of the source-to-result transformation for the <acronym>XML</acronym> documents is not one-to-one, but one-to-many &#x2013; producing up to twelve versions of <acronym>XML</acronym> result documents for one source document. With regard to the quality of the results, none of these twelve <acronym>XML</acronym> results should appear in the Zip archive if at least one result document is not valid with respect to its specific version of <productname>T<subscript>0</subscript> DTD</productname>.</para>
+	</section>
+
+
+
+	<section>
+		<title>Increased quality by additional validation of <acronym>XML</acronym> results using <productname>Schematron</productname></title>
+
+		<para><productname>Schematron</productname> validations (of <acronym>XML</acronym> sources) are performed by Medical Editors and Content Managers during editing in <productname>&lt;oXygen /&gt; XML Editor</productname>. There is even a batch based pipeline integrated in the content management system to perform a <productname>Schematron</productname> validation using <productname>Skeleton</productname> that generats an easy to understand <acronym>PDF</acronym> from the <acronym>SVRL</acronym> report. Unfortunenatly this <productname>Skeleton</productname> implementation isn't integrated in the existing batches for the exports. Therefore the <productname>XProc&#x00A0;3.0</productname> pipeline should perform a additional <productname>Schematron</productname> validation when the <acronym>DTD</acronym> validation mentioned above is done.</para>
+	</section>
+
+
+
+	<section>
+		<title>Summarised, formatted and easily comprehensible log files</title>
+
+		<para>The target audience of the content management system is Medical Editors, i.e. non-technical users. For every new edition of their patient education leaflet, they have to perform an export so that an integration test of their leaflet can be done in <productname>E-ConsentPro</productname> for quality assurance purposes. <!--With the <productname>XProc&#x00A0;3.0</productname> pipelines there are now a lot more logging messages, e.g. because of the now performed validations.-->After moving to <productname>XProc&#x00A0;3.0</productname>, the pipelines will produce a lot more logging messages, e.g. because of the newly performed additional validations. The existing batches simply stored <productname>Saxon’s</productname> error messages to different text files. For the non-technical audience, there should be just one single HTML file that serves as a summarised log. There should also be some basic CSS and the use of <tag>&lt;details&gt;</tag> to show/hide additional information as well as the possibility to filter log messages by error category.</para>
+
+		<!--<figure xml:id="HTML-log">
+		<title>summarized HTML log</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="graphics/HTML-Log.png" width="100%" scalefit="1" contentdepth="100%" />
+			</imageobject>
+		</mediaobject>
+	</figure>-->
+	</section>
+
+
+
+	<section>
+		<title>Performance improvement by omitting unnecessary images from the Zip archive</title>
+
+		<para>The <acronym>XML</acronym> sources contain links to images supplied in the same folder as the <acronym>XML</acronym> sources. The improved pipeline has to make sure that all references are valid, i.e. every link goes to an existing image. The batch simply copied all images from the source folder to the result folders. The <productname>XProc&#x00A0;3.0</productname> pipeline should be able to copy just the referenced images, but only the images referenced in the <acronym>XML</acronym> results, not in the <acronym>XML</acronym> sources. That is because there are cases when the pipeline omits the <acronym>XML</acronym> result because of special XPath conditions in the source or because the generated <acronym>XML</acronym> result is not valid against its specific version of <productname>T<subscript>0</subscript> DTD</productname>. Although these additional unnecessary images are subsequently ignored by the REST services, it would be better to just omit them. This would result in smaller Zip archives and therefore faster transmission to the REST service and faster processing.</para>
+	</section>
+
+
+
+	<section>
+		<title>Limiting processing to specific sources from the <!--input-->source folder</title>
+
+		<para>When a new requirement is developed in the <acronym>XSLT</acronym> stylesheets, special test <acronym>XML</acronym> sources are created. Normally, the source folder in the file system contains all source <acronym>XML</acronym> files, which the new test <acronym>XML</acronym> sources are added to. Processing the whole source folder is necessary to avoid regressions. But this takes a couple of hours and, during stylesheet development, only the new test <acronym>XML</acronym> sources are relevant. So that the source folder does not have to be changed manually, an easy way to use another source folder and/or a specific file filter is needed. The <productname>XProc&#x00A0;3.0</productname> pipeline should be able to use a custom source folder and/or a specific file filter as invocation parameters.</para>
+	</section>
+
+
+
+	<!--<section>
+		<title>Summarazied requested improvements</title>
+
+		<itemizedlist>
+			<listitem>
+				<para>future proof approach and improved maintainability by adding an separate orchestration layer</para>
+			</listitem>
+			<listitem>
+				<para>increased quality by validation of <productname>XML</productname> sources using <productname>T<subscript>0</subscript> XSD</productname> as well as validation of <productname>XML</productname> results using specific versions of <productname>T<subscript>0</subscript> DTD</productname></para>
+			</listitem>
+			<listitem>
+				<para>increased quality by additional validation of <productname>XML</productname> results using <productname>Schematron</productname></para>
+			</listitem>
+			<listitem>
+				<para>summarized, formatted and easy to understand log files for an non-technical audience (= medical editors using the content management system) with the possibility to filter log messages by error category</para>
+			</listitem>
+			<listitem>
+				<para>performance improvement by omitting unnecessary images from the Zip archive (in case the pipeline omits the <productname>XML</productname> result for various reasons)</para>
+			</listitem>
+			<listitem>
+				<para>need to process only specific sources from the input folder and not always the folder as a whole (while developing new versions of the <productname>XSLT</productname> stylesheets)</para>
+			</listitem>
+		</itemizedlist>
+	</section>-->
+</section>

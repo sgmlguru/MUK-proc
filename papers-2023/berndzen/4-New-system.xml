@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section version="5.0" xmlns="http://docbook.org/ns/docbook">
+	<title>New system based on <productname>XProc&#x00A0;3.0</productname></title>
+
+	<para>Having discussed the original batches and the requirements for the new system, we can now move on to the new pipeline system using <productname>XProc&#x00A0;3.0</productname>. If we take another look at <xref linkend="fragengruppe_2_evidence" /> and <xref linkend="fragengruppe_2_FHIR-Questionnaire" />, it is easy to see that the first one is a good deal more complex than the second one. Our coverage will therefore concentrate primarily on the pipeline replacing the first batch since the basic concepts and strategies for developing the two pipelines are fundamentally the same. The difference between the two pipelines is discussed further below.</para>
+
+	<para>The general approach in our move to <productname>XProc&#x00A0;3.0</productname> was to replace the double control flow of the original solution with a single control flow in a pipeline. As <xref linkend="fragengruppe_2_evidence" /> shows, the original batch incorporated twelve sub-batches, one for each parameter group. Inside each of these batches, an <acronym>XSLT</acronym> stylesheet was called to collect and process all documents in the input folder with the given parameters. As we wanted to eliminate as much batch scripting as possible, the first or outer control flow had to be replaced by an <productname>XProc&#x00A0;3.0</productname> pipeline. Given the new requirements, we had to remove the inner, <acronym>XSLT</acronym>-based control flow as well, thus giving us one iteration over all documents in the input folder instead of twelve iterations (and potentially more in the future).</para>
+
+	<para>The basic reason for this was the new requirement to check the picture references: A document in the input folder should only be processed if all references to pictures in the document are valid, i.e. point to an existing file. As this is a property of an input document, it makes sense to address this once and for all, and hence start the twelve <acronym>XSLT</acronym> transformations only after all picture references have been checked.</para>
+
+	<para>Doing away with batch scripting also necessitates two other additions to the pipeline: As we no longer call <acronym>XSLT</acronym> via <productname>Saxon</productname>'s command line, we can no longer use its powerful command line interface to perform an <tag>XInclude</tag> and to validate the source documents. As <productname>XProc&#x00A0;3.0</productname> has the steps <tag>&lt;p:xinclude&gt;</tag> and <tag>&lt;p:validate-with-xml-schema&gt;</tag>, these two tasks can be easily performed before the stylesheet transformations begin.</para>
+
+	<para>The well-established and tested XSLT stylesheets are of course reused in the pipeline. However, this first stylesheet is not called from a batch anymore but via the <tag>&lt;p:xslt&gt;</tag> step instead. Additionally, the <productname>XProc</productname> pipeline uses a different entry point to the stylesheet than the batch: The latter called a named template that creates a collection of documents in a given folder matching a given pattern of file names. For each document in this collection, a template is then called by matching its root element.</para>
+
+	<para>The <productname>XProc&#x00A0;3.0</productname> pipeline calls the same template by matching the document's root element, but creates the sequence of the documents to be processed itself: XProc's <tag>&lt;p:directory-list&gt;</tag> produces a document reflecting the content of a given directory, possibly using include and exclude filters. The pipeline then iterates over each <tag>&lt;c:file&gt;</tag> element to subject the respective document to processing.</para>
+
+	<figure xml:id="birds-eyes">
+		<title>A bird's eye view of the new system</title>
+		<mediaobject>
+			<imageobject>
+				<!--<imagedata fileref="graphics/grafik1-3.jpg" width="70%" />-->
+				<imagedata fileref="graphics/grafik1-3.png" width="100%" scalefit="1" contentdepth="100%" />
+			</imageobject>
+		</mediaobject>
+	</figure>
+
+	<para>The second change to the existing XSLT stylesheet is to unroll the <tag class="attribute">@saxon:next-in-chain</tag> concatenation of stylesheets to a sequence of explicit calls of <tag>&lt;p:xslt&gt;</tag>. In <productname>Saxon</productname>, you can use <tag class="attribute">@saxon:next-in-chain</tag> inside a <tag>&lt;xsl:output&gt;</tag> to direct the stylesheet's output to another stylesheet. This is a convenient way to chain stylesheets and thus decompose complex processing into a set of smaller stylesheets. This approach helps to improve the quality of code by breaking down a complex task into smaller pieces that are easier to manage. The downside is that <tag class="attribute">@saxon:next-in-chain</tag> is a <productname>Saxon</productname>-only extension attribute, which is not supported by other processors and is not guaranteed to be a <productname>Saxon</productname> feature in the future. With the <productname>XPath&#x00A0;3.1</productname> function <code>fn:transform()</code>, we have a way to chain stylesheet execution together in a standard-compliant manner. It would therefore be easy to rewrite the existing stylesheets to get rid of <tag class="attribute">@saxon:next-in-chain</tag> and replace it with a cascade of <code>fn:transform()</code>. Hence, there is no need to change technology from XSLT to XProc if you are looking for a standard-compliant way to develop decomposed stylesheets and then chain them together to perform the general transformation.</para>
+
+	<para>In our case, using <productname>XProc&#x00A0;3.0</productname> provides an additional advantage for developing decomposed stylesheets: With <tag>&lt;p:store&gt;</tag>, XProc&#x00A0;3.0 has a step for storing documents that can easily be used to improve debugging pipelines and and &#x2013; in our case &#x2013; decomposed stylesheets. Unlike in XProc&#x00A0;1.0, <tag>&lt;p:store&gt;</tag> is fully transparent, meaning that the document on the input port is stored <emphasis>and</emphasis> delivered on the output port. Therefore adding a <tag>&lt;p:store&gt;</tag> (almost) anywhere in your pipeline does not break the &#x201C;normal&#x201D; flow of documents, but provides great debugging opportunities. Switching off debugging is also pretty easy in XProc&#x00A0;3.0: The attribute <tag class="attribute">@use-when</tag> associated with a Boolean expression can be used on (almost) any step in XProc. If the expression is evaluated as <literal>false</literal>, the step (and all its descendants) are effectively excluded from the pipeline. Therefore, by using <tag>&lt;p:store&#x00A0;use-when="expr"&#x00A0;/&gt;</tag>, we can easily switch the generation of debugging information on and off. Since XProc&#x00A0;3.0 also introduced static options that could be used in <productname>XPath</productname> expressions, switching debugging on and off directly from the pipeline invocation in the command line is the way to go. To sum this point up: Unrolling <tag class="attribute">@saxon:next-in-chain</tag> concatenation into an XProc pipeline helps to improve the quality of code by splitting larger tasks into smaller pieces.</para>
+
+	<para>What we have discussed so far might be considered a general blueprint for embedding complex XSLT stylesheets into an XProc pipeline. Running this pipeline is, apart from the improvements in debugging, largely equivalent to invoking the original stylesheet. Let us now have a look at the advancements added to the overall process with the XProc pipeline. As you can see in <xref linkend="birds-eyes" />, the general process can be described in three main parts:
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>Obtaining the URIs of the documents to be processed</para>
+			</listitem>
+			<listitem>
+				<para>Processing any individual documents and (possibly) storing the results to disk</para>
+			</listitem>
+			<listitem>
+				<para>Collecting the information from the individual processing to</para>
+				<orderedlist spacing="compact">
+					<listitem>
+						<para>Create the Zip archive</para>
+					</listitem>
+					<listitem>
+						<para>Generate a report about the processing</para>
+					</listitem>
+				</orderedlist>
+			</listitem>
+		</orderedlist>
+	</para>
+
+	<para>In the overall design, the <tag>&lt;p:for-each&gt;</tag> step has two purposes: (1) It processes every selected document, i.e. applying the <acronym>XSLT</acronym> stylesheets and, if the processing was successful, storing the produced documents to disk. (2) It produces meta information about the document processing: For every processed source document, a report document is created. The latter contains success or error reports for each stage of the source document processing, references to the image files in the source document, and a list of URIs pointing to the created result documents. We will look at these report documents later. For now, let us focus on the first purpose of the block inside the <tag>&lt;p:for-each&gt;</tag> step.</para>
+
+	<para>When unrolling the <tag class="attribute">@saxon:next-in-chain</tag> sequence from the original batch, we first get a sequence of two to six <tag>&lt;p:xslt&gt;</tag> steps, each followed by a <tag>&lt;p:store&gt;</tag> for debugging purposes. The first improvement to be added to the pipeline was the validation of the result document(s). Until then the quality of the result document(s) relied on the validity of the source document and the correctness of the XSLT stylesheet(s) to produce the result documents. One requirement for the XProc pipeline was to add a validation for the result document(s) and store only those documents that prove to be valid. As XProc&#x00A0;3.0 defines steps for validation with <productname>RELAX&#x00A0;NG</productname>, <productname>XML Schema</productname> and <productname>Schematron</productname> (as well as <acronym>NVDL</acronym> and <productname>JSON schema</productname>s), this could be achieved quite easily. The result of the last XSLT transformation is connected to the input port of a validation step. If the validation is successful, i.e. the document is valid, it appears on the step's result port and can be stored. If the document proves to be invalid, the validation step raises an error, which is then caught to create an element for the report document.</para>
+
+	<para>For the &#x201C;fragengruppe_2_FHIR-Questionnaire&#x201D; the validation takes the form of an XML schema and a Schematron document. To validate the produced <acronym>FHIR</acronym> document, you simply chain a <tag>&lt;p:validate-with-xml-schema&gt;</tag> and <tag>&lt;p:validate-with-schematron&gt;</tag> after each other to obtain a complete validation of the document. For the other pipeline, called &#x201C;fragengruppe_2_evidence&#x201D; the resulting documents are in-house documents for which a <acronym>DTD</acronym> is the authoritative grammar. This poses some problems to XProc&#x00A0;3.0 since, as you might have established from the aforementioned list of supported validation languages, there is no step for <acronym>DTD</acronym> validation included. With <tag>&lt;p:load&gt;</tag>, however, pipeline authors can ask for a <acronym>DTD</acronym> validation of the document to be loaded. As with the &#x201C;normal&#x201D; validation steps, this either returns a valid document or an error is thrown. Unlike with the normal validation steps, however, the document to be validated does not appear on the input port but has to be loaded from a secondary store via <acronym>URI</acronym>. To circumvent this restriction, we switched the steps around: Instead of validating the (in-memory) document first and then storing if the validation succeeds, we first store the document and then validate it via reloading. As a consequence, invalid artifacts are written to disk, which does not occur in the other pipelines where we can validate before the document is stored. This was a deliberate decision, because it would be easy to delete the stored document from disk once we have discovered its invalidity.</para>
+
+	<para>Another aspect of the quality improvements for the produced results is related to image referencing. Along with the source <acronym>XML</acronym> documents, the source folder also contains image files. Some of the image files are referenced in the documents, but not all. On the other hand, documents might have a reference to a non-existing image file. To improve the overall quality of the results, the XProc pipeline was required to check the source documents for image references and to raise an error if an image file is referenced that is not present in the source folder. In addition, the pipeline has to keep track of the referenced image files, so that only referenced images are included in the resulting Zip archive.</para>
+
+	<para>With <productname>XProc&#x00A0;3.0</productname>, both requirements are pretty easy to fulfill: The pipeline iterates over all image references in the selected source documents and obtains their <acronym>URI</acronym>. With the <tag>&lt;p:file-info&gt;</tag> step, you can then obtain information about the referenced image: If the referenced resource exists, a <tag>&lt;c:file&gt;</tag> document appears on the <code><!--;-->result</code> port. If the document does not exist, a <tag>&lt;c:error&gt;</tag> document will appear on this port. In the first case, an entry for the archive manifest is generated, In the second case, an error report element is created to flag the error for the report to be generated.</para>
+
+	<para>The outlined algorithm solves both shortcomings in the existing batch system: Since only images with a corresponding <tag>&lt;c:entry&gt;</tag> element are included in the Zip archive, the latter will only contain images actually referenced in at least one source document. And since every image reference in a source document is tested, the resulting report will include every error for invalid image references.</para>
+
+	<para>However, some post-processing of the image-related <tag>&lt;c:entry&gt;</tag> elements proved to be necessary: For efficiency reasons, the image references were tested for the source documents, but not for the produced documents. This is possible since the XSLT transformations do not add any image references. In general, there will be a 1:m relationship between the source documents and resulting documents, but since the produced documents are validated, there may be a 1:0 relationship if the validation for all produced documents fails. In this special case, there might be a <tag>&lt;c:entry&gt;</tag> element for an image document that is not referenced by any resulting document. Before actually generating the Zip archive, some cleanup has to take place. Every entry for an image documents records the URI of the source document it was derived from as well as any resulting <acronym>XML</acronym> document. For every image-related <tag>&lt;c:entry&gt;</tag>, the cleanup has to check whether there is a corresponding <tag>&lt;c:entry&gt;</tag> from a produced document. If not, the image-related entry is simply deleted, meaning that the resulting archive will only contain images actually referenced in a contained <acronym>XML</acronym> document.</para>
+
+	<para>The last aspect of the new XProc pipeline system to mention here is the improvement of logging or reporting. One new feature of <productname>XProc&#x00A0;3.0</productname> that very much supports this requirement is the addition of <tag>&lt;p:catch&gt;</tag> with specified error codes. In <productname>XProc&#x00A0;1.0</productname>, we just had a <tag>&lt;p:try&gt;</tag>/<tag>&lt;p:catch&gt;</tag> where every error raised in the <tag>&lt;p:try&gt;</tag> block had to be handled in a single <tag>&lt;p:catch&gt;</tag> block. The ability to write different <tag>&lt;p:catch&gt;</tag> blocks for specific errors results in a more readable pipeline. This is also facilitated by the definition of more fine-grained error conditions for each individual step in <productname>XProc&#x00A0;3.0</productname>. This makes it very easy to identify what exactly went wrong inside an XProc pipeline, and to react to or report on the exact problems that occurred.</para>
+
+	<para>Our pipeline makes extensive use of <tag>&lt;p:try&gt;</tag>/<tag>&lt;p:catch&gt;</tag> to improve reporting, which is an important requirement as stated above. If you have a look at <xref linkend="birds-eyes" /> again, the pipeline does not only produce <acronym>XML</acronym> documents representing the transformation results (shown on the right side of the code block), but also reports about the pipeline process (failing out at the bottom of the code block). For (almost) every document found in the source directory, the pipeline produces a report document. Here is an excerpt of such a document:</para>
+
+	<programlisting language="xml"><![CDATA[<tcg:report file="reference-to-source-doc">
+   <tcg:report-done phase="validation">
+      <successfully-validated />
+   </tcg:report-done>
+   <tcg:report-done phase="processFileRefs">
+      <c:entry name="name-of-zip-entry-for-pic1"
+               href="path-to-pic1" 
+               found-in="reference-to-source-doc" />
+   </tcg:report-done>
+   <tcg:report-done phase="2.5.1">
+     <c:entry name="name-of-zip-entry-for-doc1"
+     		  href="path-to-doc1"
+     		  derived-from="reference-to-source-doc" />
+   </tcg:report-done>
+   <tcg:report-error phase="2.6.0">
+     <c:errors><!-- detailed error report here --></c:errors>
+   </tcg:report-error>
+</tcg:report>]]></programlisting>
+
+	<para>This snippet shows a processing report for a source document the <acronym>URI</acronym> of which is reported in the <tag class="attribute">@file</tag> attribute. The document passes the source validation successfully, and it contains a valid reference to an image file. It is transformed in phase <code>"2.5.1"</code>, thus producing a result stored at the recorded position. However, the transformation in phase <code>"2.6.0"</code> was not successful, as a result of which a <tag>&lt;tcg:report-error&gt;</tag> is included to flag the error and to report corresponding details. The <tag>&lt;c:entry&gt;</tag> elements are used to create the Zip archive. The attributes <tag class="attribute">@found-in</tag> and <tag class="attribute">@derived-from</tag> are used to make sure that an image file is included in the archive only if the source document containing the image references also passes transformation.</para>
+
+	<para>Based on the collected processing reports, the last two tasks of the pipeline are  performed: creating the Zip archive and then creating the final report. Creating the archive is pretty straightforward. <productname>XProc&#x00A0;3.0</productname>'s <tag>&lt;p:archive&gt;</tag> step has an input port <code>manifest</code>. The expected document has a <tag>&lt;c:manifest&gt;</tag> root element with <tag>&lt;c:entry&gt;</tag> elements denoting the expected archive entries. As we already created <tag>&lt;c:entry&gt;</tag> elements in our document reports, we just need to extract those elements from the report, wrap it in the expected element root and then call <tag>&lt;p:archive&gt;</tag> to create the Zip archive.</para>
+
+	<para>The final report is also based on the collected report elements: The reports contains information about every single processed <acronym>XML</acronym> document in the source folder, to which we add aggregated data such as the number of processed files, the number of detected errors or the complete processing duration. Finally, this report is processed with an <acronym>XSLT</acronym> stylesheet to create an <acronym>HTML</acronym> document and thus provide the improved logs requested in the initial requirements.</para>
+
+	<figure xml:id="HTML-log">
+		<title>Summarised HTML log</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="graphics/HTML-Log.png" width="100%" scalefit="1" contentdepth="100%" />
+			</imageobject>
+		</mediaobject>
+	</figure>
+
+	<para>As stated above, since the two batches were similar in their basic concepts, the two pipelines will also resemble each other. There are two basic differences to the pipeline already discussed:</para>
+	<orderedlist>
+		<listitem>
+			<para>While the first pipeline is only a cascade of two <acronym>XSLT</acronym> stylesheet, the <acronym>FHIR</acronym> has a total of five <acronym>XSLT</acronym>s. The implementation is pretty straightforward as the result of the first <tag>&lt;p:xslt&gt;</tag> step serves as the input for the next one. As a consequence, instead of two consecutive calls to <tag>&lt;p:xslt&gt;</tag>, we have a sequence of five interconnected calls in the <acronym>FHIR</acronym> pipeline.</para>
+		</listitem>
+		<listitem>
+			<para>The second, more conceptual difference is the way that the pipeline results are validated. While the pipeline discussed above uses a <acronym>DTD</acronym> validation, <acronym>FHIR</acronym> documents employ a different concept. The standard defines an <productname>XML schema</productname> and a <productname>Schematron</productname> schema to validate the documents. As both of these validation technologies are supported in <productname>XProc&#x00A0;3.0</productname> by individual steps, incorporating <acronym>FHIR</acronym> validation simply requires a pair of <tag>&lt;p:validate-with-xml-schema&gt;</tag> and <tag>&lt;p:validate-with-schematron&gt;</tag> with the produced document on the default input port.</para>
+		</listitem>
+	</orderedlist>
+</section>

@@ -1,0 +1,819 @@
+<?xml version="1.0" encoding="utf-8"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0"
+  xml:lang="en">
+  <info>
+    <title>Working with XML inside a web browser</title>
+    <subtitle>Edge computing for XML</subtitle>
+
+    <author>
+      <personname>Daniel Arthursson</personname>
+      <email>daniel.arthursson@cloudbackend.com</email>
+      <uri>https://cloudbackend.com</uri>
+      <affiliation>
+        <jobtitle>CEO</jobtitle>
+        <orgname>CloudBackend.com</orgname>
+      </affiliation>
+    </author>
+
+    <author>
+      <personname>Martin Nilsson</personname>
+      <email>martin.nilsson@xios3.com</email>
+      <uri>https://xios3.com</uri>
+      <affiliation>
+        <jobtitle>CTO</jobtitle>
+        <orgname>xios3.com</orgname>
+      </affiliation>
+    </author>
+
+    <keywordset>
+      <keyword>XML</keyword>
+    </keywordset>
+
+    <abstract>
+      <para>Decentralization of data and applications with edge computing is coming outside the XML
+        community. Can we revitalize web browsers and shift XML processing from the server side to
+        the client side with added benefits of improved speed and low latency? Can we make XML an
+        alternative to JavaScript and JSON development within web browsers? This requires
+        client-side database technologies, client-side XML programming languages, support for XSLT,
+        and powerful ways to address standalone XML documents as well as XML stored in document
+        databases or XML supplied through cloud-based API calls. This calls for data abstraction and
+        a unified data model within the web browser. This paper talks about two large projects aimed
+        at solving the client-side equation of XML and putting XML on the map for web development
+        again.</para>
+    </abstract>
+  </info>
+
+  <section>
+    <title>Introduction</title>
+
+    <para>Everything started out great for XML with growing support in the early 2000s, but since
+      2010 and forward we have seen a massive decline in client-side XML support with known bugs in
+      XSLT in both Firefox and the WebKit project (Chrome, Edge, Safari, Opera); going unfixed. We
+      know, as we have reported issues and provided C++ patches for XSLT bugs in both browser
+      platforms, but to our disappointment seen them linger or be dismissed.</para>
+
+    <para>XPath is stuck on version 1.0 in web browsers, and promising efforts to reimplement XPath
+      in JavaScript by Google have been abandoned since many years. Here we have once again stepped
+      in and fixed many bugs and made the Google project run with the latest build technologies.
+      This time we consider taking over management of the open-source project.</para>
+
+    <para>We have also seen XML staple technologies like XML Web Services become replaced by REST
+      APIs, and XML as a data transport format being replaced by JSON and GraphQL. It is easy to see
+      no hope for XML in web technologies; while it is still extensively used in enterprise
+      solutions. However, good examples like Frameless XPath 2.0 and XSLT 2.0, and recently the Saxonica port for JavaScript.</para>
+
+    <para>This has generally pushed the use of XML to the cloud and the server side, where the
+      latest version of XSLT, XPath, and XQuery can be used. The browser has mostly been used as a
+      dumb rendering engine for HTML and JavaScript generated in the cloud.</para>
+
+    <para>With improved JavaScript engines and execution performance, there are finally ways to
+      circumvent the obsolete XML technologies within the browsers. New JavaScript implementations
+      running within the browser sandbox are in many cases more performant than decades-old C++
+      implementations of the same technologies. There is thus ample opportunity to extend the native
+      built-in web browser XML technologies with new technologies for building rich web
+      applications, forms, XML generating applications, and caching XML data within the browser for
+      local client-side processing. Technologies that can bring XML back to its web glory days and
+      have the potential to outperform the latest React, Angular, jQuery, JSON, and GraphQL
+      technologies.</para>
+
+    <para>Employing the browser for client-side processing, rendering, execution of XML logic, and
+      caching of XML data, will enable device edge computing for XML. Edge computing is the decentralization
+      of cloud computing, to have logic and data not in a single place, but available in many places.
+      It promises low latency and new XML-based ways of writing web applications.</para>
+
+    <para>This paper will discuss technologies employed by two large projects that together are
+      aimed at super-powering web browsers on smartphones as well as laptops for the use of XML.
+      Both projects aim for general XML use, but in particular for building rich web applications
+      that consume and keep data in sync as XML across the wire as well as within the software application.</para>
+
+  </section>
+
+  <section>
+    <title>Project Goals</title>
+
+    <para>First, let us look at what ideas started the development of the two projects. There were a
+      couple of clearly defined goals: </para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Shift server-side execution to client-side, typically the web browser. This is
+          sometimes referred to as device edge computing.</para>
+      </listitem>
+      <listitem>
+        <para>Shift all HTML generation client-side, i.e., no user interfaces generated
+          server-side.</para>
+      </listitem>
+      <listitem>
+        <para>Shift all program logic client-side to enable offline-first applications that continue
+          to work while not connected to the Internet</para>
+      </listitem>
+      <listitem>
+        <para>Provide a high-level XML abstraction of describing user interfaces instead of
+          programming the user interface with JavaScript and HTML5.</para>
+      </listitem>
+      <listitem>
+        <para>Provide an event-based programming language in XML as a higher abstraction to write
+          logic and orchestration in addition to JavaScript.</para>
+      </listitem>
+      <listitem>
+        <para>Implement a full separation of user interface (view), program logic (controller), and
+          model (data) according to a pure MVC design pattern.</para>
+      </listitem>
+      <listitem>
+        <para>Intelligent data binding of XML to UI components.</para>
+      </listitem>
+      <listitem>
+        <para>Provide data abstraction towards all types of data sources; client-side, XML Web
+          Services, REST, and JSON.</para>
+      </listitem>
+      <listitem>
+        <para>Use the cloud backend as a pure data repository accessed through an API that provides
+          data, authentication, and security.</para>
+      </listitem>
+      <listitem>
+        <para>Enable anyone to add support for any XML application (language) and allow the platform
+          to recognize and act when encountering XML applications.</para>
+      </listitem>
+      <listitem>
+        <para>Reuse as much as possible of the browser capabilities, extend or replace when
+          necessary.</para>
+      </listitem>
+    </itemizedlist>
+
+    <figure>
+      <title>Abstraction based on XML in all areas is key.</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Abstraction.png" width="80%"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+  </section>
+
+  <section>
+    <title>What new XML technologies are required?</title>
+
+    <para>The set goals, including the full separation of Model, View, and Controller of an
+      application and the full utilization of XML, requires three new XML applications to be
+      developed: </para>
+    <itemizedlist>
+      <listitem>
+        <para>A generic data model in XML that can hold any XML application needed by the developer
+          defined software (model).</para>
+      </listitem>
+      <listitem>
+        <para>A way to describe user interfaces in XML (view).</para>
+      </listitem>
+      <listitem>
+        <para>The ability to write program logic for the application using XML (controller)</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>All with the ability to exchange data with a cloud-based backend using XML and XML delta
+      transactions.</para>
+
+    <figure>
+      <title>XML applications required to be developed</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Device Edge Application Platform.png" width="50%"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>The application written on top of the Device Edge Application Platform also requires some
+      type of XML application as a manifest to be described and linked to all its required
+      resources. The above figure 2 suggests a technology that consumes and produces XML, that runs
+      applications written in XML, and communicates changes to XML using XML delta
+      transactions.</para>
+
+    <para>In addition, a specialized XML application to allow declarative definitions of intelligent
+      data bindings between XML data and user interface components described in the UI XML language
+      is needed. This will allow any developed UI component like a tree, menu, tab strip, or toolbar
+      to be bound to any type of XML and listen to data changes on the XML or update the XML
+      according to user interaction.</para>
+
+    <para>It would be wise to reuse as much as possible of existing XML standards like XSLT, XPath,
+      XPointer, XLink, and ATOM to be used together with any new XML applications developed for the
+      projects.</para>
+
+  </section>
+
+  <section>
+    <title>Technical Challenges</title>
+    <para>The first obvious question is how this should be developed inside a web browser using
+      JavaScript and HTML5. Should an existing JavaScript framework be used? If so, are they
+      compatible with being controlled from XML and working with XML, or do we need to create an
+      entirely new technology stack specialized on XML?</para>
+    <para>XForms was not a technology we saw could be used for building a new presentation software,
+      calendar, or email software. We needed something more expressive that could replace the role
+      of traditional software development.</para>
+    <para>This project thereby came to the conclusion; we needed something that was thinking,
+      breathing, and communicating XML even in its sleep. We also needed several engines that could
+      interpret and execute the new XML languages for applications, UI, logic, data bindings, data
+      model, and data types – i.e. something that could make some sense of all the new markup
+      languages we needed to come up with. </para>
+    <para>We also needed the ability to in the future be able to extend the vocabulary of the user
+      interface XML language with new markup representing UI components, either by XSLT or by
+      JavaScript.</para>
+    <para>Another property was that it should be extensible by any new XML application and storage
+      format designed by any software application developer using the platform. The platform needed
+      to be able to understand these new XML applications, to act on them, to make sense of them,
+      and to be able to manage the data for them. In a sense making the entire Device Edge
+      Application Platform an XML editor in the form of a fully user-defined application UI for any
+      possible XML application (language).</para>
+    <para>The custom user-defined software applications developed in XML we imagined to be built on
+      the platform were as advanced as; presentation editor, word processor, calendar, contacts,
+      bookkeeping, document management, database, instant messenger, photo album, music player, and
+      similar.</para>
+    <para>Three technical challenges stood out; 1) how to make any UI component understand any data
+      model it could be bound to and how the UI component should then be able to know how to extract
+      the right data, 2) how to get the browsers built-in parsing of XML Document Object Model (DOM)
+      and XPath to be able to handle advanced XML documents with multiple namespaces while keeping
+      the client-side cached data models as DOM objects to minimize parsing of XML, 3) how to keep
+      parsed XML DOM objects up to date with what is happening in the cloud and to keep any user
+      interface components up to date to any changes in the XML DOMs it is intelligently bound
+      to.</para>
+  </section>
+
+  <section>
+    <title>The XML data model layer</title>
+    <para>If everything from enterprise to productivity applications should be possible to build on
+      the platform, a versatile data model is required. As most XML writers are used to create XML
+      documents, for instance an XML document describing an invoice, a calendar event, or a contact,
+      these XML document represent repeating collections of data, like multiple calendar event
+      documents. The data model thereby needs to be able to manage repeating XML documents –
+      collections of documents.</para>
+    <para>The data model layer also needs to be able to extract meta-data that should be searchable
+      to not require applications to open every single XML document and parse them to find what to
+      display or search for. This means that the data model needs some sort of data-type definitions
+      that can be associated with any XML application and defines how to apply meta-data extraction,
+      what to do if such a document is opened – or any appropriate action on the document. The data
+      types can also allow other meta-data to an XML application to be added like for instance a
+      default icon, namespace definition, file extension, and mime type.</para>
+
+    <figure>
+      <title>XML-based data model abstraction using containers and objects</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Object Model Blue 2.png" width="60%"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>We came up with a data model based on containers and objects, where containers can be
+      hierarchical and objects can have zero to many streams associated with them, ranging from
+      binary objects to XML documents. In its simplest form, a container is equivalent to a folder
+      in a normal file system, and an object with one stream in the form of an XML document would be
+      like a normal XML document stored in a file system. Objects can then also have additional
+      metadata like key/value data associated with it to be searchable, either external file data
+      like the name, creation date, filename, and access rights, or extracted data from within the
+      document itself. This makes it easy to “attach” binary file formats to a XML document, as the
+      binary additions are additional streams to the XML document object.</para>
+    <para>Querying a container returns an answer in the form of an Atom XML document according to
+      the Atom Syndication Format by the IETF AtomPub Working Group. This format is extended using
+      our own namespace to add capabilities to return containers in addition to objects described by
+      atom:entry elements.</para>
+    <para>When creating software applications there is often the need to work with relational
+      databases as data sources or to move data from relational databases into the data model. This
+      can be done by mapping tables to containers, with the added benefit of getting hierarchical
+      containers, and rows to objects. Columns are achieved with key/value meta-data, and complex
+      column fields are done by storing entire XML documents as streams to the object. Binary BLOB
+      fields can also be stored as streams.</para>
+
+    <figure>
+      <title>Mapping relational data to the XML data model</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Translating Relational Data.png" width="90%"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>The data model may be cached in-memory of the browser or persisted to disk using the local
+      store technology of web browsers. Any changes to the data model are done through the platform
+      abstractions and not directly on the XML DOM objects. This allows the browser-based
+      transaction manager to coordinate changes to the user interface as well as to the cloud where
+      a transaction coordinator is located that coordinates transactions across users and connected
+      devices. It also allows applications to continue to work with the data model if the network
+      temporarily goes down or if the application is used in an offline scenario. If the browser is
+      closed, any uncommitted transactions may be first written to disk.</para>
+    <para>Any application working with the data model automatically becomes capable of collaboration
+      and simultaneous editing across multiple connected web browsers (single user with multiple
+      screens or across several users), as any data changes automatically are coordinated through
+      XML delta-changes while the data model keeps track of all identities simultaneously working
+      with the same XML document.</para>
+    <para>This adds another fundamental perspective to the data model. It is aware of the identities
+      of authenticated users and can keep security based on Access Control Lists (ACL), roles, and
+      groups across containers and objects. It also opens up the possibility to share containers
+      and/or objects between identities and/or groups.</para>
+    <para>The data model’s cloud-based counterpart can be any implementation adhering to the same
+      XML-based communication channel API on the Device Edge Application Platform or it can be any
+      existing web API using SOAP, REST, MQTT, GraphQL etc. adapted to the internal data model
+      through client-side protocol adapters.</para>
+    <para>From an application’s point of view, the entire data model is simply a set of file systems
+      with XML documents, all accessed through Unique Resource Identifiers (URIs). This abstracts
+      where data is located, how it is updated and saved, and what the underlying representation is.
+      Every single piece of data can be accessed through a URI and an XPath. The drawback of course
+      that for all non-XML data sources the data has to be transformed through a bijective function
+      which increases overhead and can cause a trade-off between data loss and the usefulness of the
+      XML representation from the bijective function. This is however in real life not an issue, as
+      most data that is not in XML format is in JSON or GraphQL, which only provides a sub-set of
+      the descriptive powers of XML.</para>
+    <para>To determine the set of required server-side capabilities and validate APIs a large amount
+      of client applications representing the full suite of productivity and social applications of
+      a typical desktop computer were developed. This resulted in around 100 server APIs that
+      together implemented support for the data model. They are covering user management,
+      communication, data storage, collaboration, messaging, and more.</para>
+
+    <figure>
+      <title>Cloud-based support in the form of an XML repository serving the data model</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Cloud Backend.png" width="90%"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+  </section>
+
+  <section>
+    <title>The XML user interface layer</title>
+    <para>There is a concept within software development known as “design patterns” where you
+      identify specific patterns in software design and generalize them for reuse. Several such
+      patterns have been proposed and are in common use. One well-known design pattern is called
+      “Model-View-Controller” (MVC) where you separate the code responsible for the underlying data
+      model, the code that presents data for the end user, and the code that modifies the data. The
+      idea is that by keeping these parts separate it is possible to change any of these aspects
+      without altering any of the other code. The intent when designing the XML application for the
+      user interface language was to keep it at a high abstraction level without mixing in any
+      programming code, to maintain a pure MVC separation, and without too many cues about how it
+      should be rendered. This allows the user interface to be rendered into the device form factor,
+      each device’s expected behavior, and allows for effective use of themes for design and
+      style.</para>
+    <para>XML has proven itself to be a popular description language for representing application UI
+      layouts. Notable examples are the layout language for Glade Interface Designer for GTK, the
+      layout language for Android, and the XAML language for Windows Presentation Foundation from
+      Microsoft. </para>
+    <para>Common between all these languages is the same principle that worked so well for HTML, to
+      have nodes representing user-accessible components e.g., buttons, in a tree of layout
+      constructs to position the component on screen or in a window. In the case of Glade/GTK, they
+      use a small abstract language to allow for a minimal XML Schema while the other two name
+      individual components as tags to make the language more accessible but extensibility harder.
+      We can give similar examples from popular web frameworks like Vue and Angular, but there the
+      line between declarative layout language and code is not as strict, which is where a lot of
+      languages fail with respect to the Model View Control design pattern.</para>
+    <para>The idea with this project’s UI XML language is that it should be possible to create
+      almost like a wireframe version of the UI in an XML document, then build the entire working
+      application and at the same time have someone working on another UI XML document that makes
+      the application look beautiful. When the designer is done, the files should be possible to
+      swap out and the application would get a facelift.</para>
+    <para>A second dimension to this is that it should be possible to create visual themes for all
+      the user interface components and windows, which then by the change of an attribute value of
+      the application manifest should be possible to change and then affect the entire rendering of
+      the application without changing any code.</para>
+    <para>The markup for the UI XML should also be as easy for someone to learn as using XHTML, this
+      requires it to use a single implicit namespace with the addition of more namespaces only for
+      advanced users. This creates some issues we have not fully resolved yet. The system is built
+      so it allows for dynamic updates of the set of UI components, which in turn means the XML
+      schema would have to be dynamically generated for anyone using this feature or the use of
+      additional namespaces to add user developed UI components. This issue is the same as XHTML has
+      with web components extending the language.</para>
+    <para>When creating software, there is also often a need to support multiple human languages of
+      an application. Including all translations into the UI XML would make it hard to read and
+      would go against the goal of separation of concerns with MVC. Instead we need an elegant
+      mechanism to tie in translations for the currently chosen language, stored in a separate XML
+      application for translations. The fairly non-intrusive and easy-to-use solution is using a
+      localization namespace, using, for example, the prefix of “l”, and if then the attribute value
+      for “title” should be translated, writing it as “l:title” instead. A transformation pass
+      before the document is interpreted replaces all attributes in the language namespace with
+      corresponding attributes in the default namespace, but with translated values. While it is
+      natural to place localized data in text nodes, a drawback with this approach is that all
+      localized data has to be in attribute values as text nodes cannot be prefixed to a
+      namespace.</para>
+    <para>The following is a simple hello world application written in the UI XML language where the
+      view element represents the outer boundary of the application, typically a screen or a window,
+      the panel represents a layout container, and the button element the component to be placed
+      inside the panel.</para>
+
+    <programlisting language="xml"><![CDATA[<view name="myView" title="My View" icon="icon://rocket">
+  <panel>
+    <button name="myButton" text="Hello World"/>
+  </panel>
+</view>]]></programlisting>
+
+    <figure>
+      <title>Rendering of the application view</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Hello World.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>The coupling of any data model or event-driven actions to the user interface is done
+      entirely outside the UI XML in declarative XML, which means it is possible to reuse the same
+      UI XML and even most of the program logic of an application although they work with completely
+      different XML application documents (data models and/or data sources).</para>
+    <para>This is achieved by having every UI component like a tree, button, menu, toolbar, etc.
+      bound directly to a fragment of an XML document where the fragment is pointed out using XPath.
+      Events and data changes across UI components, the transaction manager, delta transactions, and
+      the data model are all done using XML and XPath. This makes the entire event and data update
+      bus of the Device Edge Application Server driven by XML. How the UI components should
+      interpret the XML it is bound to are defined by the declarative data bindings. This means that
+      UI components developed for the platform are generic and not specific or tied to any XML
+      application, they can be reused by a software developer across all projects, as they in a
+      simple way are taught how to understand the XML application, its hierarchy, elements, and
+      attributes.</para>
+    <para>The following is an example of a tree UI component with rules describing how it should
+      interpret data that it is bound to. The tree UI component is then able to render the
+      hierarchical nodes of the tree out of the XML data model by itself. Rules can also be
+      described in the declarative data binding for better reusability outside of the UI XML.</para>
+
+    <programlisting language="xml"><![CDATA[<view name="treeView" title="Tree Demo" icon="icon://pieces" width="250">
+  <panel width="200" type="row">
+    <tree name="myTree" width="100%" height="100%" icon="icon://rocket">
+      <rule match="components" display="'Component List'" icon="icon://pieces" open="true"/>
+      <rule match="component" display="@name" icon="icon://piece"/>
+      <rule match="component/documentation" display="description" icon="icon://pencil"/>
+    </tree>
+  </panel>
+</view>]]></programlisting>
+
+    <para>Anyone familiar with templates in XSLT can see the similarities to how rules match
+      underlying elements in the data model using XPath.</para>
+    <para>The final example is of the iconlist UI component that in this example is bound to the
+      result from a container query, an Atom XML document extended to support the containers,
+      symbolized by fs:folder elements in the feed.</para>
+
+    <programlisting language="xml"><![CDATA[<iconlist name="lists" width="100%" height="70" layout="sectionlist"
+  scroll="true" deselect="false" iconsize="32">
+  <rule match="fs:folder">
+    <item text="{substring-after(@name, ' ')}" icon="icon://check"/>
+  </rule>
+</iconlist>]]></programlisting>
+
+    <para>The rule will make sure that the iconlist component is fed one item for every fs:folder
+      (container) that the query results in. The iconlist component is bound to the root element
+      (atom:feed) of the Atom XML document, which means that all XPaths inside the rule is relative
+      to this XML fragment. This is similar to how matched xsl:templates changes the current context
+      for sub-sequent XPath expressions within the template. XPath functions are available to be
+      used within the text attribute value, similar to how they would be used in XSLT.</para>
+
+  </section>
+
+  <section>
+    <title>The XML program logic layer</title>
+    <para>Less common than representing layout with XML is to represent processing steps with XML,
+      but there are again plenty of examples. Most notable is of course XSLT with its XSL document,
+      execution environment of constants, and input document which together generate a third output
+      document. In XSLT you define template rules, some of which are triggered directly by the nodes
+      in the input data and some which are called like functions from other templates. Inside the
+      templates are imperative statements that are executed in sequence, sometimes branching on
+      conditionals, or iterating over a set of element nodes.</para>
+    <para>Apache ANT, used as a build system, most notably for Java projects, in a similar way has
+      an execution environment of constants but instead of traversing an XML tree in the input
+      document to output resulting markup into a document it traverses a dependency tree and creates
+      resources in a filesystem. Just as with XSLT there is a list of rules, called targets, that
+      are executed depending on the input statement for the execution and the state of files it is
+      processing, e.g. has the file been modified since the last time we ran the build script.
+      Inside the targets, the individual processing steps are then executed in order.</para>
+    <para>Both XSLT and ANT are non-interactive and non-responsive in the sense that it represents a
+      contained work package that is started at one point after which it continues its set of
+      instructions until it is finished or encounters an error. To build interactive applications it
+      must be possible to have the user interactions trigger execution and allow execution steps to
+      be concurrent with each other. This can be solved by creating an event system where user
+      interactions such as clicking a button or pressing a key generates events which in turn
+      trigger execution steps in the XML code. The logic XML enables event listeners to be bound to
+      different execution steps</para>
+    <para>We decided on creating a language based on steps containing logical operations performing
+      actions, triggered by events sent from the system, components, and changed documents on the
+      Device Edge Application Platform event bus. Since the platform supports multiple running
+      instances of a single application, such as an email program having several emails open in
+      multiple windows, or a text editor with multiple documents open, and that we would not like
+      the browser memory to have multiple copies of run-time objects and XML DOM objects we designed
+      it so the same logic XML can serve all concurrently running instances of the
+      application.</para>
+    <para>The idea of the XML logic language is to work as a glue, binding documents from the data
+      model to one or more user interfaces (views), talking to external cloud APIs to integrate
+      data, and to process user-generated events and interactions. It should also be able to manage
+      inter-application interaction when several software applications are running side by side in
+      the Device Edge Application Platform.</para>
+    <para>Another design consideration was that it should be possible to create a visual editor that
+      allows developers to use drag-and-drop to build the logic XML and see it as a visual process
+      drawing. In the following implementation, yellow circles are triggers, green represents
+      decisions and the rest are process steps. The notation of the names above the yellow triggers
+      is like a XPointer style referencing mechanism that allow referencing of a named view and UI
+      component from the logic XML.</para>
+
+    <figure>
+      <title>Visualization of the logic XML language created inside a web-browser</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Process Designer.png" width="50%"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>Since modern-day web applications are working asynchronously to not tie up the user
+      interface while waiting on a server request to complete, the logic XML programming language
+      needs to make sure everything underneath it runs asynchronously. It gives the developer the
+      illusion that the programming can be done synchronously – significantly simplifying the
+      developing experience – while in reality it runs asynchronously and possibly
+      concurrently.</para>
+    <para>This is a small example that makes the button in the previous view example close the
+      view.</para>
+
+    <programlisting language="xml"><![CDATA[<process name="myProcess">
+  <trigger view="myView" component="myButton" event="Select"
+    step="closeStep"/>
+
+  <step id="closeStep">
+    <operation name="close" value="myView"/>
+  </step>
+</process>]]></programlisting>
+
+    <para>The following is a complete example of an application manifest that includes both a view
+      and a logic process, they can both be linked into the manifest using the W3C XLink standard
+      instead.</para>
+
+    <programlisting language="xml"><![CDATA[<application name="My App" icon="icon://rocket" instances="0" theme="marble">
+  <resources>
+    <item name="employee">
+      <card>
+        <name>Gandalf the White</name>
+        <occupation>Wizard</occupation>
+      </card>
+    </item>
+  </resources>
+
+  <view name="App" title="My App" icon="icon://rocket">
+    <panel>
+      <label size="20" name="myLabel" default="This is a label"/>
+    </panel>
+  </view>
+
+  <process name="My App - Process">
+    <trigger view="App" event="Loaded" step="init"/>
+    <step id="init">
+      <operation name="bind" value="#employee">
+        <component view="App" name="myLabel" select="/card/name"/>
+      </operation>
+    </step>
+  </process>
+</application>]]></programlisting>
+
+    <para>As soon as the application manifest has loaded the application, including opening its
+      view, the trigger will listen to the “Loaded” event and call step “init”. The init step will
+      use the process operation called “bind” to bind the temporarily created XML document added to
+      the data model defined above under resources to the label component. The label component will
+      thereby change its content from “This is a label” to “Gandalf the White”. If any other code or
+      external application alters the data model, the label component will automatically update its
+      text to the new state of the data model.</para>
+    <para>This means that the logic XML language together with the intelligent data bindings removes
+      all need to call server APIs to get data changes, then update a local object data model in
+      memory, then listen to changes to that object model and use set and get methods on the UI
+      component to update it programmatically and vice versa. All of this is done by the Device Edge
+      Application Platform.</para>
+
+  </section>
+
+  <section>
+    <title>The resulting architecture of the XML edge platform</title>
+    <para>The following architecture overview shows the major components of the XML Device Edge
+      Application Platform. Obviously, there are many more components to make it work, but the
+      following are the core functionality.</para>
+    <para>At the user experience layer, the application manifest, the UI XML, but also XSLT
+      renderers and JavaScript code that create the XHTML output are located. This layer can be
+      extended using the component API by any developer.</para>
+
+    <figure>
+      <title>Architecture of the XML Device Edge Application Platform</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="Architecture.png" width="80%"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>The business logic layer consists of modules to manage the XML process logic markup as
+      well as the intelligent declarative data bindings, the data types for making the platform
+      aware of any XML applications, and the API to extend the logic XML with arbitrary program
+      logic operations.</para>
+    <para>Finally, the data and communications layer provides support for the XML-based data model.
+      It allows channel services to be built that interface into any backend system, API, or
+      database. It provides the container/object file system abstraction used to consume the data
+      model and also includes ready-to-be-used communication channels for speaking with XML Web
+      Services using SOAP, REST APIs, interfacing with JSON or any XHTML compliant website using the
+      HTTP proxy.</para>
+
+  </section>
+
+  <section>
+    <title>The two projects</title>
+    <para>Everything discussed in this paper that has to do with the Device Edge Application
+      Platform is the work of XIOS/3 AB (https://xios3.com), while everything that has to do with
+      the data model and Singularity Database is the technology from CloudBackend AB
+      (https://cloudbackend.com). These two projects are not yet launched and available commercially,
+      but we expect them being available within the next couple of months.</para>
+    <para>Several concepts and ideas discussed in this paper are patented and protected by the
+      following issued US patents (18 patents in total). Further information about the XML Internet
+      Operating System (XIOS) can be found in the patent descriptions in the link below.</para>
+
+    <table>
+      <title/>
+      <tgroup cols="2">
+        <tbody>
+          <row>
+            <entry>US8239511</entry>
+            <entry>Network operating system application packaging </entry>
+          </row>
+          <row>
+            <entry>US8843942</entry>
+            <entry>Interpreting semantic application code</entry>
+          </row>
+          <row>
+            <entry>US8959123</entry>
+            <entry>User interface framework</entry>
+          </row>
+          <row>
+            <entry>US8099671</entry>
+            <entry>Network operating system opening an application view </entry>
+          </row>
+          <row>
+            <entry>US8954526</entry>
+            <entry>Network operating system data source abstraction </entry>
+          </row>
+          <row>
+            <entry>US8112460</entry>
+            <entry>Framework for applying rules </entry>
+          </row>
+          <row>
+            <entry>US8996459</entry>
+            <entry>Offline and/or client-side execution of a network application </entry>
+          </row>
+          <row>
+            <entry>US9344497</entry>
+            <entry>State management of applications and data</entry>
+          </row>
+          <row>
+            <entry>US8615531</entry>
+            <entry>Programmatic data manipulation</entry>
+          </row>
+          <row>
+            <entry>US8280925</entry>
+            <entry>Resolution of multi-instance application execution </entry>
+          </row>
+          <row>
+            <entry>US7917584</entry>
+            <entry>Gesture-based Collaboration</entry>
+          </row>
+          <row>
+            <entry>US8108426</entry>
+            <entry>Application and file system hosting framework </entry>
+          </row>
+          <row>
+            <entry>US8156146</entry>
+            <entry>Network file system</entry>
+          </row>
+          <row>
+            <entry>US8234315</entry>
+            <entry>Data source abstraction system and method</entry>
+          </row>
+          <row>
+            <entry>US8620863</entry>
+            <entry>Message passing in a collaborative environment </entry>
+          </row>
+          <row>
+            <entry>US8688627</entry>
+            <entry>Transaction propagation in a networking environment </entry>
+          </row>
+          <row>
+            <entry>US8738567</entry>
+            <entry>Network file system with enhanced collaboration </entry>
+          </row>
+          <row>
+            <entry>US9071623</entry>
+            <entry>Real-time data sharing</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+  </section>
+
+  <section>
+    <title>Future development for the two projects</title>
+    <para>At the moment the two most frustrating problems with using only the built-in XSLT and
+      XPath engine of web browsers, even though we have a lot of custom extensions, is the inability
+      to support additional XPath 2.0 and 3.1 functionality and to have our own extension functions.
+      The same goes for being able to add extension functions to XSLT. Having that capability would
+      allow much tighter integration between the Device Edge Application Platform and the XML
+      world.</para>
+    <para>It is also very frustrating sometimes to not be able to debug XSLT and connect the ability
+      to step through XSLT with the ability to step through the XML process logic using the built-in
+      debugger we created for XIOS/3.</para>
+    <para>We have thus written a new very nimble XML parser in JavaScript, a new XPath engine is under
+      development, and we then aim to write our own XSLT implementation in JavaScript. The reason
+      of doing all this work is because of the tight integration that we believe we need and being
+      able to optimize the code as we heavily process and use XML. There will also be
+      C++ versions of the XML, XPath, and XSLT engine available for inclusion in the Software Development
+      Kits (SDK) offered by CloudBackend that allow integration into native applications in Swift (iOS),
+      Java (including Android), and C++ (Windows, Mac, Linux, and IoT) that tap into the data model and
+      XML applications that run inside the browser. We want the same XPath and XSLT to be able to run
+      in the web browser, the cloud, and on mobile apps for cross-device development. This will
+      probably be material for another future paper.</para>
+  </section>
+
+  <section>
+    <title>Conclusion</title>
+    <para>It is possible to create quite a sophisticated XML development environment with edge
+      device acceleration and caching already today. Managing to build the entire infrastructure is
+      a lot of work and includes building a new JavaScript framework and many more technologies not
+      normally associated with running within a browser like a transaction engine and multi-instance
+      support of applications within a single browser tab.</para>
+    <para>The end result is amazing from an XML perspective. We can get an entire environment where
+      everything is XML, from the data format we open and store, to the applications designed to
+      work with the data, all the way to events created because of a user clicking on something or
+      data being update in the cloud.</para>
+    <para>A lot of technical challenges are solved by using XML as the common denominator throughout
+      the entire software project. The extensible nature of XML with the ability to add new elements
+      later in a project or mix and merge several XML applications into one XML document using
+      namespaces are very powerful tools available to a developer.</para>
+    <para>The edge computing aspect of things, running most of the application logic inside the
+      browser or even the entire application logic, brings some interesting effects to the table
+      like:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Changing the role of the cloud to become a storage and coordination point, utilizing
+          all connected clients for most application logic processing, dramatically reducing the
+          cost of using cloud computing since fewer server instances are needed.</para>
+      </listitem>
+      <listitem>
+        <para>Reduced required network bandwidth as clients cache data locally, reducing the cost of
+          data transfer to/from cloud providers.</para>
+      </listitem>
+      <listitem>
+        <para>Reduced required network bandwidth as clients cache data locally, reducing the cost of
+          data transfer to/from cloud providers.</para>
+      </listitem>
+      <listitem>
+        <para>Handles high latency scenarious like mobile broadband, unstable networks, or when the
+          end-user is far away from the cloud region where a Software-as-a-Service (SaaS) or app is
+          deployed.</para>
+      </listitem>
+      <listitem>
+        <para>Uniquely enables SaaS companies to provide excellent service worldwide with as little
+          as one cloud region.</para>
+      </listitem>
+      <listitem>
+        <para>The drawback is that developers need to develop in XML instead of JavaScript or server
+          code, which for people without any prior XML knowledge might be challenging.</para>
+      </listitem>
+      <listitem>
+        <para>Architectural patterns may need to change somewhat as the client-side edge execution
+          favors backends designed as stateless micro services, i.e. a Service Oriented Architecture
+          (SOA), instead of large monolithic APIs.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>It is our experience that it is considerably faster to develop applications using XML,
+      than creating the same application using traditional JavaScript frameworks and technologies.
+      It results in considerably less source code that is easier to read and maintain. The source
+      code can be validated by an XML schema, and it becomes much easier to collaborate between
+      several people using GIT to build large enterprise-grade projects than having multiple people
+      editing the same JavaScript code. The key is here how XML can be modularised using well-known
+      technologies like XLink and split up into multiple documents and how XML enables a higher
+      abstraction level with larger building blocks than traditional programming.</para>
+    <para>XML software applications can be hosted on any web server. They do not
+      require any specific installed code in the cloud to work, nor are they dependent on any build
+      toolchain. They can also be cached out close to end-users using any Content Delivery Network
+      (CDN) as they are not dependent on server-side logic.</para>
+
+
+    <figure>
+      <title>Uniquely leveraging a CDN to distribute XML software applications for
+        low-latency</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="CDN.png" width="60%"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>We thereby believe that applications on the Internet, that remind you of traditional
+      software, will be more and more written using XML as they are easy to build, simple to host,
+      and share a lot of properties of what made HTML popular in the first place. Almost anyone can
+      write their own home page using HTML, but not everyone can build an advanced HTML5 application
+      using JavaScript. XML software applications have the ability to bring the simplicity of markup
+      back, replacing the programmatic web we see today with declarative markup.</para>
+    <para>Hopefully these two projects can show what is possible to do with XML, in order for more
+      people to follow and build up a strong toolchain for web-based XML development. Together the
+      available efforts and tools can be extended and packaged to make XML mainstream for web developers.</para>
+    <para>Imagine surfing a web-based of XML software applications and XForms instead of HTML and
+      JavaScript.</para>
+  </section>
+
+</article>

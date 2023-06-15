@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section version="5.0" xmlns="http://docbook.org/ns/docbook">
+	<title>Pain points of the existing batches</title>
+
+	<section>
+		<title>Lacking of flexibility for inserting additional XSLT steps (in between)</title>
+
+		<para>Regarding the batch <productname>&#x201C;fragengruppe_2_evidence&#x201D;</productname>, it all started about a dozen years ago with just one single XSLT stylesheet. It was called with an initial template and used <code>fn:collection()</code> to process the entire <!--input-->source folder.</para>
+
+		<para>Over the years, more and more requirements have been added as well as, and new <productname>E&#x2011;ConsentPro</productname> versions were released that had to be supported with the matching version of the <acronym>XML</acronym> content. As a result, the original XSLT stylesheet became more and more complex. In addition, some of the new requirements could no longer be sensibly implemented within a single XSLT stylesheet &#x2013; for example, additional whitespace handling following a transformation performed on the original stylesheet. The simplest way to extend the existing <!--batch-->transformation, without having to adjust anything else, was by adding another XSLT stylesheet using <tag class="attribute">@saxon:next-in-chain</tag>.</para>
+
+		<para>Using <tag class="attribute">@saxon:next-in-chain</tag> was an incredibly easy and effective solution, but it also comes with some downsides. Each <acronym>XSLT</acronym> stylesheet is orchestrated from the previous one. Inserting an additional stylesheet is inflexible and requires an unrelated <acronym>XSLT</acronym> to be changed. <!--Even storing intermediate results from each step for debugging purposes is not as comfortable as it could be.--></para>
+
+		<para><orgname>Saxonica</orgname> has since deprecated <tag class="attribute">@saxon:next-in-chain</tag> and suggests using <code>fn:transform()</code> instead. While we are convinced that this function is a suitable replacement for <tag class="attribute">@saxon:next-in-chain</tag>, but we have not looked into this simply due to the additional pain points as well as the requested improvements for existing pipelines.</para>
+	</section>
+
+
+
+	<section>
+		<title>No easy way to debug the intermediate results of each <acronym>XSLT</acronym> step</title>
+
+		<para>Debugging a multi-step <acronym>XSLT</acronym> pipeline can be an arduous process. A no longer matching <tag>&lt;xsl:template&gt;</tag> in a later <acronym>XSLT</acronym> stylesheet, because an earlier stylesheet has already changed the <code>node()</code>, occurs frequently. Storing intermediate results from each <!--<productname>XSLT</productname>--> step therefore is necessary but is not as easy as it could be, based on the existing batches. <acronym>XSLT</acronym> provides <tag>&lt;xsl:result-document&gt;</tag> for this purpose. Until now, however, this is only inserted manually if needed and not added as a general rule. The <productname>XProc&#x00A0;3.0</productname> pipeline needs to take this into account from the outset and simply offer this functionality by adding an invocation parameter.</para>
+	</section>
+
+
+
+	<section>
+		<title>Too many tools means too many dependencies</title>
+
+		<para>The main problem with the existing batches is the stability and maintainability of the pipelines. That is because the batches had to use different tools for specific tasks, e.g.: 
+			<itemizedlist spacing="normal">
+				<listitem>
+					<para><productname>Beyond Compare</productname> for synchronising the <acronym>XML</acronym> files and images in the source folder and in the result folders</para>
+				</listitem>
+				<listitem>
+					<para><productname>7-Zip</productname> to create Zip archives</para>
+				</listitem>
+				<listitem>
+					<para><productname>curl</productname> for transferring results to REST endpoints</para>
+				</listitem>
+			</itemizedlist>
+			The more tools are involved, the greater the dependencies and the greater the risk of breaking changes with future updates of these tools &#x2013; of which there were quite a few in that dozen years. It also makes it harder to run the batches from different machines. That is because it has to be ensured that each machine provides these specific tools in their specific version. <productname>XProc&#x00A0;3.0</productname> offers the necessary functionalities out of the box, which provided the opportunity to significantly reduce dependencies by minimising the tools involved in the pipelines.</para>
+	</section>
+
+
+
+	<!--<section>
+		<title>Summarazied existing pain points</title>
+
+		<itemizedlist>
+			<listitem>
+				<para>lack of flexibility for adding additional <productname>XSLT</productname> steps (in between)</para>
+			</listitem>
+			<listitem>
+				<para>lack of an easy way to debug the intermediate results of each <productname>XSLT</productname> step</para>
+			</listitem>
+			<listitem>
+				<para>too many dependencies due to too many tools involved (= <!-\-<productname>Saxon</productname>,-\-> <productname>Beyond Compare</productname>, <productname>7-Zip</productname>, <productname>curl</productname>), with high administrative effort as well as the constant risk of breaking changes with upcoming updates of these tools</para>
+			</listitem>
+		</itemizedlist>
+	</section>-->
+</section>

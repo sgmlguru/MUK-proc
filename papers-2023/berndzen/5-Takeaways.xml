@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section version="5.0" xmlns="http://docbook.org/ns/docbook">
+	<title>Takeaways</title>
+
+	<para>What are the takeaways from our project?</para>
+
+
+
+	<section>
+		<title>Smooth transition to <productname>XProc&#x00A0;3.0</productname></title>
+
+		<para>First of all, we have to say that the move from batch scripts to <productname>XProc&#x00A0;3.0</productname> was a very smooth experience. Compared to developing pipelines with <productname>XProc&#x00A0;1.0</productname>, the process is a lot faster. This is thanks both to the wealth of syntactic sugar and to the much cleaner concept of some frequently used steps. The type system for variables and options provides a new level of security. The availability of <productname>XPath&#x00A0;3.0</productname> and the respective functions improves programming a lot. And we are pleased to say that we did not miss parameter ports for a second.</para>
+	</section>
+
+
+
+	<section>
+		<title><productname>MorganaXProc-IIIse</productname> <!--did the job and has been improved-->worked well and could even be improved over the course of the project</title>
+
+		<para><productname>MorganaXProc-IIIse</productname> turned out to be a reasonable tool. The complete task could be fulfilled without any custom additions. <!--Also, having-->Having to develop a complex pipeline system with a lot of documents to process helped a lot in improving <productname>MorganaXProc</productname><!--, which is not to say, that all bugs are already fixed-->. <!--The programm--><!--<productname>MorganaXProc</productname> could also be improved a lot because we could fix some bugs found during pipeline development.--> During pipeline development, some bugs were found in the software and most of them have already been fixed. Additionally, we identified pain points for optimisation from using <!--the software--><productname>MorganaXProc</productname> in a large real-<!--life-->world project,<!--. Not all of them are implemented yet--> which will be reflected in new features to be added in the future.</para>
+	</section>
+
+
+
+	<!--<section>
+		<title>Increased system requirements</title>
+
+		<para>Some time we had to struggle with high memory demands of <productname>MorganaXProc</productname> which caused a pipeline with 15,000&#x00A0;source documents to run out of memory, even though 8&#x00A0;GB were available to the JVM. It took some effort to fix this problem because of the different behaviour of the <productname>Java</productname> implementations and operating systems employed. Additionally, this problem only appeared with <productname>MorganaXProc</productname>'s implementation for <productname>Java</productname>&#x00A0;8.0, which is a multi-threading implementation of <productname>XProc</productname>. Finally, we were able to identify a memory leak in <productname>MorganaXProc</productname>'s handling of <productname>XProc</productname>'s <tag>&lt;p:try&gt;</tag>/<tag>&lt;p:catch&gt;</tag> mechanism. <!-\-Having to develop a complex pipeline system with a lot of documents to process helped a lot in improving <productname>MorganaXProc</productname>, which is not to say, that all bugs are already fixed.-\-></para>
+	</section>-->
+
+
+
+	<section>
+		<title>Serialisation is now done by <productname>MorganaXProc</productname> and no longer by <productname>Saxon</productname></title>
+
+		<!-- https://www.saxonica.com/documentation9.5/extensions/output-extras/double-space.html -->
+
+		<para>One thing to note is that with <productname>XProc&#x00A0;3.0</productname> the serialisation is done by <productname>MorganaXProc</productname> even though the transformation is still performed by <productname>Saxon</productname>. Since the <acronym>XSLT</acronym> transformation is now orchestrated by <productname>XProc&#x00A0;3.0</productname>, a <tag>&lt;xsl:output&gt;</tag> declaration in the stylesheet is now ignored. In particular, the serialisation differs with regard to the order of attributes and whether or not they are presented in a new line. In addition, Also <productname>Saxon</productname> provides <!--more serialization options-->powerful serialisation features which <productname>MorganaXProc</productname> currently lacks. For instance, there is <tag class="attribute">@saxon:line-length</tag>, <tag class="attribute">@saxon:attribute-order</tag> or <tag class="attribute">@saxon:double-space</tag>, which <!--was-->were used with the batch pipelines<!-- to generate an extra blank line before the start tag of selected elements-->. These are useful features for (further) increasing the human readibility of the XML result documents.</para>
+
+		<figure xml:id="serialization">
+			<title>Serialisation done by <productname>MorganaXProc</productname> (left) and <productname>Saxon</productname> (right)</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="graphics/Serialization.png" width="100%" scalefit="1" contentdepth="100%" />
+				</imageobject>
+			</mediaobject>
+		</figure>
+
+		<para>We had to ensure that the <acronym>XML</acronym> results of the <productname>XProc&#x00A0;3.0</productname> pipelines are similar to the results of the batch pipelines. <!--Mainly because of-->But there were two main issues: 
+			<orderedlist spacing="compact">
+				<listitem>
+					<para>There is some siginificant whitespace handling in the <acronym>XSLT</acronym> stylesheets.</para>
+				</listitem>
+				<listitem>
+					<para>Some transformations are now done in <productname>XProc</productname> itself using <tag>&lt;p:insert&gt;</tag> and no longer within the <acronym>XSLT</acronym> stylesheets.</para>
+				</listitem>
+			</orderedlist>
+		</para>
+
+		<para><!--Actually this could be a minor issue but we weren't aware of that behaviour.--> We were not aware of the serialisation behaviour at first and, aesthetic considerations aside, these shortcomings in <productname>MorganaXProc-IIIse</productname> made it difficult to compare the results of the original batches with the pipeline results<!--, obstructing quality control in the transition significantly-->. Comparing the <acronym>XML</acronym> results therefore took more time, and the <acronym>XMLs</acronym> had to be pretty-printed first, with the downside that this falsified the whitespace handling.</para>
+	</section>
+
+
+
+	<section>
+		<title>Performance problems with <acronym>FHIR</acronym> XML schema</title>
+
+		<para>The low performance of the <acronym>FHIR</acronym> pipeline gave us some headaches. It was significantly slower than the other pipeline although being very similar in the its structure. Turned out that the result validations with the official <acronym>FHIR</acronym> schema was the culprit. Initially we used &#x201C;<literal>fhir-all</literal>&#x201D; in <tag>&lt;p:validate-with-xml-schema&gt;</tag>, but that was extremely slow. Turns out that schema document just imported about 140 other schema documents, and each of them importing the same schema. Luckily there is an other official schema document &#x201C;<literal>fhir-single</literal>&#x201D; which contains a complete schema document. Using this schema document did the trick and we are now happy with the pipeline's performance.</para>
+	</section>
+
+
+
+	<section>
+		<title><!--load stylesheets at the beginning only once (or cache it too)-->XProc pipeline optimisation by loading stylesheets only once at the beginning</title>
+
+		<para>The pipeline development was not without drawbacks: The first (and natural) approach to processing the documents in the input folder would be:</para>
+
+		<programlisting language="xml"><![CDATA[<p:for-each>
+    <p:xslt>
+        <p:with-input port="stylesheet" href="the-stylesheet.xsl" />
+    </p:xslt>
+</p:for-each>]]></programlisting>
+
+		<para>However, if you process around 15,000&#x00A0;source documents, the stylesheet document is loaded each time too. Since this is completely inefficient, we changed it to:</para>
+
+		<programlisting language="xml"><![CDATA[<p:load href="the-stylesheet.xsl" name="stylesheet" />
+<!-- ... -->
+<p:for-each>
+    <p:xslt>
+        <p:with-input port="stylesheet" pipe="@stylesheet" />
+    </p:xslt>
+</p:for-each>]]></programlisting>
+
+		<para>This is a bit better performance-wise, but makes the pipeline more difficult to read. Moreover, it only partially resolves the inefficiency issue because the stylesheet has to be compiled every time the <tag>&lt;p:for-each&gt;</tag> is executed. The same applies to the <productname>XML schema</productname>s or the <productname>Schematron</productname>. They have to be prepared every time to be usable, although they do not change in our case. Using an <productname>XML catalog</productname> does not help here, because it only caches the document. The most effective solution would be to cache the ready-to-use stylesheet etc. But simply caching them as default processor behaviour is not feasible in <productname>XProc&#x00A0;3.0</productname>. Looking at the specifications, it is perfectly possible to rewrite documents or stylesheets etc. within <tag>&lt;p:for-each&gt;</tag> so that a later iteration depends on documents produced in an earlier one.</para>
+
+		<para>A processor could perform some optimisation here by checking whether a certain document is written inside a <tag>&lt;p:for-each&gt;</tag>. However, since catalog resolution etc. frequently takes place in <productname>XProc</productname>, there is no simple and reliable way to do this. From our perspective, some more investigation of this problem is necessary: One solution could be an (extension) attribute on <tag>&lt;p:with-input&gt;</tag> allowing a pipeline author to declare a stylesheet, schema etc. to be cacheable. Whether this is implemented in <productname>XProc</productname> at language level or takes the form of a vendor-specific extension is a discussion for the future.</para>
+	</section>
+
+
+
+	<section>
+		<title>Feature request for <productname>XProc<!--&#x00A0;4.0--></productname>: please add <tag>&lt;p:validate-with-dtd&gt;</tag></title>
+
+		<para><productname>XProc&#x00A0;3.0</productname> offers a whole range of possibilities for validating documents using:
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para><tag>&lt;p:validate-with-json-schema&gt;</tag></para>
+				</listitem>
+				<listitem>
+					<para><tag>&lt;p:validate-with-nvdl&gt;</tag></para>
+				</listitem>
+				<listitem>
+					<para><tag>&lt;p:validate-with-relax-ng&gt;</tag></para>
+				</listitem>
+				<listitem>
+					<para><tag>&lt;p:validate-with-schematron&gt;</tag></para>
+				</listitem>
+				<listitem>
+					<para><tag>&lt;p:validate-with-xml-schema&gt;</tag></para>
+				</listitem>
+			</itemizedlist>
+			However, there is no equivalent for validating <acronym>XML</acronym> documents with <acronym>DTD</acronym>.
+		</para>
+
+		<para>Even though <productname>XML&#x00A0;Schema</productname> became a <orgname>W3C</orgname> recommendation already in 2001, and <productname>RELAX&#x00A0;NG</productname> was also defined then, there are still legacy systems that only support <acronym>DTD</acronym>. In rare cases, it is possible to enhance these systems by switching to <productname>XML&#x00A0;Schema</productname>, but this is generally not an option and these systems have to be supported nevertheless.</para>
+
+		<para>The lack of <acronym>DTD</acronym> validation in <productname>XProc&#x00A0;3.0</productname> means that the pipelines have to use a workaround. The <acronym>XML</acronym> result must first be stored to the file system <!--using <tag>&lt;p:store&gt;</tag>--> and then loaded immediately from there again using <tag>&lt;p:load&gt;</tag>. This is because, surprisingly, <acronym>DTD</acronym> validation is possible with <productname>XProc&#x00A0;3.0</productname> but only while loading a document. Finally, the previously stored and validated XML result has to be deleted<!-- with <tag>&lt;p:file-delete&gt;</tag>-->, because its no longer needed. While this workaround does its job, the ability to do this in memory using something like <tag>&lt;p:validate-with-dtd&gt;</tag> would be much more effective.</para>
+
+		<para>There is perhaps an argument for adding <acronym>DTD</acronym> validation to the pipeline using <tag>&lt;p:declare-step&gt;</tag>. However, this requires the XProc processor to realise that only a memory stream is needed, causing it to perform an optimisation and avoid storing the result to the file system and reloading it. Even if this would work, anybody who wants to support DTD has to add the following step to their pipelines instead of just using <tag>&lt;p:validate-with-dtd&gt;</tag>.</para>
+
+		<programlisting language="xml"><![CDATA[<p:declare-step type="tcg:validate-with-dtd">
+    <p:input port="source" sequence="false" content-types="xml" />
+    <p:output port="result" sequence="true" content-types="xml" />
+
+    <p:pipe step="load" />
+
+    <p:store href="foo.xml" name="store" />
+
+    <p:load href="foo.xml" name="load" parameters="map{'dtd-validate' : true()}" depends-on="store" />
+
+    <p:file-delete href="foo.xml" depends-on="load" /> 
+</p:declare-step>]]></programlisting>
+
+		<para>So please, <productname>XProc</productname> working group, support DTD validation natively and add <tag>&lt;p:validate-with-dtd&gt;</tag> <!--with <productname>XProc&#x00A0;4.0</productname>--> and Bob's your uncle.</para>
+	</section>
+</section>

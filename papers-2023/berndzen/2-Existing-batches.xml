@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section version="5.0" xmlns="http://docbook.org/ns/docbook">
+	<title>Introduction to existing batches</title>
+
+	<section>
+		<title>Batch <productname>&#x201C;fragengruppe_2_evidence&#x201D;</productname></title>
+
+		<para>When it comes to the content delivery to <orgname>Thieme Compliance's</orgname> <productname>E-ConsentPro</productname>, the latest editions of the patient education leaflets are selected in the content management system <productname>CLS</productname> and an export is performed. The main <acronym>XML</acronym> file as well as all referenced XIncludes and images are exported from the database into a temporary folder on the <productname>CLS</productname> server. Here, the batch <productname>&#x201C;fragengruppe_2_evidence&#x201D;</productname> is used to  
+			<itemizedlist spacing="normal">
+				<listitem>
+					<para>Merge the main <acronym>XML</acronym> with the XIncludes</para>
+				</listitem>
+				<listitem>
+					<para>Change the <acronym>XML</acronym> files from <productname>T<subscript>0</subscript> XSD</productname> to <productname>T<subscript>0</subscript> DTD</productname> by removing namespaces and inserting a Document Type Declaration</para>
+				</listitem>
+				<listitem>
+					<para>Derive up to twelve different variants from the source <acronym>XML</acronym> file, each valid for the specific version of <productname>T<subscript>0</subscript> DTD</productname> employed for the different versions of <productname>E-ConsentPro</productname> currently in use in the market</para>
+				</listitem>
+			</itemizedlist>
+		</para>
+
+		<para>When the transformation is complete, <productname>Beyond Compare</productname> from <orgname>Scooter Software</orgname> is used to copy the images from the <!--input-->source to the <!--output-->result folder. The <!--generated results are-->output is then zipped together with the referenced images and delivered via REST services using <productname>curl</productname>.</para>
+
+		<figure xml:id="fragengruppe_2_evidence">
+			<title>Batch <productname>&#x201C;fragengruppe_2_evidence&#x201D;</productname></title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="graphics/batch_fragengruppe_2_evidence.png" width="100%" scalefit="1" contentdepth="100%" />
+				</imageobject>
+			</mediaobject>
+		</figure>
+	</section>
+
+
+
+	<section>
+		<title>Batch <productname>&#x201C;fragengruppe_2_FHIR-Questionnaire&#x201D;</productname></title>
+
+		<para>This second batch is used to deliver the medical history part of the patient education leaflet additionally as an <orgname>HL7</orgname> <acronym>FHIR</acronym> questionnaire resource. Therefore, the main <acronym>XML</acronym> file as well as all referenced XIncludes are exported from the database into a temporary folder on the <productname>CLS</productname> server. A three-step transformation is then performed to:
+			<itemizedlist spacing="normal">
+				<listitem>
+					<para>Merge the main <acronym>XML</acronym> with the XIncludes</para>
+				</listitem>
+				<listitem>
+					<para>Generate the <acronym>FHIR</acronym> questionnaire resource and then clean it up (e.g. whitespace handling)</para>
+				</listitem>
+				<listitem>
+					<para>Derive the human-readable part from the previously generated <acronym>FHIR</acronym> questionnaire resource and merge it back in</para>
+				</listitem>
+				<listitem>
+					<para>Optionally transform the previously generated <acronym>XML</acronym> <acronym>FHIR</acronym> questionnaire resource into <acronym>JSON</acronym></para>
+				</listitem>
+				<listitem>
+					<para>Further optionally merge the just generated <acronym>JSON</acronym> <acronym>FHIR</acronym> questionnaire resource into an <acronym>XHTML</acronym> template for an output based on <productname>LHC-Forms</productname></para>
+				</listitem>
+			</itemizedlist>
+		</para>
+
+		<para>Afterwards, the generated results are zipped and delivered via REST services using <productname>curl</productname>. The images are not needed for this output and are therefore discarded.</para>
+
+		<figure xml:id="fragengruppe_2_FHIR-Questionnaire">
+			<title>Batch <productname>&#x201C;fragengruppe_2_FHIR-Questionnaire&#x201D;</productname></title>
+			<mediaobject>
+				<imageobject>
+					<!--<imagedata fileref="graphics/batch_fragengruppe_2_FHIR-Questionnaire.png" width="100%" scalefit="1" contentdepth="100%" />-->
+					<!--<imagedata fileref="graphics/batch_fragengruppe_2_FHIR-Questionnaire_mit_Whitespace.png" width="100%" scalefit="1" contentdepth="100%" />-->
+					<imagedata fileref="graphics/batch_fragengruppe_2_FHIR-Questionnaire_mit_JSON.png" width="100%" scalefit="1" contentdepth="100%" />
+				</imageobject>
+			</mediaobject>
+		</figure>
+	</section>
+</section>
