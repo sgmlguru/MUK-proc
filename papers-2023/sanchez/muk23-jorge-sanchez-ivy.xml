@@ -106,8 +106,14 @@ export PATH=$PATH:$AROUSA_HOME</programlisting>
     <title>A bold experiment. How much time/effort does it take?</title>
     <para>We are going to introduce Ivy and Arousa with a basic example. The purpose is to evaluate how easy it is to work with Arousa and how much effort involve manage dependencies with Ivy.
     </para>
-    <para>The example will use a pair of external xslts, one that convert the text nodes to bold, and other that wraps the content into html. 
-    </para>
+    <para>The example will use a pair of external xslts, one that convert the text nodes to bold,
+      and other that wraps the content into html.</para>
+    <para>
+      <inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="diagrams/bold-experiment.png"/>
+        </imageobject>
+      </inlinemediaobject></para>
     <para>We are going to open the bold experiment folder from the Arousa MARKUPUK23 examples and remove the bold-experiment subfolder.
     </para>
     <para>You can navigate now to the sample-bold-transformation folder and run:
@@ -181,20 +187,28 @@ $ echo '&lt;div>This text will be bold&lt;/div>' > test/data/basic_test.xml</pro
       
   <section>
     <title>Introducing the Arousa project structure</title>
-    
-    <para>Arousa creates a project structure with a base build.xml file, source folders, etc. You may have noticed the conf folder. The conf folder contains the usual ivy files prefixed with the “arousa-” key. It creates the arousa-ivy that describe the dependencies, the arousa-ivy-settings that describes the repositories and an arousa-build.xml with the ant tasks used in the dependency management operations. The base build file calls imports and calls the arousa build tasks. 
-  </para>
-    <para>In order to use the same path references to dependencies from the source folders and from the dependency folders we use a folder naming convention. The idea is to have the same depth of folders both source folders and from the dependencies folders. 
-  </para>
-  <programlisting language="bourne">./src/&lt;dependency-type>/xsl   -->     deps/&lt;some_project>/xsl
+    <para>Arousa creates a project structure with a base build.xml file, source folders, etc. You
+      may have noticed the conf folder. The conf folder contains the usual ivy files prefixed with
+      the “arousa-” key. It creates the arousa-ivy that describe the dependencies, the
+      arousa-ivy-settings that describes the repositories and an arousa-build.xml with the ant tasks
+      used in the dependency management operations. The base build file calls imports and calls the
+      arousa build tasks. </para>
+    <para><inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="diagrams/Arousa-file-structure.png"/>
+        </imageobject>
+      </inlinemediaobject></para>
+    <para>In order to use the same path references to dependencies from the source folders and from
+      the dependency folders we use a folder naming convention. The idea is to have the same depth
+      of folders both source folders and from the dependencies folders. </para>
+    <programlisting language="bourne">./src/&lt;dependency-type>/xsl   -->     deps/&lt;some_project>/xsl
 ./src/&lt;dependency-type>/xproc -->     deps/&lt;some_project>/xproc</programlisting>
-    
-  <para>
-      Doing so you can call some script, like for example a xsl:import on some.xsl with the same path ../../../deps/&lt;project-name>/&lt;file-type>/some.xsl both from the source folder and later on when the xsl is deployed to other projects deps folder.
-  </para>
-  <para>
-    Note that you could avoid this convention, using options, string substitutions, etc. 
-  </para>
+    <para> Doing so you can call some script, like for example a xsl:import on some.xsl with the
+      same path ../../../deps/&lt;project-name>/&lt;file-type>/some.xsl both from the source folder
+      and later on when the xsl is deployed to other projects deps folder.</para>
+    <para><inlinemediaobject><imageobject><imagedata fileref="diagrams/folder-convention%20diagaram.png"/></imageobject></inlinemediaobject></para>
+    <para>Note that you could avoid this convention, using options, string substitutions, etc.
+    </para>
   </section>
       
   <section>
@@ -297,6 +311,11 @@ $ echo '&lt;div>This text will be bold&lt;/div>' > test/data/basic_test.xml</pro
     <para>- A Jira set of transformation stylesheets and utilities.</para>
     <para>- The current data projects, where we are going to perform the Jira or Redmine issue list
       analysis.</para>
+    <para><inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="diagrams/configuration%20chains.png"/>
+        </imageobject>
+      </inlinemediaobject></para>
     <para>At this point, a question may arise, should our report depend on a specific theme project
       for each report style/colour set or should we use a specific project with several output
       configurations? We are going to start with two different theme projects, a red one and a blue
@@ -460,6 +479,11 @@ root="http://repository.jboss.com/maven2/" /></programlisting>
     <para>We are going to demonstrate this capability using the dual-resolver-data example. In this
       example we are going to relate three dataset files from an external resource. </para>
     <para>We are going to take the customer, part and supplier dataset files from: </para>
+    <para><inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="diagrams/dual-resolvers.png"/>
+        </imageobject>
+      </inlinemediaobject></para>
     <para><link xmlns:xlink="http://www.w3.org/1999/xlink"
         xlink:href="http://aiweb.cs.washington.edu/research/projects/xmltk/xmldata/"
         >http://aiweb.cs.washington.edu/research/projects/xmltk/xmldata/</link></para>
@@ -740,6 +764,25 @@ value="${user.home}/dev/ws/arousaws/arousa-examples/examples/
         xl:href="http://aiweb.cs.washington.edu/research/projects/xmltk/xmldata/"/></bibliomisc>
     </bibliomixed>
 
-</bibliography>
+    <bibliomixed>
+      <abbrev>EXPath-Pkg</abbrev> 
+      <title>EXPath Pkg main site</title>.  <bibliomisc><link
+        xl:href="http://expath.org/modules/pkg/"/></bibliomisc>
+    </bibliomixed>
+        
+    <bibliomixed>
+      <abbrev>EXPath-Pkg-Spec</abbrev> 
+      <title>EXPath Pkg Specification</title>.  <bibliomisc><link
+        xl:href="http://expath.org/spec/pkg"/></bibliomisc>
+    </bibliomixed>
+    
+    <bibliomixed>
+      <abbrev>maven-catalogBuilder-plugin</abbrev> 
+      <title>Christoph Marchand Catalog Builder</title>.  
+      <bibliomisc><link
+        xl:href="https://github.com/cmarchand/maven-catalogBuilder-plugin/wiki"/></bibliomisc>
+    </bibliomixed>
+    
+    </bibliography>
 
 </article>

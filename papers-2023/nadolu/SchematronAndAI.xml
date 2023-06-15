@@ -415,7 +415,7 @@
                 something like this:  </para>
             <para>
                 <example>
-                    <title>Rule that verifies if the technical terms are explained adequately </title>
+                    <title>Rule that verifies if the technical terms are explained adequately</title>
                     <programlisting language="xml">&lt;sch:report test="ai:verify-content('Are the technical terms explained ambiguous?', .)"
        The text uses technical terms that are not explained adequately.&lt;/sch:report></programlisting>
                 </example>
