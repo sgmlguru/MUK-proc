@@ -58,7 +58,7 @@
     <screenshot>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/image2.png"/>
+          <imagedata fileref="images/image2.png" width="100%"/>
         </imageobject>
       </mediaobject>
     </screenshot>
@@ -68,7 +68,7 @@
     <screenshot>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/image4.png"/>
+          <imagedata fileref="images/image4.png" width="100%"/>
         </imageobject>
       </mediaobject>
     </screenshot>
@@ -87,7 +87,7 @@
     <screenshot>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/image6.png"/>
+          <imagedata fileref="images/image6.png" width="100%"/>
         </imageobject>
       </mediaobject>
     </screenshot>
@@ -97,7 +97,7 @@
     <screenshot>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/image7.png"/>
+          <imagedata fileref="images/image7.png" width="100%"/>
         </imageobject>
       </mediaobject>
     </screenshot>
@@ -122,7 +122,7 @@
       <screenshot>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="images/image1.png"/>
+            <imagedata fileref="images/image1.png" width="100%"/>
           </imageobject>
         </mediaobject>
       </screenshot>
@@ -152,7 +152,7 @@
       <screenshot>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="images/image5.png"/>
+            <imagedata fileref="images/image5.png" width="100%"/>
           </imageobject>
         </mediaobject>
       </screenshot>
@@ -182,7 +182,6 @@
 
   <section>
     <title>Feedback and Future Development</title>
-    <para>[Link zur Umfrage mit Tracking. Tracking-Link auch auf der Homepage ]</para>
     <para>The "XSD Visualizer Plugin" has received valuable feedback from users and the development team remains committed to further improving and expanding its capabilities. If you also want to contribute to the roadmap of this plugin, please fill out this <link xl:href="https://xsdvisualizer.fluxparticle.com/permalink/ABe2S6LAAAA">survey</link>. In response to user needs and emerging industry trends, the following future developments and enhancements are planned:</para>
 
     <section>
