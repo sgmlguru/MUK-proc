@@ -163,7 +163,7 @@
       <screenshot>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="images/image3.png"/>
+            <imagedata fileref="images/image3.png" scalefit="1"/>
           </imageobject>
         </mediaobject>
       </screenshot>
