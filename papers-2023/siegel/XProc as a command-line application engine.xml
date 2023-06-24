@@ -5,7 +5,7 @@
     <title>XProc as a command-line application engine</title>
 
     <author>
-      <personname>Erik Segel</personname>
+      <personname>Erik Siegel</personname>
       <email>erik@xatapult.nl</email>
       <uri>http://www.xatapult.com</uri>
       <personblurb>
@@ -144,11 +144,11 @@
       &#x201c;applications&#x201d;) has their own set of versions, use-cases and end-products. This leads to a
       combinatorial explosion of stuff that needs to be produced and maintained.</para>
 
-    <mediaobject>
+    <informalfigure><mediaobject>
       <imageobject>
-        <imagedata fileref="images/problem-domain.png"/>
+        <imagedata fileref="images/problem-domain.png" width="100%"/>
       </imageobject>
-    </mediaobject>
+    </mediaobject></informalfigure>
 
     <para>The current implementation is made with Ant as main engine and uses XSLT for the actual transformations. There
       are over a 100 Ant scripts. The whole set, organically grown over the years, is now considered outdated, hard to
@@ -160,7 +160,7 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="images/example-existing-flow.png"/>
+        <imagedata fileref="images/example-existing-flow.png" width="100%"/>
       </imageobject>
     </mediaobject>
 
@@ -212,7 +212,7 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="images/processing-1.png"/>
+        <imagedata fileref="images/processing-1.png" width="100%"/>
       </imageobject>
     </mediaobject>
 
@@ -223,11 +223,11 @@
     <para>However, there are of course still the (data) documents that are processed/produced to cater with. The way to
       handle this is add <emphasis>another port</emphasis> on the processing steps and pass them on through this:</para>
 
-    <mediaobject>
+    <informalfigure><mediaobject>
       <imageobject>
-        <imagedata fileref="images/processing-2.png"/>
+        <imagedata fileref="images/processing-2.png" width="100%"/>
       </imageobject>
-    </mediaobject>
+    </mediaobject></informalfigure>
 
     <para>In XProc, that&#x2019;s easy to do, just add another (non-primary) port in the step&#x2019;s prolog:</para>
 
@@ -295,11 +295,11 @@
         what needs to be done (for instance by inspecting the command-line arguments) and create it. In my case, it
         worked like this: </para>
 
-      <mediaobject>
+      <informalfigure><mediaobject>
         <imageobject>
-          <imagedata fileref="images/job-ticket-1.png"/>
+          <imagedata fileref="images/job-ticket-1.png" width="100%"/>
         </imageobject>
-      </mediaobject>
+      </mediaobject></informalfigure>
 
 
       <para>I created an overarching job ticket document that held tickets for several jobs, specified in some internal
@@ -448,7 +448,7 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="images/cw.png"/>
+        <imagedata fileref="images/cw.png" width="100%"/>
       </imageobject>
     </mediaobject>
 
