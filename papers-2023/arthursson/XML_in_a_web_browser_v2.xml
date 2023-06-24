@@ -511,7 +511,7 @@
       <title>Visualization of the logic XML language created inside a web-browser</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="Process Designer.png" width="50%"/>
+          <imagedata fileref="Process Designer.png" scale="75"/>
         </imageobject>
       </mediaobject>
     </figure>
