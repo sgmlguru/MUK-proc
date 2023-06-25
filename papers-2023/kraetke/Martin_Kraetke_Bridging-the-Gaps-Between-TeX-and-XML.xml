@@ -30,10 +30,10 @@
       <para>There are established software solutions to convert from XML to TeX. Nevertheless, these approaches either limit the configurability of the TeX output or introduce a lot of programming effort. In this paper, we will discuss these methods and present an alternative approach that hopes to offer the greatest possible flexibility based on fixed conversions, an extensible configuration and the injection of XSLT, and that forms the basis for our Open Source typesetting system xerif.</para>
     </abstract>
   </info>
-  <acknowledgements>
+  <section>
     <title>Acknowledgements</title>
     <para>Patrick Schulz for patiently explaining all the peculiarities of TeX. Gerrit Imsieke for his careful review and his very appreciated suggestions.</para>
-  </acknowledgements>
+  </section>
    <section xml:id="Chap2">
       <title role="Heading1">Introduction</title>
       <para>TeX is a powerful typesetting system and popular in scientific publishing due to the superior typesetting of mathematical formulae. The software is published under a permissive Open Source license and offers a rich ecosystem of packages that extend its functionality. LaTeX, a macro system built on top of TeX, provides descriptive commands for common layout elements and simplifies the use of TeX. Although XML and LaTeX are both markup languages, there are several limitations that make it difficult for converting XML to LaTeX. This paper describes common problems, presents existing software solutions and introduces a declarative approach for transforming XML to LaTeX.</para>
