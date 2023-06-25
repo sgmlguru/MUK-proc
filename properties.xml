@@ -17,11 +17,11 @@
      previously declared either earlier in the build process or
      earlier in the current property file. -->
 
-<entry key="single">proceedings-2019.xml</entry>
+<entry key="single">proceedings-2021.xml</entry>
 
 <!-- <oXygen/>-related properties. -->
 <!-- Oxygen version, which is included in directory names. -->
-<entry key="oxygen.version">21</entry>
+<entry key="oxygen.version">23</entry>
 <!-- Oxygen installation folder as file path. -->
 <entry key="oxygenInstallDir.windows">C:/Program Files/Oxygen XML Editor ${oxygen.version}</entry>
 <entry key="oxygenInstallDir.unix">/opt/Oxygen XML Editor ${oxygen.version}</entry>

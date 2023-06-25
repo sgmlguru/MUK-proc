@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbookxi.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<book
+    xmlns="http://docbook.org/ns/docbook" 
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.0">
+    <info>
+        <editor><orgname>Markup UK</orgname></editor>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="xsl/img/background.jpg"/>
+            </imageobject>
+        </mediaobject>
+        <cover>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="xsl/img/background.jpg"/>
+                </imageobject>
+            </mediaobject>
+        </cover>
+        <title>Markup UK 2023 Proceedings</title>
+        
+    </info>
+    
+    <xi:include href="papers-2023/siegel/XProc%20as%20a%20command-line%20application%20engine.xml"/>
+    <xi:include href="papers-2023/arthursson/XML_in_a_web_browser_v2.xml"/>
+    <xi:include href="papers-2023/graham-css/paper.xml"/>
+    <xi:include href="papers-2023/reinck/paper.xml"/>
+    <xi:include href="papers-2023/berndzen/article-main.xml"/>
+    <xi:include href="papers-2023/kraetke/Martin_Kraetke_Bridging-the-Gaps-Between-TeX-and-XML.xml"/>
+    <xi:include href="papers-2023/nilsson/Sponsored-Paper.xml"/>
+    <xi:include href="papers-2023/marchand/using-tdd-with-xslt-to-produce-high-quality-code.xml"/>
+    <xi:include href="papers-2023/conrad/kwcWPmuk23paperDB_20230531.xml"/>
+    <!-- <xi:include href="papers-2023/lingunixtix/linguini.xml"/> -->
+    <xi:include href="papers-2023/nadolu/SchematronAndAI.xml"/>
+    <xi:include href="papers-2023/sales/Markup%20UK%202023%20paper.xml"/>
+    <xi:include href="papers-2023/graham-quality/paper.xml"/>
+	<!-- kay? -->
+    <xi:include href="papers-2023/sanchez/muk23-jorge-sanchez-ivy.xml"/>
+    <xi:include href="papers-2023/quin/quin-tooks.xml"/>
+    
+
+</book>

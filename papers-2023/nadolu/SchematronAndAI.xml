@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.0/rng/docbook.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.0">
+    <info>
+        <title>Leveraging the Power of OpenAI and Schematron for Content Verification and
+            Correction</title>
+        <author>
+            <personname><firstname>Octavian</firstname>
+                <surname>Nadolu</surname></personname>
+            <affiliation>
+                <orgname>Oxygen XML Editor</orgname>
+            </affiliation>
+            <email>octavian_nadolu@oxygenxml.com</email>
+        </author>
+        <abstract>
+            <para>The purpose of this presentation is to provide an overview of what AI is, the
+                potential benefits of using AI with Schematron and SQF for content verification and
+                correction, and some of the challenges we face when using AI for this purpose. </para>
+            <para>AI (Artificial Intelligence) is a branch of computer science that studies and
+                develops theories, methods, and technologies to allow machines to perceive,
+                understand, and act in the world. AI is used to create algorithms that can learn,
+                understand, and make decisions in complex environments. AI is used in many areas,
+                including natural language processing, robotics, computer vision, data mining, and
+                machine learning. </para>
+            <para>OpenAI is a research laboratory dedicated to developing and deploying AI in order
+                to solve complex problems. OpenAI has developed algorithms that use reinforcement
+                learning and deep learning to solve problems in robotics, natural language
+                processing, and computer vision. </para>
+            <para>Schematron can be used to identify elements of a document and make assumptions
+                about them, providing a powerful boost when used in conjunction with OpenAI
+                algorithms. Using OpenAI algorithms with Schematron and SQF (Schematron Quick Fix)
+                can help to automate the verification of the correctness, completeness, and accuracy
+                of content. OpenAI algorithms can be used to automatically check and correct errors
+                in content and markup. This can save time and money for content creators and
+                publishers, as well as improving the accuracy of the content. </para>
+            <para>However, there are challenges associated with using OpenAI for content
+                verification and correction. OpenAI algorithms may not accurately identify errors in
+                content, and may not be able to make corrections that are appropriate for the
+                context. Additionally, OpenAI algorithms may not be able to detect errors that are
+                due to cultural or regional differences in language.</para>
+            <para>In conclusion, OpenAI can be a powerful tool for verifying and correcting content,
+                but there are challenges associated with using OpenAI for this purpose. It is
+                important to consider these challenges when using OpenAI for content verification
+                and correction. </para>
+        </abstract>
+    </info>
+    <section>
+        <title>Introduction</title>
+        <para>In today's digital age, content verification and correction have become increasingly
+            important, especially for businesses and organizations that rely on the accuracy and
+            consistency of their content to communicate with their audiences. To address this need,
+            many companies are turning to artificial intelligence (AI) and Schematron to automate
+            the process of ensuring that their content meets certain standards and guidelines.
+            Schematron, a powerful language for specifying rules for XML documents, allows
+            developers to define their own custom messages and provide more descriptive feedback to
+            users. By leveraging the power of AI and Schematron, businesses can streamline their
+            content creation and editing processes and ensure that their messaging is clear,
+            consistent, and error-free.</para>
+    </section>
+    <section>
+        <title>Artificial Intelligence</title>
+        <para>Artificial Intelligence (AI) refers to the ability of machines to perform tasks that
+            typically require human intelligence, such as visual perception, speech recognition,
+            decision-making, and language translation. AI is a broad field that encompasses a range
+            of techniques, including machine learning, deep learning, natural language processing,
+            and computer vision.</para>
+        <para>Machine learning is a subset of AI that involves training algorithms to learn patterns
+            in data, without being explicitly programmed. Deep learning is a type of machine
+            learning that uses neural networks with multiple layers to learn increasingly complex
+            representations of data. Natural language processing is a subfield of AI that focuses on
+            enabling machines to understand and generate human language. Computer vision is another
+            subfield of AI that focuses on enabling machines to interpret and analyze visual
+            information.</para>
+        <para>AI has numerous real-world applications across various domains, including healthcare,
+            finance, transportation, customer service, and entertainment. As technology advances, AI
+            continues to evolve and has the potential to revolutionize industries and enhance
+            various aspects of human life.</para>
+    </section>
+    <section>
+        <title>Generative Pre-trained Transformer(GPT)</title>
+        <para>Generative Pre-trained Transformer (GPT) is a type of deep learning model that uses a
+            transformer architecture to generate natural language text. The model is pre-trained on
+            a large corpus of text data and then fine-tuned on specific tasks, such as language
+            translation or text completion.</para>
+        <para>The transformer architecture is a type of neural network that is designed to process
+            sequential data, such as text. It uses self-attention mechanisms to capture the
+            relationships between different parts of a sequence, allowing it to generate more
+            coherent and contextually appropriate text.</para>
+        <para>GPT is particularly useful for natural language processing tasks such as language
+            translation, text summarization, and text completion. It has achieved state-of-the-art
+            performance on a range of benchmarks, including the GLUE benchmark for natural language
+            understanding and the COCO captioning challenge for image captioning.</para>
+        <para>Overall, GPT represents a significant advance in the field of natural language
+            processing, enabling more accurate and effective text generation and
+            understanding.</para>
+        <para>A transformer is a type of deep learning model architecture that is used for
+            processing sequential data, such as natural language text. It was introduced in a 2017
+            paper by Vaswani et al. and has since become a popular choice for a wide range of
+            natural language processing tasks.</para>
+        <para>The transformer architecture is based on the idea of self-attention, which allows the
+            model to focus on different parts of the input sequence when making predictions. This is
+            in contrast to traditional recurrent neural networks (RNNs), which process sequential
+            data in a linear fashion and can struggle with long-term dependencies.</para>
+        <para>The transformer consists of an encoder and a decoder, each of which contains multiple
+            layers of self-attention and feedforward neural networks. The encoder processes the
+            input sequence, while the decoder generates the output sequence. During training, the
+            model learns to predict the next token in the sequence based on the previous tokens, and
+            can be fine-tuned for specific tasks such as language translation or text
+            classification.</para>
+        <para>Overall, the transformer architecture has proven to be highly effective for natural
+            language processing tasks, achieving state-of-the-art results on a range of
+            benchmarks.</para>
+        <para>Embeddings, in the context of natural language processing (NLP) and machine learning,
+            refer to the mathematical representations of words, sentences, or documents in a
+            continuous vector space. Embeddings are used to capture the semantic meaning and
+            relationships between words, allowing machines to understand and process human
+            language.</para>
+        <para>Traditionally, words were represented as one-hot vectors, where each word in a
+            vocabulary is assigned a unique binary vector with a dimension equal to the vocabulary
+            size. However, one-hot vectors lack semantic information and are not suitable for
+            machine learning algorithms that rely on numerical representations.</para>
+        <para>Embeddings address this limitation by mapping words to dense, lower-dimensional
+            vectors in a continuous space. The goal is to encode similar words with similar
+            embeddings, such that their spatial proximity reflects their semantic similarity. This
+            is achieved through unsupervised learning algorithms, such as Word2Vec, GloVe, or
+            fastText, which learn embeddings based on the context in which words appear in large
+            corpora.</para>
+        <para>The resulting word embeddings can capture various linguistic relationships, such as
+            word analogies (e.g., "king" - "man" + "woman" = "queen") and syntactic patterns.
+            Additionally, word embeddings can be extended to represent larger units of text, such as
+            sentences or documents, by aggregating the embeddings of constituent words.</para>
+        <para>Embeddings have become a fundamental component of many NLP tasks, including language
+            translation, sentiment analysis, information retrieval, and text classification. They
+            enable machine learning models to leverage the semantic information encoded in text and
+            make more accurate predictions or understandings based on it.</para>
+    </section>
+    <section>
+        <title>Schematron and AI</title>
+        <para>Schematron is a schema language for XML documents that allows for more flexible and
+            expressive validation than traditional XML schema languages like XML Schema and DTD.
+            Schematron uses a rule-based approach to validation, allowing for complex business rules
+            and constraints to be expressed in a clear and concise manner. It is often used in
+            conjunction with other schema languages to provide more comprehensive validation of XML
+            documents.</para>
+        <para>Schematron can be used with AI to automatically verify documents using an AI model.
+            This can be done by integrating the AI model into the Schematron rules to check for
+            specific criteria. For example, the AI model can check for the use of active/passive
+            voice in the document and the Schematron rules can be set up to flag any instances where
+            the wrong voice is used. Similarly, the AI model can check for adherence to a specific
+            style guide and the Schematron rules can be set up to flag any deviations from that
+            guide. The AI model can also check if the document answers a specific question and the
+            Schematron rules can be set up to flag any instances where the question is not answered.
+            Additionally, the AI model can check for spelling and grammar errors and the Schematron
+            rules can be set up to flag any errors found by the model. Overall, integrating AI with
+            Schematron can help to automate the verification process and ensure that documents meet
+            specific criteria.</para>
+    </section>
+    <section>
+        <title>Schematron Quick Fix and AI</title>
+        <para>Schematron QuickFix (SQF) is a simple language that allows the Schematron developer to
+            define actions that will correct the problems reported by Schematron rules. SQF was
+            created as an extension of the Schematron language. It was developed within the W3C
+            "Quick-Fix Support for XML Community Group". The first draft of the Schematron Quick Fix
+            specification was published in April 2015, second draft in March 2018, and it is
+            available on the <link xlink:href="https://www.w3.org/community/quickfix/">W3C Quick-Fix
+                Support for XML community group</link> page.</para>
+        <para>Schematron Quick Fix (SQF) can be used with AI to automatically correct problems in
+            documents. Here are some steps to use SQF with AI:<orderedlist>
+                <listitem>
+                    <para>Create a set of rules using Schematron to identify problems in the
+                        document. These rules can include grammar and spelling checks, as well as
+                        more complex checks like sentence structure and coherence.</para>
+                </listitem>
+                <listitem>
+                    <para>Use AI algorithms to generate suggestions for how to fix the identified
+                        problems. For example, an AI algorithm could suggest rephrasing a sentence
+                        to use active voice or to have a certain word count.</para>
+                </listitem>
+                <listitem>
+                    <para>Implement the suggested fixes using SQF. SQF allows for user-defined fixes
+                        to be applied automatically, making it easy to correct problems in the
+                        document without manual intervention.</para>
+                </listitem>
+                <listitem>
+                    <para>Test the document to ensure that the fixes have been applied correctly and
+                        that the document is now error-free.</para>
+                </listitem>
+            </orderedlist></para>
+        <para>By combining Schematron, AI, and SQF, it is possible to automate the process of
+            correcting problems in documents, saving time and improving the overall quality of the
+            document.</para>
+    </section>
+    <section>
+        <title>Implementation of AI in Schematron</title>
+        <para>To call an implementation of AI in Schematron, you can use XSLT functions or extension
+            functions. </para>
+        <para>
+            <orderedlist>
+                <listitem>
+                    <para>Using XSLT functions: </para>
+                    <para>You can use XSLT functions to call an implementation of AI in Schematron.
+                        For example, you can use implement function to call ChatGPT API. Here's an example:<example>
+                            <title>Example of XSLT functions that calls ChatGPT</title>
+                            <programlisting language="xml">&lt;xsl:function name="ai:chatGPT">
+    &lt;xsl:param name="userInput"/>
+    &lt;xsl:variable name="url" select="'https://api.chatgpt.com/v1/chatbot/question'"/>
+    &lt;xsl:variable name="requestBody" select="concat('{', '&amp;quot;text&amp;quot;:&amp;quot;',
+        $userInput,'&amp;quot;', '}')"/>
+    &lt;xsl:variable name="response" select="document(concat($url, '?apiKey=',
+        '&amp;lt;your_api_key>'))//response"/>
+    &lt;xsl:sequence select="$response"/>
+&lt;/xsl:function></programlisting>
+                        </example></para>
+                </listitem>
+                <listitem>
+                    <para>Using extension functions:</para>
+                    <para>You can also use extension functions to call an implementation of AI in
+                        Schematron. For example, you can define an extension function called
+                        `ai:verify-content` that takes an instruction and content as parameters and
+                        returns a boolean. Here's an example: <example>
+                            <title>Example an extensions function ai:verify-content()</title>
+                            <programlisting language="xml">&lt;sch:rule context="...">
+  &lt;sch:assert test="ai:verify-content('instruction', 'content')">Message&lt;/sch:assert>
+&lt;/sch:rule></programlisting>
+                        </example></para>
+                    <para>In this example, the `ai:verify-content` function is called within a
+                        `sch:assert` element to verify that the content meets certain criteria
+                        specified by the instruction.</para>
+                    <para>To modify the content using AI, you can define an extension function
+                        called `ai:transform-content` that takes an instruction and content as
+                        string parameters and returns transformed content as string. You can use
+                        this function an SQF action to correct the content. Here's an example: <example>
+                            <title>Example an extension function ai:transform-content</title>
+                            <programlisting language="xml">&lt;sqf:fix id="rephrase">
+    &lt;sqf:replace select="ai:transform-content('instruction', 'content')"/>
+&lt;/sqf:fix></programlisting>
+                            <para> The `ai:transform-content` function is called within a
+                                `sqf:replace` element and will transform the given content according
+                                to the instruction, the returned result will be inserted in the
+                                document replacing the current node content .</para>
+                        </example></para>
+                </listitem>
+            </orderedlist>
+        </para>
+    </section>
+    <section>
+        <title>Examples of AI-driven Schematron and SQF Solutions</title>
+        <section>
+            <title>Check text consistency</title><para>One use case for Schematron using AI is to check if the text in an XML document is
+            consistent and easy to read and understand. For example, you may want to ensure that the
+            text is written in plain language, uses simple sentence structures, and avoids technical
+            jargon or complex terminology. To achieve this, you can define a Schematron rule that
+            checks for specific patterns or structures in the text. For instance, you may define a
+            rule that checks if the sentences are too long or if the text contains too many complex
+            words or phrases. If the rule detects any issues, it can report an error or a warning to
+            the user, indicating the specific location of the problem.</para>
+        <para>
+            <example>
+                <title>Example a Schematron rule that verifies if the text is easy to read and
+                    understand</title>
+                <programlisting language="xml">&lt;sch:rule context="p">
+    &lt;sch:assert test="ai:verify-content('Is the text easy to read and understand?', .)">
+        The text in not easy to read and understand&lt;/sch:assert>
+&lt;/sch:rule></programlisting>
+            </example>
+        </para>
+        <para>Once you have identified the issues in the text, you can use SQF (Schematron Quick
+            Fixes) to provide suggestions or corrections to the user. For example, you may provide a
+            suggestion to correct the text to be easy to read and understand by calling the
+            ai:transform-content() function.</para>
+        <example>
+            <title>SQF fix that corrects the text to be easy to read and understand</title>
+            <programlisting language="xml">&lt;sqf:fix id="rephrase">
+    &lt;sqf:description>
+        &lt;sqf:title>Correct the consistency of the text&lt;/sqf:title>
+    &lt;/sqf:description>
+    &lt;sqf:replace match="text()" select="ai:transform-content(
+		'Correct the text to be easy to read and understand', .)"/>
+&lt;/sqf:fix></programlisting>
+        </example></section>
+        <section>
+            <title>Check text voice</title>
+            <para>In this example, we want to create a rule that verifies if the text voice is
+                active. This means that the text should be written in a way that emphasizes the
+                subject of the sentence and uses active verbs. For example, instead of saying "The
+                ball was thrown by John", we should say "John threw the ball". </para>
+            <para>
+                <example>
+                    <title>Rule that verifies if the text voice is active</title>
+                    <programlisting language="xml">&lt;sch:rule context="shortdesc">
+    &lt;sch:assert test="ai:verify-content('Is active voice used?', .)">
+        In the description we should use active voice.&lt;/sch:assert>
+&lt;/sch:rule></programlisting>
+                </example>
+            </para>
+            <para>If the text does not follow this rule, we can create a fix that reformulates the
+                text to use active voice. This will improve the clarity and readability of the text. </para>
+            <example>
+                <title>SQF fix that that reformulates the text to use active voice</title>
+                <programlisting language="xml">&lt;sqf:fix id="rephrase">
+    &lt;sqf:description>
+        &lt;sqf:title>Reformulate the text to use active voice&lt;/sqf:title>
+    &lt;/sqf:description>
+    &lt;sqf:replace match="text()" select="ai:transform-content('
+		Reformulate to use active voice', .)"/>
+&lt;/sqf:fix></programlisting>
+            </example>
+        </section>
+        <section>
+            <title>Answer to question</title>
+            <para>Another example is a rule that checks if the text answers to a specified question.
+                Let's say we have a text that discusses OpenAI, but we want to make sure that the
+                text actually answers the question "What is OpenAI?" </para>
+            <para>
+                <example>
+                    <title>Rule that verifies if the text does answer to a specific question</title>
+                    <programlisting language="xml">&lt;sch:rule context="p[@id='openai']">
+    &lt;sch:assert test="ai:verify-content('Does it answers to the question: What is OpenAI?', .)">
+        The test does not answer to the question "What is OpenAPI?" &lt;/sch:assert>
+&lt;/sch:rule></programlisting>
+                </example>
+            </para>
+            <para>If the text passes this rule, we can be reasonably confident that it does answer
+                the question "What is OpenAI?" </para>
+            <para>However, if the text does not pass the rule, we know that it may not be providing
+                a clear answer to the question. In this case, we might need to revise or restructure
+                the text to make sure it does answer the question.  </para>
+            <example>
+                <title>SQF fix that that reformulates the text to answer to the question</title>
+                <programlisting language="xml">&lt;sqf:fix id="rephrase">
+    &lt;sqf:description>
+        &lt;sqf:title>Reformulate the text to answer to the question: 
+                        What is OpenAI?&lt;/sqf:title>
+    &lt;/sqf:description>
+    &lt;sqf:replace match="text()" select="ai:transform-content(
+        'Reformulate the text to answer to the question: What is OpenAI?', .)"/>
+&lt;/sqf:fix></programlisting>
+            </example>
+        </section>
+        <section>
+            <title>Check the number of words</title>
+            <para>In this case, we want to create a rule that checks the number of words in the
+                description element of an XML document. The rule should ensure that the description
+                contains less than 50 words. If the description contains more than 50 words, the
+                rule should fail and report an error. The implementation uses XPath functions to
+                tokenize the string and count the words. </para>
+            <para>
+                <example>
+                    <title>Rule that verifies the number of words from the shortdesc element</title>
+                    <programlisting language="xml">&lt;sch:rule context="shortdesc">
+    &lt;sch:report test="count(tokenize(.,'\s+')) > 50">
+         The description must contain less than 50 words.&lt;/sch:report>
+&lt;/sch:rule></programlisting>
+                </example>
+            </para>
+            <para>You can also provide a fix for the error by suggesting a corrected version of the
+                description that contains less than 50 words. The AI can help you to do this by
+                reformulating the phrase.</para>
+            <example>
+                <title>SQF fix that reformulates the phrase to have less than 50 words</title>
+                <programlisting language="xml">&lt;sqf:fix id="rephrase">
+    &lt;sqf:description>
+        &lt;sqf:title>Reformulate phrase to contain less than 50 words&lt;/sqf:title>
+    &lt;/sqf:description>
+    &lt;sqf:replace match="text()" select="ai:transform-content(
+           'Reformulate phrase to contain less than 50 words', .)"/>
+&lt;/sqf:fix></programlisting>
+            </example>
+        </section>
+        <section>
+            <title>Check if  block of text should be a list</title>
+            <para>This Schematron rule is designed to check if a block of text should be converted
+                to a list. It can be used to ensure that content is properly formatted and
+                structured for readability and accessibility.  </para>
+            <para>
+                <example>
+                    <title>Rule that verifies the text from a paragraph should be converted to a
+                        list</title>
+                    <programlisting language="xml">&lt;sch:rule context="p">
+    &lt;sch:report test="contains(., '- ')">
+        The text should be converted to a list&lt;/sch:report>
+&lt;/sch:rule></programlisting>
+                </example>
+            </para>
+            <para>If the rule detects that the text should be converted to a list, it can trigger a
+                fix that generates an unordered or ordered list from the set of phrases. This can
+                help to improve the organization and clarity of the content, making it easier for
+                readers to understand and follow. </para>
+            <example>
+                <title>SQF fix that creates a list from a set of phrases</title>
+                <programlisting language="xml">&lt;sqf:fix id="replace">
+    &lt;sqf:description>
+        &lt;sqf:title>Create a list from the phrases from the paragraph&lt;/sqf:title>
+    &lt;/sqf:description>
+    &lt;sqf:replace match="text()">
+        &lt;xsl:value-of select="ai:transform-content(
+            'Create a Dita unorderd list with an item from each phrase', .)"
+            disable-output-escaping="yes"/>
+    &lt;/sqf:replace>
+&lt;/sqf:fix></programlisting>
+            </example>
+            <para>If the generated content contains markup you need to use the
+                    <emphasis>disable-output-escaping="yes"</emphasis> in order to insert the markup
+                unescaped in the document.</para>
+        </section>
+        <section>
+            <title>User-Entry - Check technical terms</title>
+            <para>Technical terms are specialized words or phrases that are used within a particular
+                field or industry. When writing technical documents, it's important to ensure that
+                these terms are explained adequately so that readers who may not be familiar with
+                them can understand the content. One way to check if technical terms are explained
+                adequately is to use a Schematron rule that interrogates an AI . The rule might look
+                something like this:  </para>
+            <para>
+                <example>
+                    <title>Rule that verifies if the technical terms are explained adequately</title>
+                    <programlisting language="xml">&lt;sch:report test="ai:verify-content('Are the technical terms explained ambiguous?', .)"
+       The text uses technical terms that are not explained adequately.&lt;/sch:report></programlisting>
+                </example>
+            </para>
+            <para>To fix this issue, the user could provide an explanation for the technical term.
+                However, sometimes it may be necessary to reformulate the phrase to make it more
+                understandable. In this case, a fix could be added to the Schematron rule that
+                allows the user to specify how to reformulate the phrase. </para>
+            <example>
+                <title>SQF fix that allows the user to specify the prompt that will be send to the
+                    AI</title>
+                <programlisting language="xml">&lt;sqf:fix id="reformulateUser">
+    &lt;sqf:description>
+        &lt;sqf:title>Specify how to reformulate the phrase&lt;/sqf:title>
+    &lt;/sqf:description>
+    &lt;sqf:user-entry name="userInput" default="'
+         Reformulate phrase and replace the ambiguous terms with a more accurate one'">
+        &lt;sqf:description>sqf:title>How to correct:&lt;/sqf:title>sqf:description>
+    &lt;/sqf:user-entry>
+    &lt;sqf:replace match="text()" select="ai:transform-content($userInput, .)"/>
+&lt;/sqf:fix></programlisting>
+            </example>
+            <para>The user can specify the instruction for the fix in the sqf:user-entry. A default
+                value instruction is proposed to the user, but the user can decide do correct the
+                phrase providing other instruction to the AI system (such as: explain term, define
+                term, replace term with a new one)</para>
+        </section>
+    </section>
+    <section>
+        <title>Generate Fix Automatically</title>
+        <para>When a Schematron rule fails during validation, it generates an error message
+            indicating the context of the error. However, it does not provide a fix for the issue.
+            The fix for the error message can be generated using AI, which analyzes the context of
+            the rule and suggests a correction to the XML document. This can help to automate the
+            process of fixing errors in XML documents and save time for developers.</para>
+        <example>
+            <title>Example: A Schematron rule that verifies the number of words from shortdesc
+                element</title>
+            <programlisting language="xml">&lt;sch:rule context="shortdesc">
+    &lt;sch:report test="count(tokenize(.,'\s+')) > 50">
+         The description must contain less than 50 words.&lt;/sch:report>
+&lt;/sch:rule></programlisting>
+        </example>
+        <para>You can use the Schematron rule to generate a fix using AI. The content to correct is
+            provided in the context of the Schematron rule, and the goal is to use AI to generate a
+            new text that will serve as a fix for the issue. Specifically, the AI should generate a
+            new text to replace the content of the "shortdesc" element, which should contain a brief
+            description of the issue.</para>
+        <para>This approach can be extended beyond Schematron to other types of error messages in
+            software development. By using AI to generate fixes automatically, developers can save
+            time and focus on more complex tasks, while also improving the overall quality of their
+            code.</para>
+        <para>Of course, there are some challenges to this approach. For example, the message needs
+            to be as concise as possible so that the AI can use it effectively. Additionally,
+            sometimes the context of the message may need to be modified or additional operations
+            may need to be performed to generate an effective fix. However, overall this approach
+            can save a lot of time and effort compared to manually creating</para>
+    </section>
+    <section>
+        <title>Develop Schematron using AI</title>
+        <para>Artificial intelligence can be used to develop Schematron rules. Machine learning
+            algorithms can be trained to recognize these patterns and generate Schematron rules that
+            can be used to validate future XML documents. </para>
+        <para>The user can provide a prompt that describes the Schematron rule. He can describe a
+            specific scenario or use case for which the Schematron rules will be created using AI.
+            The AI will generate the rules based on the scenario he provides.</para>
+        <para>For example the user can provide a prompt like: "A Schematron assert that verifies the
+            number of words to be 10". The generated content by the AI can be something like
+            this:<programlisting language="xml">&lt;sch:assert test="count(tokenize(., '\s+')) = 10">There should be exactly 10.&lt;/sch:assert></programlisting></para>
+        <para>Another example of prompt can be to verify if the text contains an email. I this case
+            the prompt can be something like: "A Schematron assert that verifies if there is an
+            email in text". The content generated by the AI can be something like
+            this:<programlisting language="xml">&lt;sch:assert test="matches(., '\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')">
+                There is no email in the text&lt;/sch:assert></programlisting></para>
+    </section>
+    <section>
+        <title>Conclusion</title>
+        <para>Schematron is an XML-based language used for validating the content of XML documents.
+            It allows users to define rules that can be used to verify the correctness and
+            completeness of the content. With the help of AI, Schematron can be made even more
+            powerful.</para>
+        <para>One way to use AI with Schematron is to use machine learning algorithms to analyze the
+            content of XML documents and identify patterns and anomalies. This can help to detect
+            errors and inconsistencies that might otherwise be missed by traditional validation
+            techniques. For example, AI can be used to identify semantic errors, such as incorrect
+            usage of terms or concepts, that might not be caught by simple syntactic
+            validation.</para>
+        <para>Another way to use AI with Schematron is to use SQF fixes to correct errors
+            automatically. For example, if an XML document contains a misspelled word, an AI-powered
+            Schematron can automatically correct the spelling without requiring any manual
+            intervention. This can save time and effort and improve the accuracy of the validation
+            process.</para>
+        <para>In addition, AI can be used to generate fixes automatically. For example, if an XML
+            document contains an error that can be corrected automatically, an AI-powered Schematron
+            can generate the corrected version of the document automatically. This can save time and
+            effort and improve the overall quality of the content.</para>
+        <para>As AI technology continues to improve and evolve, Schematron can be further developed
+            to take advantage of these advancements. For example, new machine learning algorithms
+            can be integrated into Schematron to improve its ability to detect errors and anomalies. </para>
+        <para>Overall, the use of AI with Schematron has the potential to revolutionize the way
+            content is validated and corrected. By leveraging the power of AI, Schematron can
+            provide more accurate and efficient validation, leading to higher quality content and
+            improved user experiences. As AI technology continues to grow and improve, the
+            possibilities for Schematron are endless.</para>
+    </section>
+</article>

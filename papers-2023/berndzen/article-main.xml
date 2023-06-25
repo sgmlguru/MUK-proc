@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<article 
+	xml:lang="en"
+	version="5.0" 
+	xmlns="http://docbook.org/ns/docbook" 
+	xmlns:xi="http://www.w3.org/2001/XInclude" 
+	xmlns:xl="http://www.w3.org/1999/xlink">
+	<info>
+		<title>Improving quality-critical XML workflows with XProc&#x00A0;3.0 pipelines</title>
+
+
+		<author>
+			<personname>
+				<firstname>Achim</firstname>
+				<surname>Berndzen</surname>
+			</personname>
+			<email>achim.berndzen@xml-project.com</email>
+			<uri>https://www.xml-project.com</uri>
+			<personblurb>
+				<!-- based on https://markupuk.org/speakers.html#achim-bio -->
+				<para>Achim earned an M.A. in philosophy at Aachen University and has more than 20&#x00A0;years of teaching experience in communications. In 2014 he founded <orgname>&lt;xml-project /&gt;</orgname>. He is developer of <productname>MorganaXProc</productname>, a fully compliant XProc processor with an emphasis on configurability and plugability. He is a member of the <productname>XProc&#x00A0;3.0</productname> editors group and currently develops <productname>MorganaXProc-III</productname>. Achim also works on projects use the power of <acronym>XML</acronym> technologies in web applications.</para>
+			</personblurb>
+			<affiliation>
+				<orgname>&lt;xml-project /&gt;</orgname>
+			</affiliation>
+		</author>
+
+		<author>
+			<personname>
+				<firstname>Thorsten</firstname>
+				<surname>Rohm</surname>
+			</personname>
+			<email>thorsten.rohm@thieme-compliance.de</email>
+			<uri>https://www.thieme-compliance.de</uri>
+			<personblurb>
+				<para>Thorsten started working with <acronym>SGML</acronym> applications for print output and electronic publishing in 1997. He was active in prepress for various legal publishers in the areas of data structuring, transformation and enhancement. Since 2002 he deals with <acronym>XML</acronym>, <acronym>XSLT</acronym>, <acronym>XSL-FO</acronym> and <productname>Antenna House Formatter</productname> as well as other <acronym>XML</acronym> technologies.</para>
+				<para>In 2009 he moved on to <orgname>Thieme Compliance GmbH</orgname> were he now is employed as Head of Content Architecture &amp; Management. Together with his team, he focuses on the further development of the <acronym>XML</acronym> content and ensures its single-source capability. The main task is on the development and maintenance of publishing pipelines for fully or highly automated output in a wide variety of media forms.</para> 
+				<para>He loves everything markup and is very interested in exchange with the <acronym>XML</acronym> community.</para>
+			</personblurb>
+			<affiliation>
+				<jobtitle>Head of Content Architecture &amp; Management</jobtitle>
+				<orgname>Thieme Compliance GmbH</orgname>
+			</affiliation>
+		</author>
+
+
+		<keywordset>
+			<keyword>XML</keyword>
+			<keyword>XProc</keyword>
+			<keyword>XSLT</keyword>
+			<keyword>pipeline</keyword>
+			<keyword>healthcare</keyword>
+		</keywordset>
+
+
+		<xi:include href="0-abstract.xml" />
+	</info>
+
+
+	<xi:include href="1-intro.xml" />
+
+
+	<xi:include href="2-Existing-batches.xml" />
+
+
+	<xi:include href="2a-Pain-points.xml" />
+
+
+	<xi:include href="3-Requirements.xml" />
+
+
+	<xi:include href="4-New-system.xml" />
+
+
+	<xi:include href="5-Takeaways.xml" />
+
+
+	<!--<xi:include href="5-Takeaways-Achim.xml" />-->
+
+
+	<bibliography xml:id="references">
+		<biblioentry>
+			<abbrev>Siegel:2019</abbrev>
+			<author>
+				<personname>
+					<firstname>Erik</firstname>
+					<surname>Siegel</surname>
+				</personname>
+			</author>
+			<citetitle>An introduction to XProc 3.0</citetitle>
+			<publisher>
+				<publishername>XML.com</publishername>
+				<address>https://www.xml.com/articles/2019/11/05/introduction-xproc-30/</address>
+			</publisher>
+			<date>2019</date>
+		</biblioentry>
+
+		<biblioentry>
+			<abbrev>Siegel:2020</abbrev>
+			<author>
+				<personname>
+					<firstname>Erik</firstname>
+					<surname>Siegel</surname>
+				</personname>
+			</author>
+			<citetitle>XProc 3.0. Programmer Reference</citetitle>
+			<publisher>
+				<publishername>XML Press</publishername>
+				<address>Laguna Hills, CA</address>
+			</publisher>
+			<date>2020</date>
+		</biblioentry>
+
+		<biblioentry>
+			<abbrev>Siegel:2020a</abbrev>
+			<author>
+				<personname>
+					<firstname>Erik</firstname>
+					<surname>Siegel</surname>
+				</personname>
+			</author>
+			<citetitle>XProc 3.0 - Connecting steps using ports</citetitle>
+			<publisher>
+				<publishername>XML.com</publishername>
+				<address>https://www.xml.com/articles/2020/01/23/xproc-30-connecting-steps-using-ports/</address>
+			</publisher>
+			<date>2020</date>
+		</biblioentry>
+
+		<biblioentry>
+			<abbrev>Siegel:2020b</abbrev>
+			<author>
+				<personname>
+					<firstname>Erik</firstname>
+					<surname>Siegel</surname>
+				</personname>
+			</author>
+			<citetitle>XProc 3.0 - Strategies for merging documents</citetitle>
+			<publisher>
+				<publishername>XML.com</publishername>
+				<address>https://www.xml.com/articles/2020/11/16/xproc-30-strategies-merging-documents/</address>
+			</publisher>
+			<date>2020</date>
+		</biblioentry>
+
+		<bibliomixed>
+			<abbrev>7-Zip</abbrev> is a file archiver with a high compression ratio. <bibliomisc><link xl:href="https://www.7-zip.org" /></bibliomisc>
+		</bibliomixed>
+
+		<bibliomixed>
+			<abbrev>Beyond Compare</abbrev> is a data comparison program developed by <orgname>Scooter Software</orgname>. In addition to comparing files, the program can also compare entire directories as well as FTP directories and archives. The program's particular strengths include its scripting capability and its usage of built-in and extendable comparison rules for different file formats. <bibliomisc><link xl:href="https://www.scootersoftware.com" /></bibliomisc>
+		</bibliomixed>
+
+		<bibliomixed>
+			<abbrev>CLS</abbrev> <productname>Content Lifecycle System (CLS)</productname> is a component content management system from <orgname>Empolis Solutions GmbH</orgname>. <bibliomisc><link xl:href="https://www.empolis.com/" /></bibliomisc>
+		</bibliomixed>
+
+		<bibliomixed>
+			<abbrev>curl</abbrev> is used in command lines or scripts to transfer data. <bibliomisc><link xl:href="https://curl.se" /></bibliomisc>
+		</bibliomixed>
+
+		<bibliomixed>
+			<abbrev>E-ConsentPro</abbrev> is a software solution for digital patient education developed by <orgname>Thieme Compliance GmbH</orgname> <bibliomisc><link xl:href="https://thieme-compliance.de/en/products/e-consentpro-software/" /></bibliomisc>
+		</bibliomixed>
+
+		<bibliomixed>
+			<abbrev>HL7 FHIR</abbrev> The Fast Healthcare Interoperability Resources (FHIR, pronounced &#x201C;fire&#x201D;) standard is a set of rules and specifications for exchanging electronic healthcare data. It was created by the Health Level Seven International (HL7) healthcare standards organisation. <bibliomisc><link xl:href="https://www.hl7.org/fhir" /></bibliomisc>
+		</bibliomixed>
+
+		<bibliomixed>
+			<abbrev>LHC-Forms</abbrev> is a widget that renders input forms for web-based applications based on <acronym>FHIR</acronym> questionnaires provided by the <orgname>National Library of Medicine</orgname>. <bibliomisc><link xl:href="https://lhcforms.nlm.nih.gov/" /></bibliomisc>
+		</bibliomixed>
+
+		<bibliomixed>
+			<abbrev>LOINC</abbrev> (<productname>Logical Observation Identifiers Names and Codes</productname>) is an international system published by the <orgname>Regenstrief Institute</orgname> for the unique identification and coding of medical observations, especially laboratory tests. <bibliomisc><link xl:href="https://loinc.org" /></bibliomisc>
+		</bibliomixed>
+
+		<bibliomixed>
+			<abbrev>SNOMED CT</abbrev> (<productname>Systematized Nomenclature of Medicine and Clinical Terms</productname>) is currently the most comprehensive health terminology in the world, a steadily growing ontology of preferred terms and their synonyms. It is maintained and distributed by <orgname>SNOMED International</orgname>. <bibliomisc><link xl:href="https://www.snomed.org" /></bibliomisc>
+		</bibliomixed>
+
+		<bibliomixed>
+			<abbrev>XProc</abbrev> is an <acronym>XML</acronym> based programming language for processing documents in pipelines, which involves chaining conversions and other steps together to achieve the desired results. The current version is 3.0. <bibliomisc><link xl:href="https://xproc.org/" /></bibliomisc>
+		</bibliomixed>
+	</bibliography>
+</article>

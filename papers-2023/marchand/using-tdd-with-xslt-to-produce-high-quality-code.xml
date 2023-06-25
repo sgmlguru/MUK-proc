@@ -1,0 +1,666 @@
+<?xml version="1.0" encoding="utf-8"?>
+<article 
+  xmlns="http://docbook.org/ns/docbook" 
+  xmlns:xl="http://www.w3.org/1999/xlink" 
+  version="5.0"
+  xml:lang="en">
+  <info>
+    <title>Using TDD to produce High Quality XSLT</title>
+    <subtitle>Return on experience</subtitle>
+
+    <author>
+      <personname>Christophe Marchand</personname>
+      <email>christophe@marchand.top</email>
+      <uri>https://github.com/cmarchand</uri>
+      <personblurb>
+        <para>Christophe Marchand is a passionate developer, involved in
+        software quality for years. He has work to provide continuous
+        integration tools for XML technologies, by developing many Maven
+        plugins.</para>
+        <para>He also teaches Java, Software Carftsmanship and XML languages.</para>
+      </personblurb>
+      <affiliation>
+        <jobtitle>Open to new opportunities</jobtitle>
+        <orgname>Oxiane</orgname>
+      </affiliation>
+    </author>
+
+    <keywordset>
+      <keyword>XSLT</keyword>
+      <keyword>Test Driven Development</keyword>
+      <keyword>High quality code</keyword>
+    </keywordset>
+
+    <abstract>
+      <para>This paper explains the benefits we had in using TDD to developp a Markdown to XML transformer.</para>
+      <para>It introduces TDD, Clean Code and Refactoring, and shows how to apply them to XSLT language.</para>
+    </abstract>
+  </info>
+
+  <para>At OXiane, we produce a lot of courses, we sell and teach. We were using office tools,
+  like LibreOffice Writer and LibreOffice Impress. But it was difficult for us to make a clear
+  distinction between a source document, that can be edited, and a production document, that is
+  archived to know which slides has been used for which session. And being many writers to work
+  together is not easy with such tools.</para>
+
+  <para>For this reasons, and for editorial contraints, we decided that a Oxiane Course will be
+  a project, that contains sources for slides, source for exercise book, where sources are text
+  files, and that we will build the production files by a build process.</para>
+  
+  <para>This drives us to write various tools to transform text source files into PDF or HTML
+  outputs. And we wanted to have high quality tools, so we decided to apply lessons learn from
+  Software Craftsmanship.</para>
+
+  <section>
+    <title>TDD : where does it comes from ?</title>
+
+    <para>Test Driven Development was originaly introduced by Kent Beck in eXtreme Programming explained<biblioref linkend="xp-explained"/>
+      in 2004, but was already used since the beginning of extreme programming in the end of 90's.</para>
+
+    <para>Extreme programming was a set of responses to the high costs, poor quality, unpredictable delays
+      of software, and TDD focuses on quality. Quality is defined by readability, robustness and maintanability.</para>
+
+    <section>
+      <title>The TDD loop and the refactoring phase</title>
+      <para>Test Driven Development consists in first writing a test that describes a business requirement ;
+        this test, when executed, must fail. Then, it consists in writing the minimum of code that make the
+        test succeed. At this point, the business requirement described by the test is fully implemented,
+        and business code can be delivered. But probably, the code isn't readable, isn't robust, has some
+        duplications, and must be refactored to remove all duplications, to be easily readable and understandable,
+        and to become robust.</para>
+      <para>This process is known as the TDD loop. And the most important phase of this loop is the
+        refactoring phase. It's in this phase that we introduce methods that hides the technical complexity,
+        and that describes the business intent. Once the business intent is clearly exposed in code, the code is
+        readable, understandable, and code is easy to modify.</para>
+      <para>Refactoring is a process where we have to rewrite the code without changing any behavior. The
+        sole way to guarantee this is to have unit tests, and to run unit tests each time we modify code,
+        and to check that all tests succeed. If tests still succeed, program behavior has not been changed.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Writing a MarkDown to HTML converter with XSLT</title>
+
+    <para>The business purpose is to be able to write OXiane exercices books with only pure text. We do not
+      want anymore any office tool, as they use binary file formats. These binary file formats are not
+      fully supported by version control tools, such as Git. Ans all course writers at OXiane are developers
+      that use Git every day.</para>
+    
+    <para>So we need a pure text file format, easy to write and to structurate, and we need tools to transform
+      this text-based file format to various outputs : LibreOffice for backward compatibility, Microsoft
+      Office because some of our clients expect this file format, PDF for printers, and HTML for students -
+      that's much comfortable for them to use than PDF.</para>
+    
+    <para>The semantics requirements are very limited : paragraphs, three levels of titles, two levels of
+      list-items, pictures, code blocks, bold text, inline code, links and anchors, and bold text in code
+      blocks.</para>
+    
+    <para>As MarkDown is commonly used in tools such as GitLab, we decided to use a limited subset of
+      MarkDown, with special extensions to have bold text in code blocks. But it is really a limited subset,
+      and we do not want to allow any writer to use some editorial features not allowed in our editorial
+      rules. So, using an existing MarkDown converter was not a solution. We decided so to write our own
+      MarkDown converter.</para>
+    
+    <section>
+      <title>Feature definition</title>
+      
+      <para>A course is a git repository. It contains a slide-deck, edited by an OXiane tool, and serialized
+        in JSon, and this tool is not related to this paper. And it contains an exercice book, edited by
+        any text editor in our own MarkDown flavor. It is also a project that is build by a continuous
+        integration process, and this build process must produce the slide-deck in pdf format, and the
+        exercice book in PDF and Html formats. LibreOffice and MS Office formats has been made obsolete.
+        For both slide-deck and exercice book, two flavors are produced, one for screen, one for print.</para>
+      
+      <para>We need a tool that is able to transform MarkDown to Html, to PDF, and a
+        What-You-See-Is-What-You-Get browser-based editor. Transformation process must be quick and efficient,
+        as WYSISWYG editor must be fluid. As this tool is written by a course-writers team, and as there is no
+        credit to maintain this tool, it must be very robust, it must be very easy to evolve if new features are
+        required in the future. It must provide comprehensive error message when transformation fails, to
+        help the writer to correct its document, without requiring a developer assistance.</para>
+    </section>
+    
+    <section>
+      <title>Tooling</title>
+      
+      <para>As XSLT is able to run embeded in a Java Program, and in a browser, we choose XSLT to write
+        the transformer program. Because we've used Saxon for a while, Saxon XSLT processor will be
+        used.</para>
+      
+      <para>XSpec is a Unit Test framework, that can be used to test XSLT, XQuery and Schematron. XSpec
+      has been present for a while, but is actively maintained by <author><personname>AirQuick</personname></author>
+      and <author><personname>Galtm</personname></author></para>
+      
+      <para>OXygen XML Developer<biblioref linkend="oxygen-xml-developer"/> is a really convinient Development environment for XSLT, it embeds Saxon,
+        and XSpec. We will use OXygen XML Developer to develop this tool.</para>
+    </section>
+    
+    <section>
+      <title>Methods</title>
+      
+      <para>As Software Craftsmanship practitioners, we will use Test Driven Development to develop our
+        transformer. Even it's not commonly used with XSLT, it has proven that if correctly practised, it
+        produces high quality code.</para>
+    </section>
+  </section>
+  
+  <section>
+    <title>Implementation</title>
+    
+    <section>
+      <title>Level 1 titles</title>
+      
+      <para>We want to transform a <code># Title 1</code> line into an XML element <code>&lt;title>Title 1&lt;/title></code>.</para>
+      
+      <para>Test Driven Development says we <emphasis>must</emphasis> write a test that describes the business
+        requirement, before coding any production code. XSpec is a framework where we can describe business
+        requirements as scenarios, with context and expectations.</para>
+      <para>Let's write such a scenario</para>
+      
+      <example>
+        <title>XSpec 1</title>
+        <programlisting language="xml"><![CDATA[<x:description 
+  xmlns:x="http://www.jenitennison.com/xslt/xspec"
+  stylesheet="../../main/xsl/md-to-xml.xsl"
+  xslt-version="3.0">
+
+  <x:scenario label="Title 1">
+    <x:context select="'# Title 1'" mode="convert"/>
+    <x:expect label="A title element with text in">
+      <title>Title 1</title>
+    </x:expect>
+  </x:scenario>
+</x:description>]]></programlisting>
+      </example>
+      
+      <para>If we run this XSpec scenario, it fails, and says that <code>../../main/xsl/md-to-xml.xsl
+        does not exist</code>. Correct. A test that does not compile is a failing test. We are allowed
+        to write production code to make the test compile.</para>
+      
+      <para>So we create the missing file, with the minimum code to make the test compile.</para>
+
+      <example>
+        <title>XSLT 1</title>
+        <programlisting language="xml"><![CDATA[<xsl:stylesheet 
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  version="3.0">
+  
+</xsl:stylesheet>]]></programlisting>
+      </example>
+
+      <para>With this file, the unit tests executes, but fails to succeed. We can now write the minimum
+        code to make the test succeed :</para>
+
+
+    <example>
+      <title>XSLT 2</title>
+      <programlisting language="xml"><![CDATA[<xsl:stylesheet 
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  version="3.0">
+  
+  <xsl:template match=".[. eq '# Title 1']" mode="convert">
+    <title>Title 1</title>
+  </xsl:template>
+</xsl:stylesheet>]]></programlisting>
+    </example>
+
+      <para>If we run again the unit test, it now succeeds. First part of TDD loop is completed, the code
+        behaves as expected. But the code is very specific, and not very easy to understand ; business
+        intention can not be quickly understood, and that's a problem. In <biblioref linkend="clean-code"/>,
+        Bob Martin explains that we have to improve readability, it makes code easier to maintain.</para>
+      
+      <para>To refactor code, we can process by hand, and apply manually various refactoring operations, like
+        Extract Function<biblioref linkend="REFACTO-extract-function"/> ; we can also use OXygen's implementation of
+        this operation, it will be quicker :</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Select <code>. eq '#Title 1'</code></para>
+      </listitem>
+      <listitem>
+        <para>Right Click on it / Refactoring / Extract Function</para>
+      </listitem>
+      <listitem>
+        <para>It asks for a function name, let's type <code>prv:isTitle1</code> and validate</para>
+      </listitem>
+      <listitem>
+        <para>OXygen generates the function, defines the namespace alias, and replace the ugly code by the function call :</para>
+      </listitem>
+    </itemizedlist>
+
+    <example>
+      <title>XSLT 3</title>
+      <programlisting language="xml"><![CDATA[<xsl:stylesheet 
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  version="3.0"
+  xmlns:prv="http://www.example.com/fn">
+  
+  <xsl:function name="prv:isTitle1">
+    <xsl:value-of select=". eq '# Title 1'"/>
+  </xsl:function>
+  <xsl:template match=".[prv:isTitle1()]" mode="convert">
+    <title>Title 1</title>
+  </xsl:template>
+</xsl:stylesheet>]]></programlisting>
+    </example>
+    
+    <para>Let's run again the unit test, it fails. The function does not have any parameter, no context
+      item, so it can not compare text. Let's introduce a parameter ; OXygen does not provide a Introduce
+      parameter<biblioref linkend="REFACTO-introduce-parameter-object"/> nor a Change function declaration<biblioref linkend="REFACTO-change-function-declaration"/>,
+      so we have to do it manually :</para>
+      
+    <example>
+      <title>XSLT 4</title>
+      <programlisting language="xml"><![CDATA[<xsl:stylesheet 
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  version="3.0"
+  xmlns:prv="http://www.example.com/fn"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xsl:function name="prv:isTitle1">
+    <xsl:param name="line" as="xs:string"/>
+    <xsl:value-of select="$line eq '# Title 1'"/>
+  </xsl:function>
+  <xsl:template match=".[prv:isTitle1(.)]" mode="convert">
+    <title>Title 1</title>
+  </xsl:template>
+</xsl:stylesheet>
+]]></programlisting>
+    </example>
+      
+    <para>The test succeeds. But function is at the beginning of the code, and it hides the business
+      part. Let's apply the Slide Statement<biblioref linkend="REFACTO-slide-statement"/> refactoring operation, to move
+      the function at the bottom of the file :</para>
+    <example>
+      <title>XSLT 5</title>
+      <programlisting language="xml"><![CDATA[<xsl:stylesheet 
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  version="3.0"
+  xmlns:prv="http://www.example.com/fn"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xsl:template match=".[prv:isTitle1(.)]" mode="convert">
+    <title>Title 1</title>
+  </xsl:template>
+  
+  <xsl:function name="prv:isTitle1">
+    <xsl:param name="line" as="xs:string"/>
+    <xsl:value-of select="$line eq '# Title 1'"/>
+  </xsl:function>
+</xsl:stylesheet>]]></programlisting>
+    </example>
+
+    <para>Now, we can read the XSL file, and understand that it is used to convert all lines that are a
+      <code>title1</code>, and transform it to a random element. We do not need to know exactly what is a
+      <code>title1</code>, and which technical rules apply to identify a <code>title1</code>. We just know
+      that this template processes all <code>title1</code> lines.</para>
+
+    <para>This second part of TDD loop, the refactoring part, is the most important phase of TDD. It's the
+      phase where we make business rules emerge from the code.</para>
+      
+    <para>What a pitty, Oxygen is not very precise in refactoring, and it generates code that has to be
+      manually fixed. The generated function should be typed as boolean, but isn't. It's an error,
+      and we know this because we have good skills in XSLT. But we can not write new code without a failing
+      test. So we write a test that shows the function is not correct and must return a <code>xs:boolean</code>.</para>
+      
+    <example>
+      <title>XSpec 2</title>
+      <programlisting language="xml"><![CDATA[<x:description 
+  xmlns:x="http://www.jenitennison.com/xslt/xspec"
+  xmlns:prv="http://www.example.com/fn"
+  stylesheet="../../main/xsl/md-to-xml.xsl"
+  xslt-version="3.0">
+  
+  <x:scenario label="Title 1">
+    <x:context select="'# Title 1'" mode="convert"/>
+    <x:expect label="A title element with text in">
+      <title>Title 1</title>
+    </x:expect>
+  </x:scenario>    
+  
+  <x:scenario label="testing isTitle1">
+    <x:scenario label="# Title 1">
+      <x:call function="prv:isTitle1">
+        <x:param># Title 1</x:param>
+      </x:call>
+      <x:expect label="Title 1" select="true()"/>
+    </x:scenario>
+  </x:scenario>
+</x:description>]]></programlisting>
+    </example>
+      
+      <para>Here, we precisely define we expect a <code>xs:boolean</code>. We we run the test, it fails. Types are different.
+        Let's correct production code just add <code>as</code> attribute :</para>
+      <example>
+        <title>XSLT 6</title>
+        <programlisting language="xml"><![CDATA[  <xsl:function name="prv:isTitle1" as="xs:boolean">
+    <xsl:param name="line" as="xs:string"/>
+    <xsl:value-of select="$line eq '# Title 1'"/>
+  </xsl:function>]]></programlisting>
+      </example>
+      
+      <para>And here, Oxygen shows a warning on mis-use of value-of. We replace it with a sequence :</para>
+
+      <example>
+        <title>XSLT 7</title>
+        <programlisting language="xml"><![CDATA[  <xsl:function name="prv:isTitle1" as="xs:boolean">
+    <xsl:param name="line" as="xs:string"/>
+    <xsl:sequence select="$line eq '# Title 1'"/>
+  </xsl:function>]]></programlisting>
+      </example>
+      
+      <para>Now, all tests are green.</para>
+      
+      <para>We now can add new test cases for titles. XSpec allows to wrap scenarios into scenarios, it is
+        very useful to group scenarios together ; that's what we do here, to check if our <code>isTitle1</code>
+        function is correct :</para>
+      
+      <example>
+        <title>XSpec 3</title>
+        <programlisting language="xml"><![CDATA[  <x:scenario label="testing isTitle1">
+    <x:scenario label="# Title 1">
+      <x:call function="prv:isTitle1">
+        <x:param># Title 1</x:param>
+      </x:call>
+      <x:expect label="true" select="true()"/>
+    </x:scenario>
+    <x:scenario label="# Another title 1">
+      <x:call function="prv:isTitle1">
+        <x:param># Another title 1</x:param>
+      </x:call>
+      <x:expect label="true" select="true()"/>
+    </x:scenario>
+  </x:scenario>]]></programlisting>
+      </example>
+      
+      <para>The new scenario fails, our function is not correctly written. As we have read
+        the Markdown specification, we know that a level 1 title must starts with <code># </code>,
+        so we code this :</para>
+      
+      <example>
+        <title>XSLT 8</title>
+        <programlisting language="xml"><![CDATA[  <xsl:function name="prv:isTitle1" as="xs:boolean">
+    <xsl:param name="line" as="xs:string"/>
+    <xsl:sequence select="$line => starts-with('# ')"/>
+  </xsl:function>]]></programlisting>
+      </example>
+      
+      <para>And all tests succeed.</para>
+        
+      <para>Last, we have to test that the produced <code>title</code> element contains the correct text.
+        So we write a new scenario with a different text. And we refactor scenarios titles, to be clearer :</para>
+      
+      <example>
+        <title>XSpec 4</title>
+        <programlisting language="xml"><![CDATA[  <x:scenario label="Exercise Book title">
+    <x:scenario label="Title 1">
+      <x:context select="'# Title 1'" mode="convert"/>
+      <x:expect label="A title element with text in">
+        <title>Title 1</title>
+      </x:expect>
+    </x:scenario>
+    <x:scenario label="Another title 1">
+      <x:context select="'# Another title 1'" mode="convert"/>
+      <x:expect label="A title element with Another title 1 in">
+        <title>Another title 1</title>
+      </x:expect>
+    </x:scenario>
+  </x:scenario>]]></programlisting>
+      </example>
+      
+      <para>This new scenario fails, we can correct the template to produce the expected output :</para>
+      
+      <example>
+        <title>XSLT 9</title>
+        <programlisting language="xml"><![CDATA[  <xsl:template match=".[prv:isTitle1(.)]" mode="convert" expand-text="true">
+    <title>{. => substring(3)}</title>
+  </xsl:template>]]></programlisting>
+      </example>
+      
+      <para>This new code make all scenarios succeed. We are done with implementation for level 1 titles,
+        but code is not very understandable : what does <code>. => substring(3)</code> mean from a business
+        point of view ? Nothing, it's too technical. Let's add clarity, and extract all the thecnical code
+        in a function :</para>
+      
+      <example>
+        <title>XSLT 10</title>
+        <programlisting language="xml"><![CDATA[  <xsl:function name="prv:getTitle1Content">
+    <xsl:param name="line" as="xs:string"/>
+    <xsl:value-of select="$line => substring(3)"/>
+  </xsl:function>
+  <xsl:template match=".[prv:isTitle1(.)]" mode="convert" expand-text="true">
+    <title>{prv:getTitle1Content(.)}</title>
+  </xsl:template>]]></programlisting>
+      </example>
+      
+      <para>And again, move function to the bottom of file, it's only technical details... Now, if we look
+        at our code, we have a template where the match attribute contains an understable business rule, and
+        it produces an output that is also described by a business rule. All rules are clearly defined in the
+        code. This code will be much simpler to maintain if business rules evolve in the future, and if
+        developers who write the initial code are not still active on the project. We can read the code from
+        top to bottom, as a book.</para>
+      
+      <example>
+        <title>XSLT 11</title>
+        <programlisting language="xml"><![CDATA[<xsl:stylesheet 
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  version="3.0"
+  xmlns:prv="com:oxiane:courses:mdtoxml:private"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xsl:mode name="convert" on-no-match="fail"/>
+  
+  <xsl:template match=".[prv:isTitle1(.)]" mode="convert" expand-text="true">
+    <title>{prv:getTitle1Content(.)}</title>
+  </xsl:template>
+  
+  <xsl:function name="prv:isTitle1" as="xs:boolean">
+    <xsl:param name="line" as="xs:string"/>
+    <xsl:sequence select="$line => starts-with('# ')"/>
+  </xsl:function>
+
+  <xsl:function name="prv:getTitle1Content">
+    <xsl:param name="line" as="xs:string"/>
+    <xsl:value-of select="$line => substring(3)"/>
+  </xsl:function>
+</xsl:stylesheet>]]></programlisting>
+      </example>
+      
+    </section>
+    <section>
+      <title>Next titles and list items</title>
+      <para>Then, the same process is applied to level 2 and level 3 titles, to level 1 and
+        level 2 list items. We write a new test case, we check that the test fail, we write the
+        minimum code to make the test succeed, and we refactor production code to make it readable.</para>
+    </section>
+  </section>
+  
+  <section>
+    <title>Pro and Cons of using TDD for XSLT development</title>
+    <para>When applying strictly Test Driven Development method, we only write code that is required
+      by a business use case. we do not have any unnecessary code.</para>
+    <para>When appying with test driven development, developers proceed by baby steps. This allows to
+    focus on a simple problem, and produces simple code.</para>
+    <para>Refactoring is the phase where code is reorganised. It eliminates duplication, and make appears
+    design that simplifies code. Code is simplified as features are added<biblioref linkend="wycash"/></para>
+    <para>Extracting code to functions allows the business requirement being exposed clearly. It also
+      conduct to respect the Single Responsability Principle. Respecting the SRP makes the code more
+      robust and more easy to maintain.</para>
+    <para>As all business requirements are exposed as unit tests, and as the tests all succeed, there is no bug
+      in code.</para>
+    <para>As we write only code that is required to make a test succeed, all code is covered by unit tests.
+      TDD drives us to have a 100% code coverage ; it's difficult to have such a coverage with other methods.</para>
+    <para>Data coverage is more a problem. We can not write code to process unexpected or unknown data, as
+      we are not able to write test cases for this unexpected data ; but we can write code that fails if there
+      is an unexpected data structure.</para>
+    
+    <section>
+      <title>Bugs</title>
+      <para>When a program do not behave as expected, we call this a bug. Using TDD forces to express all expected
+        behavior by tests. So all behavior is perfectly known and proven. If TDD is used, then there is no bug in
+        our code.</para>
+      <para>We may have new expectations. A client may ask for a new semantic, a new rendering. It's not a bug. It
+        has not been expressed before, we have to implement a new behavior. We will do this by applying TDD.
+        Creating new tests, implementing code to make tests succeed may drives to have existing tests that fail. We
+        have to check carefully if we broke the expected behavior, or if the existing test that fail is still valid.
+        Sometime, adding new features drives to change existing features, and so drives to change tests.</para>
+      <para>On the OXiane Course project, we do not have any ticket that was an error, after investigation. We have
+        tickets where the client says "it doesn't work as I expect". But it works as it was expected in the beginning.
+        And these tickets have conduct us to change some parts of syntax, mainly on image sizing.</para>
+    </section>
+    
+    <section>
+      <title>Baby steps</title>
+      <para>Coding with TDD, we should proceed by baby steps. Only small things, one by one. When this first thing works,
+        then you create a second test, with a second baby step, and you code it.</para>
+      <para>This allows the developer to focus on problems one by one. And not to disperse in many problems.</para>
+      <para>When a bay step is coded wand when all tests succeed, we are able to deliver our code. It may be complete,
+        but everything that's coded works, is documented by steps, and is reliable. We are able to deliver the final product
+        to final users, and they are able to evaluate it. This ability to deliver all the time is required by agile methods.</para>
+      <para>This may conduct to have a lot of corks in our production code, if developer can not find the the way to make the
+        code right (Make it run, make it correct, make it fast<biblioref linkend="xp-explained"/>). But with this corks,
+        the code behaves correctly, according to written unit tests. The corks will disapear in refactoring phase.</para>
+    </section>
+    
+    <section>
+      <title>Refactoring</title>
+      <para>As written above, refactoring is the most important phase of TDD loop. This experience of using TDD with XSLT
+        has shown that refactoring tools provided by Oxygen are limited, and they can be enhanced to provide high level
+        helpers. Other IDE, like IntelliJ or Eclipse, provide very advanced refactoring tools, and this tools allows
+        developpers to be much more efficient. For example, when we rename a function, all code that calls this function
+        is updated to take in account the rename. But Oxygen has already this refactoring operations, some implemented
+        in editor, like move XML element, which fits with slide statement<biblioref linkend="REFACTO-slide-statement"/>, some
+        from the Refactoring menu. Users probably need to challenge Oxygen team to enhance these refactoring operations.</para>
+      <para>Refactoring is the phase where design emerges. When we see many corks written one after the other, we see
+        what we have to do to introduce the right design, or the right patterns to eliminate duplications and to simplify
+        the code.</para>
+    </section>
+    
+    <section>
+      <title>Code Coverage</title>
+      <para>Code coverage is a common indicator of code quality. Tools like Sonarqube have metrics on code coverage.
+        Code coverage, in object oriented languages, is calculated on lines of code. But in these languages, there is
+        mainly only one instruction per line of code.</para>
+        <para>In XSLT, spacing in code is part of code. If we separate two sequence constructors by a space or a
+          carriage return, the output is changed. And so we may have more than one instruction per line of code.
+          Calculating code coverage with XSLT is more complex than with other languages.</para>
+        <para>XSpec is able to calculate code coverage with XSLT. It requires to use Saxon-EE. XSpec does not provide
+          a numeric result for code coverage, but there is a colored rendering of XSLT code that allows to know if a code
+          instruction is tested or not. Since Saxon 10, API has changed and XSpec framework has not been fully updated for
+          these API changes. Michael Kay (Saxonica) has contributed to XSpec framework to correct this, but there is still
+          some job to do to have good results on code coverage evaluation. If we keep a line scope for coverage, and if we
+          are able to ignore XML vocabulary like namespace declarations, then we can see that all the XSLT code is covered
+          by unit tests.</para>
+    </section>
+    
+    <section>
+      <title>Data Coverage</title>
+      <para>Data coverage is another important quality indicator. We have to be sure that our code covers all data cases.
+        As XSLT is a data-driven process, there are some mechanisms in XSLT to ensure that all data cases are processed,
+        like <code>no-match</code> attributes in <code>xsl:mode</code>. But it is sometime not enough, as we can decide
+        to process only parts of input content, with <code>xsl:apply-templates/@select</code> for examples.</para>
+      <para>A common way to ensure that all data cases are covered is to use grammars on input content.
+        XML Schema<biblioref linkend="xml-schema"/>, RelaxNG<biblioref linkend="relaxng"/> and Schematron<biblioref linkend="schematron"/>
+        are commons grammars used with XML content, and at least XML Schema and Schematron can easily be embeded in an XSLT
+        transformation. But in our case, input is pure text, with no markup, and these grammars are not made to validate text.</para>  
+      <para>Today, we are only 6 people to use this tool, and we decided to ignore data coverage problems. If a writer use
+        an unsupported syntax, it is simply processed as simple text, and sent to output without any transform. It is neither
+        satisfying nor robust, but, at this point of usability, we will not invest more in this part.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Conclusion</title>
+
+    <para>Test Driven Development, Refactoring, Clean Code and Software Craftsmanship are all techniques and methods that produces
+      high quality code in Oriented-Object Programming languages.</para>
+    <para>XSpec framework, and its integration in Oxygen, allows to apply test driven development with XSLT. It runs quickly enough
+      to have a short TDD loop, and to produce quickly deliverable code.</para>
+    <para>Coding time is a little it more important than with standard method, but it produces code that is much cheaper to maintain,
+      and much more reliable.</para>
+    <para>Mixing TDD and XSLT provides a lot of serinity to developers.</para>
+
+  </section>
+
+  <bibliography xml:id="marchand-references">
+
+    <bibliomixed xml:id="xp-explained">
+      <author><personname>Kent Beck</personname></author>: <title>eXtreme Programming explained</title>.
+      <editor><personname>ADDISON-WESLEY</personname></editor>: <biblioid class="isbn">0-201-61641-6</biblioid>
+    </bibliomixed>
+
+    <bibliomixed xml:id="clean-code">
+      <abbrev>Clean Code</abbrev>
+      <author><personname>Robert C. Martin</personname></author>: <title>Clean Code</title>.
+      <editor><personname>Addison-Wesley</personname></editor>: <biblioid class="isbn">978-0-13-235088-4</biblioid>
+    </bibliomixed>
+    
+    <bibliomixed xml:id="REFACTO-extract-function">
+      <abbrev>Refactoring Extract Function</abbrev>
+      <author><personname>Martin Fowler</personname></author>: <title>Refactoring</title>, <subtitle>Second Edition</subtitle>
+      <editor><personname>Addison Wesley</personname></editor>: <biblioid class="isbn">978-0-13-475759-9</biblioid> ;
+      <bibliomisc>Extract Function - Page 106</bibliomisc>
+    </bibliomixed>
+    <bibliomixed xml:id="REFACTO-change-function-declaration">
+      <abbrev>Refactoring Change Function Declaration</abbrev>
+      <author><personname>Martin Fowler</personname></author>: <title>Refactoring</title>, <subtitle>Second Edition</subtitle>
+      <editor><personname>Addison Wesley</personname></editor>: <biblioid class="isbn">978-0-13-475759-9</biblioid> ;
+      <bibliomisc>Change Function Declaration - Page 124</bibliomisc> 
+    </bibliomixed>
+    <bibliomixed xml:id="REFACTO-introduce-parameter-object">
+      <abbrev>Refactoring Introduce Parameter</abbrev>
+      <author><personname>Martin Fowler</personname></author>: <title>Refactoring</title>, <subtitle>Second Edition</subtitle>
+      <editor><personname>Addison Wesley</personname></editor>: <biblioid class="isbn">978-0-13-475759-9</biblioid> ;
+      <bibliomisc>Introduce Parameter Object - Page 140</bibliomisc>
+    </bibliomixed>
+    <bibliomixed xml:id="REFACTO-slide-statement">
+      <abbrev>Refactoring Slide Statement</abbrev>
+      <author><personname>Martin Fowler</personname></author>: <title>Refactoring</title>, <subtitle>Second Edition</subtitle>
+      <editor><personname>Addison Wesley</personname></editor>: <biblioid class="isbn">978-0-13-475759-9</biblioid> ;
+      <bibliomisc>Slide Statement - Page 223</bibliomisc>
+    </bibliomixed>
+    
+    <bibliomixed xml:id="oxygen-xml-developer">
+      <abbrev>Oxygen XML Developer</abbrev>
+      <author><orgname>SynchRO Soft SRL</orgname></author>
+      <biblioid class="uri">https://www.oxygenxml.com/xml_developer.html</biblioid>
+    </bibliomixed>
+    
+    <bibliomixed xml:id="wycash">
+      <abbrev>Ward Cunningham</abbrev>
+      <author><personname>Ward Cunningham</personname></author>: 
+      <title>The WyCash Portfolio Management System</title>, <subtitle>Experience Report</subtitle>
+      <biblioid class="uri">https://dl.acm.org/doi/pdf/10.1145/157709.157715</biblioid>
+      <bibliomisc>Page 2/2, end of first paragraph</bibliomisc>
+    </bibliomixed>
+
+    <bibliomixed xml:id="xml-schema">
+      <abbrev>XML Schema</abbrev>
+      <authorgroup>
+        <author><personname>Shudi Gao</personname></author>
+        <author><personname>C. M. Sperberg-McQueen</personname></author>
+        <author><personname>Henry S. Thompson</personname></author>
+        <author><personname>Noah Mendelsohn</personname></author>
+        <author><personname>David Beech</personname></author>
+        <author><personname>Murray Maloney</personname></author>
+      </authorgroup>: <title>W3C XML Schema Definition Language (XSD) 1.1 Part 1: Structures</title>
+      <biblioid class="uri">https://www.w3.org/TR/xmlschema11-1/</biblioid>
+    </bibliomixed>
+
+    <bibliomixed xml:id="relaxng">
+      <abbrev>RelaxNG</abbrev>
+      <authorgroup>
+        <author><personname>James Clarck</personname></author>
+        <author><personname>MURATA Makoto</personname></author>
+      </authorgroup>: <title>RELAX NG Specification</title>
+      <biblioid class="uri">https://relaxng.org/spec-20011203.html</biblioid>
+    </bibliomixed>
+    
+    <bibliomixed xml:id="schematron">
+      <abbrev>Schematron</abbrev>
+      <title>Document Schema Definition Language (DSDL) - Part 3: Rule-based validation using Schematron</title>
+      <biblioid class="uri">https://www.iso.org/obp/ui/#iso:std:iso-iec:19757:-3:ed-3:v1:en</biblioid>
+    </bibliomixed>
+
+  </bibliography>
+
+</article>

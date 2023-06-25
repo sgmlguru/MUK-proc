@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<abstract version="5.0" xmlns="http://docbook.org/ns/docbook">
+	<para>Orchestrating complex XML pipelines has been a major topic of XML-related software development over the years. Comprehensive techniques have been developed to: 
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>Deliver high-quality results</para>
+			</listitem>
+			<listitem>
+				<para>Ensure that the pipelines can be maintained</para>
+			</listitem>
+			<listitem>
+				<para>Allow the pipelines to be debugged for straightforward troubleshooting</para>
+			</listitem>
+		</orderedlist>
+	</para>
+
+	<para>The quality demands for the workflow and the produced results can vary: For example, you may find a very maintainable pipeline producing documents with very low quality demands, e.g. the system producing the static website for your local sports club. On the other hand you might find documents with very high quality demands produced by a pipeline that is not easy to maintain and debug. And, of course, the relationship between the quality of the documents and the maintainability of the pipeline producing these documents may change over time. Implementing new quality demands for the documents might have a negative impact on the pipelines quality. And sometimes in the history of developing a pipeline expected to produce documents with high quality demands, you might even decide to start over, as new quality demands for the documents threaten to impair the quality of your pipeline<!-- heavily-->.</para>
+
+	<para>In this paper, we would like to report about a shared project of our two companies. We had to add new features to a well-established workflow producing documents in the medical sector that come with very high quality demands. As the existing workflow already had some pain points, we decided to start over and to refactor it. And we even decided to change the basic orchestrating technology: Since the existing workflow was based on a combination of <productname>Windows</productname> batch files calling different programs and some very elaborate <productname>XSLT</productname> stylesheets, we decided to use <productname>XProc&#x00A0;3.0</productname> to orchestrate the workflow, thus doing away with as much shell scripting as possible while keeping the <productname>XSLT</productname> stylesheets to do the actual transformations.</para>
+
+	<para>As <productname>XProc&#x00A0;3.0</productname> is a relatively new technology for orchestrating document workflows, we think our project might be of some interest to people developing and/or maintaining pipelines for documents with high quality demands. We will first provide some background context for the produced documents and their actual usage to elaborate the specific quality demands. This will be followed by an overview of the existing workflow and a discussion on its pain points and new demands. We will then give an overview of the new <productname>XProc&#x00A0;3.0</productname> pipeline developed in the project and discuss some aspects of the used technology. The paper<footnote><para>We would like to thank the reviewers of our abstract for their very helpful comments. A special thank goes out to Geert&#x00A0;Bormans whose thoughtful remarks on the abstract helped to improved this paper significantly.</para></footnote> concludes with the lessons learned in our project and the key takeaways of our project in a more general context of pipelines producing documents with high quality demands.</para>
+</abstract>
