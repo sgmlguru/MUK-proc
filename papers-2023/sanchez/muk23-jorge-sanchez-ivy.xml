@@ -111,7 +111,7 @@ export PATH=$PATH:$AROUSA_HOME</programlisting>
     <para>
       <inlinemediaobject>
         <imageobject>
-          <imagedata fileref="diagrams/bold-experiment.png"/>
+          <imagedata contentdepth='100%' width='100%' scalefit='1' fileref="diagrams/bold-experiment.png"/>
         </imageobject>
       </inlinemediaobject></para>
     <para>We are going to open the bold experiment folder from the Arousa MARKUPUK23 examples and remove the bold-experiment subfolder.
@@ -195,7 +195,7 @@ $ echo '&lt;div>This text will be bold&lt;/div>' > test/data/basic_test.xml</pro
       arousa build tasks. </para>
     <para><inlinemediaobject>
         <imageobject>
-          <imagedata fileref="diagrams/Arousa-file-structure.png"/>
+          <imagedata contentdepth='100%' width='100%' scalefit='1' fileref="diagrams/Arousa-file-structure.png"/>
         </imageobject>
       </inlinemediaobject></para>
     <para>In order to use the same path references to dependencies from the source folders and from
@@ -206,7 +206,7 @@ $ echo '&lt;div>This text will be bold&lt;/div>' > test/data/basic_test.xml</pro
     <para> Doing so you can call some script, like for example a xsl:import on some.xsl with the
       same path ../../../deps/&lt;project-name>/&lt;file-type>/some.xsl both from the source folder
       and later on when the xsl is deployed to other projects deps folder.</para>
-    <para><inlinemediaobject><imageobject><imagedata fileref="diagrams/folder-convention%20diagaram.png"/></imageobject></inlinemediaobject></para>
+    <para><inlinemediaobject><imageobject><imagedata contentdepth='100%' width='100%' scalefit='1' fileref="diagrams/folder-convention%20diagaram.png"/></imageobject></inlinemediaobject></para>
     <para>Note that you could avoid this convention, using options, string substitutions, etc.
     </para>
   </section>
@@ -313,7 +313,7 @@ $ echo '&lt;div>This text will be bold&lt;/div>' > test/data/basic_test.xml</pro
       analysis.</para>
     <para><inlinemediaobject>
         <imageobject>
-          <imagedata fileref="diagrams/configuration%20chains.png"/>
+          <imagedata contentdepth='100%' width='100%' scalefit='1' fileref="diagrams/configuration%20chains.png"/>
         </imageobject>
       </inlinemediaobject></para>
     <para>At this point, a question may arise, should our report depend on a specific theme project
@@ -481,7 +481,7 @@ root="http://repository.jboss.com/maven2/" /></programlisting>
     <para>We are going to take the customer, part and supplier dataset files from: </para>
     <para><inlinemediaobject>
         <imageobject>
-          <imagedata fileref="diagrams/dual-resolvers.png"/>
+          <imagedata contentdepth='100%' width='100%' scalefit='1' fileref="diagrams/dual-resolvers.png"/>
         </imageobject>
       </inlinemediaobject></para>
     <para><link xmlns:xlink="http://www.w3.org/1999/xlink"
